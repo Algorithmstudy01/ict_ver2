@@ -1,0 +1,305 @@
+import 'package:chungbuk_ict/pill_information.dart';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+// Add this import for the InformationScreen
+
+class BookmarkScreen extends StatefulWidget {
+  final String userId;
+
+  const BookmarkScreen({Key? key, required this.userId}) : super(key: key);
+
+  @override
+  _BookmarkScreenState createState() => _BookmarkScreenState();
+}
+
+class _BookmarkScreenState extends State<BookmarkScreen> {
+  TextEditingController _searchController = TextEditingController();
+  Future<List<Map<String, String>>>? _favoritesFuture;
+  List<Map<String, String>> _allFavorites = [];
+  List<Map<String, String>> _filteredFavorites = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _favoritesFuture = fetchFavorites(widget.userId);
+    _searchController.addListener(_filterFavorites);
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  Future<List<Map<String, String>>> fetchFavorites(String userId) async {
+    final response = await http.get(
+      Uri.parse('https://80d4-113-198-180-184.ngrok-free.app/favorites/$userId/'),
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
+      List<dynamic> data = jsonDecode(response.body);
+      List<Map<String, String>> favorites = data.map<Map<String, String>>((item) => {
+        'pillCode': item['pill_code'] as String,
+        'pillName': item['pill_name'] as String,
+        'confidence': item['confidence'] as String,
+        'efficacy': item['efficacy'] as String,
+        'manufacturer': item['manufacturer'] as String,
+        'usage': item['usage'] as String,
+        'precautionsBeforeUse': item['precautions_before_use'] as String,
+        'usagePrecautions': item['usage_precautions'] as String,
+        'drugFoodInteractions': item['drug_food_interactions'] as String,
+        'sideEffects': item['side_effects'] as String,
+        'storageInstructions': item['storage_instructions'] as String,
+        'pillImage': item['pill_image'] as String,
+        'pillInfo': item['pill_info'] as String? ?? '',
+      }).toList();
+      setState(() {
+        _allFavorites = favorites;
+        _filteredFavorites = favorites;
+      });
+      return favorites;
+    } else {
+      throw Exception('Failed to load favorites');
+    }
+  }
+
+  void _filterFavorites() {
+    final query = _searchController.text.toLowerCase();
+    setState(() {
+      _filteredFavorites = _allFavorites.where((item) {
+        final pillName = item['pillName']!.toLowerCase();
+        return pillName.contains(query);
+      }).toList();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: Text('즐겨찾기 목록'),
+        backgroundColor: Colors.white,
+        elevation: 4,
+        centerTitle: true,
+        foregroundColor: Colors.black,
+        shadowColor: Colors.grey.withOpacity(0.5),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            _buildSearchBar(),
+            SizedBox(height: 16),
+            Expanded(
+              child: FutureBuilder<List<Map<String, String>>>(
+                future: _favoritesFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return Center(child: Text('No favorites added yet.'));
+                  } else {
+                    return ListView.builder(
+                      itemCount: _filteredFavorites.length,
+                      itemBuilder: (context, index) {
+                        final favorite = _filteredFavorites[index];
+                        return _buildBookmarkItem(favorite);
+                      },
+                    );
+                  }
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSearchBar() {
+    return Row(
+      children: [
+        Expanded(
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(30),
+              border: Border.all(color: Colors.black),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.search, color: Colors.black),
+                Expanded(
+                  child: TextField(
+                    controller: _searchController,
+                    decoration: InputDecoration(
+                      hintText: '검색',
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.symmetric(vertical: 14),
+                    ),
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(Icons.close),
+                  onPressed: () {
+                    _searchController.clear();
+                    _filterFavorites();
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+Widget _buildBookmarkItem(Map<String, String> favorite) {
+  return GestureDetector(
+    onTap: () {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => InformationScreen(
+            pillCode: favorite['pillCode']!,
+            pillName: favorite['pillName']!,
+            confidence: favorite['confidence']!,
+            userId: widget.userId,
+            usage: favorite['usage']!,
+            precautionsBeforeUse: favorite['precautionsBeforeUse']!,
+            usagePrecautions: favorite['usagePrecautions']!,
+            drugFoodInteractions: favorite['drugFoodInteractions']!,
+            sideEffects: favorite['sideEffects']!,
+            storageInstructions: favorite['storageInstructions']!,
+            efficacy: favorite['efficacy']!,
+            manufacturer: favorite['manufacturer']!,
+            extractedText: favorite['pillInfo']!,  imageUrl: '',
+              categoryId: favorite['categoryId'] ?? 'defaultCategoryId', // Default value if null
+          ),
+        ),
+      );
+    },
+    child: Container(
+      margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),  // Slightly larger margin
+      padding: EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: Colors.purple[100],  // Slightly lighter background color
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [BoxShadow(blurRadius: 4, color: Colors.grey.withOpacity(0.2))],  // Add shadow for depth
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.network(
+                  favorite['pillImage']!,
+                  width: 80,
+                  height: 80,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => Image.asset(
+                    'assets/img/pill.png',
+                    width: 80,
+                    height: 80,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              SizedBox(width: 10),  // Slightly larger space between image and text
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: EdgeInsets.all(8.0),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [BoxShadow(blurRadius: 2, color: Colors.grey.withOpacity(0.1))],  // Shadow for text container
+                      ),
+                      child: Text(
+                        '알약 이름 : ${favorite['pillName']}',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Container(
+                      padding: EdgeInsets.all(8.0),  // Increased padding for better readability
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                        boxShadow: [BoxShadow(blurRadius: 2, color: Colors.grey.withOpacity(0.1))],  // Shadow for text container
+                      ),
+                      child: Text(
+                        '효과 : ${favorite['efficacy']}',
+                        style: TextStyle(fontSize: 14),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 5),  // More space before the button
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton(
+              onPressed: () async {
+                await _removeFavoriteFromServer(favorite['pillCode']!);
+                // Refresh the favorites list
+                setState(() {
+                  _favoritesFuture = fetchFavorites(widget.userId);
+                });
+              },
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.black, backgroundColor: Colors.white,  // Background color
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),  // Adjust padding
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),  // Rounded corners
+                ),
+                side: BorderSide(color: Colors.black.withOpacity(0.2)),  // Border color
+              ),
+              child: Text(
+                '삭제',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,  // Slightly bolder text
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+
+Future<void> _removeFavoriteFromServer(String pillCode) async {
+  final response = await http.post(
+    Uri.parse('https://80d4-113-198-180-184.ngrok-free.app/favorites/remove/'),
+    headers: {'Content-Type': 'application/json'},
+    body: jsonEncode({
+      'pill_code': pillCode,
+      'user_id': widget.userId,
+    }),
+  );
+
+  if (response.statusCode == 200) {
+    print('Favorite removed successfully');
+  } else {
+    print('Failed to remove favorite');
+    print('Status Code: ${response.statusCode}');
+    print('Response Body: ${response.body}');
+  }
+}
+}
