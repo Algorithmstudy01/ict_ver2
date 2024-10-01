@@ -108,13 +108,13 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  void openPillInformation() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => SearchHistoryScreen(userId: widget.userId),
-      ),
-    );
-  }
+  // void openPillInformation() {
+  //   Navigator.of(context).push(
+  //     MaterialPageRoute(
+  //       builder: (context) => SearchHistoryScreen(userId: widget.userId),
+  //     ),
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {

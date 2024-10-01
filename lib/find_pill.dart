@@ -21,7 +21,7 @@ class PillInfo {
   final String drugFoodInteractions;
   final String sideEffects;
   final String storageInstructions;
-  final String categoryId;
+  final String predictedCategoryId;
 
   PillInfo({
     required this.pillCode,
@@ -35,7 +35,7 @@ class PillInfo {
     required this.drugFoodInteractions,
     required this.sideEffects,
     required this.storageInstructions,
-    required this.categoryId,
+    required this.predictedCategoryId,
   });
 
   Map<String, dynamic> toJson() {
@@ -67,7 +67,7 @@ class PillInfo {
       storageInstructions: json['storageInstructions'] ?? 'No information',
       efficacy: json['efficacy'] ?? 'No information',
       manufacturer: json['manufacturer'] ?? 'No information',
-      categoryId: json['categoryId'] ?? 'Default Category', // Add this line
+      predictedCategoryId: json['predictedCategoryId'] ?? 'Default Category', // Add this line
     );
   }
 }
@@ -204,9 +204,11 @@ Future<void> _uploadImage(File image) async {
         return;
       }
 
-      // Extracting predictedCategoryId from decodedData
       int predictedCategoryId = decodedData['predicted_category_id'] ?? 0;
-      print('Predicted Category ID: $predictedCategoryId');
+if (predictedCategoryId == 0) {
+    _showErrorDialog('예상 범주 ID를 찾을 수 없습니다.'); // 적절한 오류 메시지 출력
+    return;
+}
 
       // Setting the state with the decoded data
       setState(() {
@@ -238,7 +240,7 @@ Future<void> _uploadImage(File image) async {
             imageUrl: _pillInfo['image_url'] ?? '', // 이미지 URL 추가
             extractedText: '',
             // categoryId: _pillInfo['category_id'] ?? 'No information',
-            categoryId: predictedCategoryId.toString(), // 이 부분이 중요 // Ensure categoryId is included
+            predictedCategoryId: predictedCategoryId.toString(), // 이 부분이 중요 // Ensure categoryId is included
           ),
         ),
       );
@@ -258,34 +260,38 @@ Future<void> _uploadImage(File image) async {
 
 
 Future<void> _saveSearchHistory(PillInfo pillInfo) async {
-    final prefs = await SharedPreferences.getInstance();
-    final userId = widget.userId;
+  final prefs = await SharedPreferences.getInstance();
+  final userId = widget.userId;
 
-    final response = await http.post(
-      Uri.parse('https://80d4-113-198-180-184.ngrok-free.app/save_search_history/'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'user_id': widget.userId,
-        'prediction_score': _pillInfo['prediction_score']?.toString() ?? 'Unknown',
-        'product_name': _pillInfo['product_name'] ?? 'Unknown',
-        'manufacturer': pillInfo.manufacturer,
-        'pill_code':  _pillInfo['pill_code'] ?? 'Unknown',
-        'efficacy': pillInfo.efficacy,
-        'usage': _pillInfo['usage'] ?? 'No information',
-        'precautions_before_use':  _pillInfo['precautions_before_use'] ?? 'No information',
-        'usage_precautions':_pillInfo['usage_precautions'] ?? 'No information',
-        'drug_food_interactions': _pillInfo['drug_food_interactions'] ?? 'No information',
-        'side_effects': _pillInfo['efficacy'] ?? 'No information', // 추가된 부분
-        'storage_instructions': _pillInfo['storage_instructions'] ?? 'No information',
-      }),
-    );
+  final response = await http.post(
+    Uri.parse('https://80d4-113-198-180-184.ngrok-free.app/save_search_history/'),
+    headers: {'Content-Type': 'application/json'},
+    body: jsonEncode({
+      'user_id': userId,
+      'prediction_score': _pillInfo['prediction_score']?.toString() ?? 'Unknown',
+      'product_name': _pillInfo['product_name'] ?? 'Unknown',
+      'manufacturer': pillInfo.manufacturer,
+      'pill_code': _pillInfo['pill_code'] ?? 'Unknown',
+      'efficacy': pillInfo.efficacy,
+      'usage': _pillInfo['usage'] ?? 'No information',
+      'precautions_before_use': _pillInfo['precautions_before_use'] ?? 'No information',
+      'usage_precautions': _pillInfo['usage_precautions'] ?? 'No information',
+      'drug_food_interactions': _pillInfo['drug_food_interactions'] ?? 'No information',
+      'side_effects': _pillInfo['side_effects'] ?? 'No information', // 수정된 부분
+      'storage_instructions': _pillInfo['storage_instructions'] ?? 'No information',
+      'predicted_category_id': _pillInfo['predicted_category_id'] ?? 'Unknown', // 추가된 부분,
+      
 
-    if (response.statusCode == 200) {
-      print('Search history saved successfully.');
-    } else {
-      print('Failed to save search history. Status code: ${response.statusCode}');
-    }
+    }),
+  );
+
+  if (response.statusCode == 201) {
+    print('Search history saved successfully.');
+  } else {
+    print('Failed to save search history. Status code: ${response.statusCode}');
   }
+}
+
 
 
   void _showErrorDialog(String message) {
@@ -565,7 +571,8 @@ Future<void> _uploadImage(File image) async {
             efficacy: pillInfo.efficacy,
             manufacturer: pillInfo.manufacturer,
             extractedText: '', imageUrl:'' ,
-            categoryId: pillInfo.categoryId ?? 'Default Category', // Include this line
+            predictedCategoryId: pillInfo.predictedCategoryId, // Now available
+
           ),
         ),
       );

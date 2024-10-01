@@ -11,7 +11,7 @@ import 'package:chungbuk_ict/pill_information.dart';  // Import if necessary
 
 
 class InformationScreen extends StatefulWidget {
-  final String categoryId;
+
   // 기존 변수들
   final String pillCode;
   final String pillName;
@@ -26,7 +26,8 @@ class InformationScreen extends StatefulWidget {
   final String storageInstructions;
   final String efficacy;
   final String manufacturer;
-  final String imageUrl; // 이미지 URL 추가
+  final String imageUrl;
+  final String predictedCategoryId; // 이미지 URL 추가
 
   const InformationScreen({
     Key? key,
@@ -44,7 +45,7 @@ class InformationScreen extends StatefulWidget {
     required this.efficacy,
     required this.manufacturer,
     required this.imageUrl,
-    required this.categoryId, // 카테고리 아이디를 생성자에 추가
+    required this.predictedCategoryId, // 카테고리 아이디를 생성자에 추가
   }) : super(key: key);
 
   @override
@@ -55,8 +56,8 @@ class _InformationScreenState extends State<InformationScreen> {
   bool isFavorite = false;
   late FlutterTts flutterTts;
   
-Future<String> fetchImageUrl(String categoryId) async {
-  final response = await http.get(Uri.parse('https://80d4-113-198-180-184.ngrok-free.app/images/$categoryId.png'));
+Future<String> fetchImageUrl(String predictedCategoryId) async {
+  final response = await http.get(Uri.parse('https://80d4-113-198-180-184.ngrok-free.app/images/$predictedCategoryId.png'));
 
   print('Response status: ${response.statusCode}');
   print('Response body: ${response.body}'); // 응답 내용을 출력합니다.
@@ -145,18 +146,19 @@ Future<void> _addToFavorites() async {
       'storage_instructions': widget.storageInstructions,
       'pill_image': '',
       'pill_info': '',
+      'predicted_category_id': widget.predictedCategoryId,  // categoryId 추가
     }),
   );
 
   if (response.statusCode == 201) {
     print('Favorite added successfully');
   } else if (response.statusCode == 409) {
-    // Handle the case where the favorite already exists
     print('Favorite already exists');
   } else {
     print('Failed to add favorite: ${response.statusCode} - ${response.body}');
   }
 }
+
 
 Future<void> _removeFromFavorites() async {
   final response = await http.post(
@@ -224,11 +226,12 @@ Future<void> _removeFromFavorites() async {
 //     }
 //   },
 // ),
-if (widget.categoryId.isNotEmpty)
+if (widget.predictedCategoryId.isNotEmpty)
 Center(
   child: GestureDetector(
     child: Image.asset(
-      'assets/data/${widget.categoryId}.png',
+
+      'assets/data/${widget.predictedCategoryId}.png',
       width: MediaQuery.of(context).size.width * 0.9,  // 화면 너비의 80%로 설정
       height: MediaQuery.of(context).size.height * 0.3,  // 화면 높이의 40%로 설정
       fit: BoxFit.contain,  // 비율을 유지하며 이미지 맞춤
@@ -268,16 +271,16 @@ Center(
                         ),
                       ],
                     ),
-                   // if (widget.categoryId.isNotEmpty)
-//                    Row(
-//   children: [
-//     Expanded(child: Text('예측된 카테고리 ID: ${widget.categoryId}\n', style: TextStyle(fontSize: 16))),
-//     IconButton(
-//       icon: Icon(Icons.volume_up),
-//       onPressed: () => speak('예측된 카테고리 ID: ${widget.categoryId}'),
-//     ),
-//   ],
-// ),
+                  //  if (widget.categoryId.isNotEmpty)
+                   Row(
+  children: [
+    Expanded(child: Text('예측된 카테고리 ID: ${widget.predictedCategoryId}\n', style: TextStyle(fontSize: 16))),
+    IconButton(
+      icon: Icon(Icons.volume_up),
+      onPressed: () => speak('예측된 카테고리 ID: ${widget.predictedCategoryId}'),
+    ),
+  ],
+),
  
                   if (widget.pillName.isNotEmpty)
                     Row(
@@ -401,12 +404,10 @@ Center(
 }
 
 
-
-
 class PillInfo {
   final String pillCode;
   final String pillName;
-  final String confidence;
+  final String confidence; // Ensure this is nullable or provide a default value
   final String efficacy;
   final String manufacturer;
   final String usage;
@@ -415,9 +416,8 @@ class PillInfo {
   final String drugFoodInteractions;
   final String sideEffects;
   final String storageInstructions;
-  final String pillImage;
-  final String pillInfo;
-  final String categoryId; // Add this line
+
+  final String predictedCategoryId; // Ensure this is nullable or provide a default value
 
   PillInfo({
     required this.pillCode,
@@ -431,32 +431,28 @@ class PillInfo {
     required this.drugFoodInteractions,
     required this.sideEffects,
     required this.storageInstructions,
-    required this.pillImage,
-    required this.pillInfo,
-     required this.categoryId,
+
+    required this.predictedCategoryId,
   });
 
   factory PillInfo.fromJson(Map<String, dynamic> json) {
     return PillInfo(
-      pillCode: json['pill_code'] ?? 'Unknown',
-      pillName: json['pill_name'] ?? 'Unknown',
-      confidence: json['confidence'] ?? 'Unknown',
-      efficacy: json['efficacy'] ?? 'No information',
-      manufacturer: json['manufacturer'] ?? 'No information',
-      usage: json['usage'] ?? 'No information',
-      precautionsBeforeUse: json['precautions_before_use'] ?? 'No information',
-      usagePrecautions: json['usage_precautions'] ?? 'No information',
-      drugFoodInteractions: json['drug_food_interactions'] ?? 'No information',
-      sideEffects: json['side_effects'] ?? 'No information',
-      storageInstructions: json['storage_instructions'] ?? 'No information',
-      pillImage: json['pill_image'] ?? 'No information',
-      pillInfo: json['pill_info'] ?? 'No information',
-       categoryId: json['categoryId'] ?? 'Default Category', // Add this line
-    
-      
+      pillCode: json['pill_code'] as String? ?? '', // Default to empty string if null
+      pillName: json['pill_name'] as String? ?? '',
+      confidence: json['confidence']?.toString() ?? '', // Convert to string, default to empty if null
+      efficacy: json['efficacy'] as String? ?? '',
+      manufacturer: json['manufacturer'] as String? ?? '',
+      usage: json['usage'] as String? ?? '',
+      precautionsBeforeUse: json['precautions_before_use'] as String? ?? '',
+      usagePrecautions: json['usage_precautions'] as String? ?? '',
+      drugFoodInteractions: json['drug_food_interactions'] as String? ?? '',
+      sideEffects: json['side_effects'] as String? ?? '',
+      storageInstructions: json['storage_instructions'] as String? ?? '',
+      predictedCategoryId: json['predicted_category_id']?.toString() ?? '', // Convert to string, default to empty if null
     );
   }
 }
+
 
 class SearchHistoryScreen extends StatefulWidget {
   final String userId;
@@ -476,24 +472,25 @@ class _SearchHistoryScreenState extends State<SearchHistoryScreen> {
     _searchHistory = _fetchSearchHistory();
   }
 
-  Future<List<PillInfo>> _fetchSearchHistory() async {
-    final response = await http.get(Uri.parse('https://80d4-113-198-180-184.ngrok-free.app/get_search_history/${widget.userId}'));
-    print('Response status: ${response.statusCode}');
-    print('Response body: ${response.body}'); // Check the raw response
+ Future<List<PillInfo>> _fetchSearchHistory() async {
+  final response = await http.get(Uri.parse('https://80d4-113-198-180-184.ngrok-free.app/get_search_history/${widget.userId}'));
+  print('Response status: ${response.statusCode}');
+  print('Response body: ${response.body}'); // Check the raw response
 
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> data = json.decode(response.body);
+  if (response.statusCode == 200) {
+    final Map<String, dynamic> data = json.decode(response.body);
 
-      if (data['results'] != null) {
-        final List<dynamic> results = data['results'];
-        return results.map((json) => PillInfo.fromJson(json)).toList();
-      } else {
-        return [];
-      }
+    if (data['results'] != null) {
+      final List<dynamic> results = data['results'];
+      return results.map((json) => PillInfo.fromJson(json)).toList();
     } else {
-      throw Exception('Failed to load search history');
+      return [];
     }
+  } else {
+    throw Exception('Failed to load search history');
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -559,8 +556,10 @@ class _SearchHistoryScreenState extends State<SearchHistoryScreen> {
                             storageInstructions: pillInfo.storageInstructions,
                             efficacy: pillInfo.efficacy,
                             manufacturer: pillInfo.manufacturer,
-                            extractedText: '', imageUrl: '',
-                            categoryId: pillInfo.categoryId, // Now available
+                            extractedText: '', 
+                            imageUrl: '',
+    
+                            predictedCategoryId: pillInfo.predictedCategoryId, // Now available
                           ),
                         ),
                       );
@@ -575,4 +574,3 @@ class _SearchHistoryScreenState extends State<SearchHistoryScreen> {
     );
   }
 }
-

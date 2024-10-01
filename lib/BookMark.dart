@@ -55,6 +55,10 @@ class _BookmarkScreenState extends State<BookmarkScreen> {
         'storageInstructions': item['storage_instructions'] as String,
         'pillImage': item['pill_image'] as String,
         'pillInfo': item['pill_info'] as String? ?? '',
+        'predicted_category_id': item['predicted_category_id']?.toString() ?? '',  // null 및 타입 변환 대비
+
+
+
       }).toList();
       setState(() {
         _allFavorites = favorites;
@@ -177,7 +181,7 @@ Widget _buildBookmarkItem(Map<String, String> favorite) {
             efficacy: favorite['efficacy']!,
             manufacturer: favorite['manufacturer']!,
             extractedText: favorite['pillInfo']!,  imageUrl: '',
-              categoryId: favorite['categoryId'] ?? 'defaultCategoryId', // Default value if null
+            predictedCategoryId: favorite['predicted_category_id']!, 
           ),
         ),
       );

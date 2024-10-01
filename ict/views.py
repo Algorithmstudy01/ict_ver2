@@ -370,40 +370,43 @@ def change_password(request):
         else:
             return Response({"message": "ID와 새로운 비밀번호를 모두 제공해주세요."}, status=400)
 
-from rest_framework import status
 from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from .serializers import FamilyMemberSerializer
-from .models import Userlist, FamilyMember
-
-@api_view(['POST'])
-def add_family_member(request, user_id):
-    try:
-        user = Userlist.objects.get(id=user_id)
-    except Userlist.DoesNotExist:
-        return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
-
-    serializer = FamilyMemberSerializer(data=request.data)
-    if serializer.is_valid():
-        family_member = serializer.save(user=user)
-        return Response({'message': 'Family member added successfully'}, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from .models import Userlist
-
-@csrf_exempt
-def check_member(request, user_id):
-    if request.method == 'GET':
-        user_exists = Userlist.objects.filter(id=user_id).exists()
-        return JsonResponse({'exists': user_exists})
-        from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import FamilyMember, Userlist
 from .serializers import FamilyMemberSerializer
 from rest_framework import status
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 
+# 가족 추가 API
+@api_view(['POST'])
+def add_family_member(request, user_id):
+    try:
+        # A 사용자 찾기
+        user_a = Userlist.objects.get(id=user_id)
+    except Userlist.DoesNotExist:
+        return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    # 입력받은 가족(B)에 대한 데이터 처리
+    serializer = FamilyMemberSerializer(data=request.data)
+    if serializer.is_valid():
+        family_member_b = serializer.save(user=user_a)
+
+        # B를 가족으로 등록했으므로, B의 가족 목록에 A도 추가
+        try:
+            user_b = Userlist.objects.get(id=family_member_b.family_member.id)  # B 사용자 찾기
+        except Userlist.DoesNotExist:
+            return Response({'error': 'Family member user not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        # B의 가족 목록에도 A를 추가
+        FamilyMember.objects.create(user=user_b, family_member=user_a)
+
+        return Response({'message': 'Family member added successfully and reciprocated.'}, status=status.HTTP_201_CREATED)
+    
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# 가족 목록 조회 API
 @api_view(['GET'])
 def get_family_members(request, user_id):
     try:
@@ -411,10 +414,18 @@ def get_family_members(request, user_id):
     except Userlist.DoesNotExist:
         return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
+    # 사용자 A의 가족 목록 가져오기
     family_members = FamilyMember.objects.filter(user=user)
     serializer = FamilyMemberSerializer(family_members, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
+
+# 사용자 존재 여부 확인 API
+@csrf_exempt
+def check_member(request, user_id):
+    if request.method == 'GET':
+        user_exists = Userlist.objects.filter(id=user_id).exists()
+        return JsonResponse({'exists': user_exists})
 
 from rest_framework import status
 from rest_framework.views import APIView
@@ -489,6 +500,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from .models import Favorite, Userlist
 import json
 
+
 @csrf_exempt
 @require_POST
 def add_favorite(request):
@@ -508,6 +520,7 @@ def add_favorite(request):
         storage_instructions = data['storage_instructions']
         pill_image = data['pill_image']
         pill_info = data['pill_info']
+        predicted_category_id = data['predicted_category_id']  # 대괄호로 수정
         
     except (KeyError, json.JSONDecodeError):
         return JsonResponse({'error': 'Invalid data'}, status=400)
@@ -537,6 +550,7 @@ def add_favorite(request):
         storage_instructions=storage_instructions,
         pill_image=pill_image,
         pill_info=pill_info,
+        predicted_category_id=predicted_category_id,  # 저장
     )
 
     return JsonResponse({'message': 'Favorite added successfully'}, status=201)
@@ -583,7 +597,7 @@ class FavoritesView(View):
             'pill_code', 'pill_name', 'confidence', 'efficacy', 'manufacturer', 
             'usage', 'precautions_before_use', 'usage_precautions', 
             'drug_food_interactions', 'side_effects', 'storage_instructions', 
-            'pill_image', 'pill_info', 'created_at'
+            'pill_image', 'pill_info', 'created_at','predicted_category_id'
         )
         data = list(favorites)
         return JsonResponse(data, safe=False)
@@ -602,14 +616,17 @@ def get_search_history(request, user_id):
     data = list(records.values(
         'pill_code', 'pill_name', 'confidence', 'efficacy', 'manufacturer',
         'usage', 'precautions_before_use', 'usage_precautions', 'drug_food_interactions',
-        'side_effects', 'storage_instructions', 'pill_image', 'pill_info'
+        'side_effects', 'storage_instructions', 'pill_image', 'pill_info','predicted_category_id' 
     ))
+  
     return JsonResponse({'results': data})
-
-
+from django.http import JsonResponse
+import json
+from .models import Userlist, Record
 
 from django.http import JsonResponse
 import json
+from .models import Userlist, Record
 
 def save_search_history(request):
     if request.method == 'POST':
@@ -628,6 +645,7 @@ def save_search_history(request):
             drug_food_interactions = data.get('drug_food_interactions')
             side_effects = data.get('side_effects')
             storage_instructions = data.get('storage_instructions')
+            predicted_category_id = data.get('predicted_category_id')  # predicted_category_id 추가
 
             # Validate the received data
             if not all([user_id, prediction_score, product_name, manufacturer, pill_code]):
@@ -636,14 +654,16 @@ def save_search_history(request):
             # Fetch or create the User instance
             try:
                 user_instance = Userlist.objects.get(pk=user_id)
-            except Userist.DoesNotExist:
+            except Userlist.DoesNotExist:
                 return JsonResponse({'status': 'error', 'message': 'User not found'}, status=404)
 
             # Create a new Record entry
-            record =  Record.objects.create(
+           # 새로운 레코드 생성
+            record = Record.objects.create(
                 pill_code=pill_code,
                 pill_name=product_name,
                 confidence=prediction_score,
+                predicted_category_id=predicted_category_id,  # 저장
                 efficacy=efficacy,
                 manufacturer=manufacturer,
                 usage=usage,
@@ -652,12 +672,13 @@ def save_search_history(request):
                 drug_food_interactions=drug_food_interactions,
                 side_effects=side_effects,
                 storage_instructions=storage_instructions,
-                pill_image='',  # Assuming you have an image URL or path; otherwise, leave it empty
+                pill_image='',  # 필요에 따라 이미지 URL을 추가
                 pill_info=pill_info,
                 user=user_instance
             )
+
             print("Record created successfully")
-            return JsonResponse({'status': 'success'})
+            return JsonResponse({'status': 'success', 'message': 'Record created successfully'}, status=201)
         
         except json.JSONDecodeError:
             return JsonResponse({'status': 'error', 'message': 'Invalid JSON'}, status=400)
@@ -669,8 +690,6 @@ def save_search_history(request):
         return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
 
 
-# views.py
-# views.py
 from django.http import JsonResponse
 import json
 
@@ -831,9 +850,12 @@ def predict2(request):
         else:
             print(f"Image path: {image_full_path}")
 
+   
+
         response_data = {
+            'predicted_category_id': int(predicted_category_id),  # Ensure this is correct
             'prediction_score': float(pred_scores[max_score_idx]),
-            'predicted_category_id': int(predicted_category_id),  # Add the predicted_category_id
+             # Add the predicted_category_id
             'product_name': pill_info_csv.get('제품명', 'Unknown') if pill_info_csv else 'Unknown',
             'manufacturer': pill_info_csv.get('제조/수입사', 'Unknown') if pill_info_csv else 'Unknown',
             'pill_code': pill_info_csv.get('품목기준코드', 'Unknown') if pill_info_csv else 'Unknown',

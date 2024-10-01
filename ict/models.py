@@ -94,6 +94,7 @@ class Record(models.Model):
     pill_code = models.CharField(max_length=255)
     pill_name = models.CharField(max_length=255)
     confidence = models.CharField(max_length=255)
+    predicted_category_id = models.IntegerField(null=True, blank=True)  # 새 필드 추가
     efficacy = models.TextField()
     manufacturer = models.CharField(max_length=255)
     usage = models.TextField()
@@ -103,10 +104,9 @@ class Record(models.Model):
     side_effects = models.TextField()
     storage_instructions = models.TextField()
     pill_image = models.TextField()
-    pill_info = models.TextField(null=True, blank=True)  
+    pill_info = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey('UserList', on_delete=models.CASCADE)  # ForeignKey 필드가 정확한지 확인합니다.
-
+    user = models.ForeignKey('UserList', on_delete=models.CASCADE)
 
 
 from django.db import models
@@ -127,6 +127,7 @@ class Favorite(models.Model):
     pill_info = models.TextField(null=True, blank=True)  
     created_at = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey('UserList', on_delete=models.CASCADE)
+    predicted_category_id = models.IntegerField(null=True, blank=True)  # 새 필드 추가
 
     def __str__(self):
         return self.pill_name
