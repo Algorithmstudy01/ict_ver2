@@ -372,39 +372,62 @@ def change_password(request):
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .models import FamilyMember, Userlist
 from .serializers import FamilyMemberSerializer
 from rest_framework import status
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from .models import Userlist, FamilyMember  # FamilyMember를 추가하세요
+
 
 # 가족 추가 API
+
+# @api_view(['POST'])
+# def add_family_member(request, user_id):
+#     try:
+#         user = Userlist.objects.get(id=user_id)
+#     except Userlist.DoesNotExist:
+#         return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+#     serializer = FamilyMemberSerializer(data=request.data)
+#     if serializer.is_valid():
+#         family_member = serializer.save(user=user)
+#         return Response({'message': 'Family member added successfully'}, status=status.HTTP_201_CREATED)
+#     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
+
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
+
 @api_view(['POST'])
 def add_family_member(request, user_id):
     try:
-        # A 사용자 찾기
-        user_a = Userlist.objects.get(id=user_id)
+        user = Userlist.objects.get(id=user_id)  # 현재 로그인한 사용자
     except Userlist.DoesNotExist:
         return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
-    # 입력받은 가족(B)에 대한 데이터 처리
+    # Serializer를 사용하여 가족 정보를 추가
     serializer = FamilyMemberSerializer(data=request.data)
     if serializer.is_valid():
-        family_member_b = serializer.save(user=user_a)
+        # 가족 정보를 DB에 저장
+        family_member = serializer.save(user=user)  # A 사용자의 가족으로 등록
 
-        # B를 가족으로 등록했으므로, B의 가족 목록에 A도 추가
-        try:
-            user_b = Userlist.objects.get(id=family_member_b.family_member.id)  # B 사용자 찾기
-        except Userlist.DoesNotExist:
-            return Response({'error': 'Family member user not found'}, status=status.HTTP_404_NOT_FOUND)
+        # 방금 추가한 가족의 ID를 가져오기
+        family_member_user = FamilyMember(
+            user=Userlist.objects.get(id=serializer.validated_data['name']),  # 추가한 가족의 Userlist 인스턴스
+            name=user.nickname,  # 추가한 가족의 이름
+            relationship=serializer.validated_data.get('relationship', ''),  # 가족의 관계
+            phone_number=serializer.validated_data.get('phone_number', ''),  # 가족의 전화번호
+            address=serializer.validated_data.get('address', '')  # 가족의 주소
+        )
+        family_member_user.save()  # 방금 추가한 가족에게 현재 사용자를 가족으로 추가 저장
 
-        # B의 가족 목록에도 A를 추가
-        FamilyMember.objects.create(user=user_b, family_member=user_a)
+        return Response({'message': 'Family member added successfully'}, status=status.HTTP_201_CREATED)
 
-        return Response({'message': 'Family member added successfully and reciprocated.'}, status=status.HTTP_201_CREATED)
-    
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 # 가족 목록 조회 API
 @api_view(['GET'])
@@ -414,18 +437,24 @@ def get_family_members(request, user_id):
     except Userlist.DoesNotExist:
         return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
-    # 사용자 A의 가족 목록 가져오기
     family_members = FamilyMember.objects.filter(user=user)
     serializer = FamilyMemberSerializer(family_members, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-# 사용자 존재 여부 확인 API
 @csrf_exempt
 def check_member(request, user_id):
     if request.method == 'GET':
         user_exists = Userlist.objects.filter(id=user_id).exists()
         return JsonResponse({'exists': user_exists})
+
+# 가족 추가 API
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
+from .models import Userlist
+from .serializers import FamilyMemberSerializer
+
 
 from rest_framework import status
 from rest_framework.views import APIView
