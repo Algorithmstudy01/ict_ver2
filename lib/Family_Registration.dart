@@ -14,50 +14,49 @@ class FamilyRegister extends StatefulWidget {
 
 class _FamilyRegisterState extends State<FamilyRegister> {
   final _nameController = TextEditingController();
-  final _relationshipController = TextEditingController();
+  final _relationshipController = TextEditingController(); // 기존 관계 입력 필드 제거
   final _phoneNumberController = TextEditingController();
   final _addressController = TextEditingController();
+  String? _selectedRelationship; // 선택된 관계를 저장할 변수
 
   @override
   void dispose() {
     _nameController.dispose();
-    _relationshipController.dispose();
     _phoneNumberController.dispose();
     _addressController.dispose();
     super.dispose();
   }
-Future<void> _submitForm() async {
-  final name = _nameController.text;
-  final relationship = _relationshipController.text;
-  final phoneNumber = _phoneNumberController.text;
-  final address = _addressController.text;
 
-  final url = Uri.parse('https://80d4-113-198-180-184.ngrok-free.app/addfamilymember/${widget.userId}/');
-  final response = await http.post(
-    url,
-    headers: {'Content-Type': 'application/json'},
-    body: json.encode({
-      'name': name,
-      'relationship': relationship,
-      'phone_number': phoneNumber,
-      'address': address,
-    }),
-  );
+  Future<void> _submitForm() async {
+    final name = _nameController.text;
+    final phoneNumber = _phoneNumberController.text;
+    final address = _addressController.text;
 
-  if (response.statusCode == 201) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => FamilyRegisterCompleteScreen(userId: widget.userId),
-      ),
+    final url = Uri.parse('https://80d4-113-198-180-184.ngrok-free.app/addfamilymember/${widget.userId}/');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({
+        'name': name,
+        'relationship': _selectedRelationship, // 선택된 관계 사용
+        'phone_number': phoneNumber,
+        'address': address,
+      }),
     );
-  } else {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Failed to register family member: ${response.body}')),
-    );
+
+    if (response.statusCode == 201) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => FamilyRegisterCompleteScreen(userId: widget.userId),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to register family member: ${response.body}')),
+      );
+    }
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
@@ -79,9 +78,9 @@ Future<void> _submitForm() async {
             SizedBox(height: 20),
             Center(
               child: Image.asset(
-                'assets/img/logo.jpg', // Update the path to your image
-                width: 100, // Adjust the width as needed
-                height: 100, // Adjust the height as needed
+                'assets/img/logo.jpg',
+                width: 100,
+                height: 100,
               ),
             ),
             SizedBox(height: 50),
@@ -100,8 +99,8 @@ Future<void> _submitForm() async {
               ),
             ),
             SizedBox(height: 20),
-            TextField(
-              controller: _relationshipController,
+            // 관계 선택 드롭다운 메뉴
+            DropdownButtonFormField<String>(
               decoration: InputDecoration(
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(15.0),
@@ -110,9 +109,21 @@ Future<void> _submitForm() async {
                     width: 2.0,
                   ),
                 ),
-                labelText: '관계 입력',
-                hintText: '관계를 입력해 주세요.',
+                labelText: '관계 선택',
               ),
+              value: _selectedRelationship,
+              items: ['자녀', '부모', '배우자']
+                  .map((relationship) => DropdownMenuItem<String>(
+                        value: relationship,
+                        child: Text(relationship),
+                      ))
+                  .toList(),
+              onChanged: (value) {
+                setState(() {
+                  _selectedRelationship = value; // 선택된 관계 저장
+                });
+              },
+              hint: Text('관계를 선택해 주세요.'),
             ),
             SizedBox(height: 20),
             TextField(
@@ -145,18 +156,14 @@ Future<void> _submitForm() async {
               ),
             ),
             SizedBox(height: 30),
-     
-        
-           GestureDetector(
-
-                 onTap: _submitForm,
+            GestureDetector(
+              onTap: _submitForm,
               child: Image.asset(
                 'assets/img/fam.png', // Use the correct path to your image
                 width: 350, // Adjust the width as needed
                 fit: BoxFit.contain, // Ensure the image scales correctly
               ),
             ),
-          
           ],
         ),
       ),

@@ -412,6 +412,15 @@ def add_family_member(request, user_id):
     # Serializer를 사용하여 가족 정보를 추가
     serializer = FamilyMemberSerializer(data=request.data)
     if serializer.is_valid():
+        # 선택한 가족 관계를 확인하고 적절히 설정
+        relationship = serializer.validated_data.get('relationship', '')
+        if relationship == "부모":
+            relationship = "자녀"  # 부모를 선택한 경우, 자녀로 설정
+        elif relationship == "자녀":
+            relationship = "부모"  # 자녀를 선택한 경우, 부모로 설정
+        elif relationship == "배우자":
+            relationship = "배우자"  # 배우자를 선택한 경우 그대로 설정
+
         # 가족 정보를 DB에 저장
         family_member = serializer.save(user=user)  # A 사용자의 가족으로 등록
 
@@ -419,9 +428,9 @@ def add_family_member(request, user_id):
         family_member_user = FamilyMember(
             user=Userlist.objects.get(id=serializer.validated_data['name']),  # 추가한 가족의 Userlist 인스턴스
             name=user.nickname,  # 추가한 가족의 이름
-            relationship=serializer.validated_data.get('relationship', ''),  # 가족의 관계
-            phone_number=serializer.validated_data.get('phone_number', ''),  # 가족의 전화번호
-            address=serializer.validated_data.get('address', '')  # 가족의 주소
+            relationship=relationship,  # 수정된 가족의 관계
+            phone_number=user.email,  # 추가한 가족의 전화번호를 Userlist에서 가져옴
+            address=user.location  # 사용자 위치
         )
         family_member_user.save()  # 방금 추가한 가족에게 현재 사용자를 가족으로 추가 저장
 
@@ -429,7 +438,18 @@ def add_family_member(request, user_id):
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# 가족 목록 조회 API
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from .models import Userlist, FamilyMember
+from .serializers import FamilyMemberSerializer
+from rest_framework import status
+
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from .models import Userlist, FamilyMember
+from .serializers import FamilyMemberSerializer
+from rest_framework import status
+
 @api_view(['GET'])
 def get_family_members(request, user_id):
     try:
@@ -439,8 +459,11 @@ def get_family_members(request, user_id):
 
     family_members = FamilyMember.objects.filter(user=user)
     serializer = FamilyMemberSerializer(family_members, many=True)
-    return Response(serializer.data, status=status.HTTP_200_OK)
-
+    response = Response(serializer.data, status=status.HTTP_200_OK)
+    
+    # Explicitly set Content-Type header (optional)
+    response['Content-Type'] = 'application/json; charset=utf-8'
+    return response
 
 @csrf_exempt
 def check_member(request, user_id):
