@@ -37,7 +37,7 @@ urlpatterns = [
     #  path('family/sent-items/', views.get_sent_items, name='get_sent_items'),
 path('getfamilymembers/<str:user_id>/', views.get_family_members, name='get_family_members'),
  path('recommendations/<str:user_id>/', RecommendationListView.as_view(), name='recommendation_list'),
-  path('updatefamilymember/<str:family_member_id>/', views.update_family_member, name='update_family_member'),
+  path('updatefamilymember/<str:user_id>/<str:name>/', views.update_family_member, name='update_family_member'),
    path('deletefamilymember/<str:name>/', views.delete_family_member, name='delete_family_member'),
     # Other paths...
  path('recommend/', RecommendPillView.as_view(), name='recommend-pill'),  # URL pattern for the recommendation view

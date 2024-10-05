@@ -443,20 +443,41 @@ def delete_family_member(request, name):
             return Response({'error': 'Family member not found'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+from django.shortcuts import render, get_object_or_404
+from django.http import JsonResponse, HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+from .models import FamilyMember
+import json
 
-@api_view(['PUT'])
-def update_family_member(request, family_member_id):
-    try:
-        family_member = FamilyMember.objects.get(id=family_member_id)
-    except FamilyMember.DoesNotExist:
-        return Response({'error': 'Family member not found'}, status=status.HTTP_404_NOT_FOUND)
+from django.http import JsonResponse, HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+from .models import FamilyMember
 
-    serializer = FamilyMemberSerializer(family_member, data=request.data, partial=True)
-    if serializer.is_valid():
-        serializer.save()
-        return Response({'message': 'Family member updated successfully'}, status=status.HTTP_200_OK)
+@csrf_exempt
+def update_family_member(request, user_id, name):
+    if request.method == 'PUT':
+        try:
+            # user_id와 name으로 FamilyMember 객체 찾기
+            family_member = FamilyMember.objects.filter(user_id=user_id, name=name).first()
 
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            if not family_member:
+                return JsonResponse({'error': '가족 구성원을 찾을 수 없습니다.'}, status=404)
+
+            data = json.loads(request.body)
+
+            # 받아온 데이터를 이용해 가족 구성원 정보 업데이트
+            family_member.relationship = data.get('relationship', family_member.relationship)
+            family_member.phone_number = data.get('phone_number', family_member.phone_number)
+            family_member.address = data.get('address', family_member.address)
+
+            family_member.save()
+            return JsonResponse({'message': '가족 정보가 성공적으로 수정되었습니다.'}, status=200)
+        except FamilyMember.DoesNotExist:
+            return JsonResponse({'error': '가족 구성원을 찾을 수 없습니다.'}, status=404)
+    else:
+        return HttpResponse(status=405)  # 허용되지 않는 메서드 (GET, POST 등)
 
 @api_view(['GET'])
 def get_family_members(request, user_id):
