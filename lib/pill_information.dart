@@ -184,7 +184,145 @@ Future<void> _removeFromFavorites() async {
     await flutterTts.speak(text);
   }
 
- @override
+
+
+  Future<List<dynamic>> _fetchFamilyMembers() async {
+    final url = Uri.parse('https://80d4-113-198-180-184.ngrok-free.app/getfamilymembers/${widget.userId}/');
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      return json.decode(utf8.decode(response.bodyBytes));
+    } else {
+      throw Exception('가족 목록을 불러오는 데 실패했습니다.');
+    }
+  }
+
+  void recommendPill() async {
+    try {
+      final familyMembers = await _fetchFamilyMembers();
+      if (familyMembers.isEmpty) {
+        _showNoFamilyDialog();
+      } else {
+        _showFamilyDialog(familyMembers);
+      }
+    } catch (e) {
+      _showErrorDialog();
+    }
+  }
+
+  void _showFamilyDialog(List<dynamic> familyMembers) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('가족에게 추천하기'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: familyMembers.map<Widget>((member) {
+                return ListTile(
+                  title: Text(member['name']),
+                  subtitle: Text('관계: ${member['relationship']}'),
+                  onTap: () {
+                    // 선택한 가족에게 추천 기능을 구현
+                    Navigator.of(context).pop();
+                    _recommendToFamily(member['name']); // 추천 기능 호출
+                  },
+                );
+              }).toList(),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('취소'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showNoFamilyDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('오류'),
+          content: Text('등록된 가족이 없습니다. 가족을 먼저 추가하세요.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('확인'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showErrorDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('오류'),
+          content: Text('가족 목록을 불러오는 데 실패했습니다.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('확인'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+void _recommendToFamily(String familyMemberName) async {
+  // Prepare the data to be sent in the request
+  final recommendationData = {
+    'user_id': widget.userId,  // B의 user ID
+    'family_member_name': familyMemberName, // 추천받는 사람의 이름
+    'pill_code': widget.pillCode, // 약 코드
+    'pill_name': widget.pillName, // 약 이름
+      'confidence': widget.confidence,
+      'efficacy': widget.efficacy,
+      'manufacturer': widget.manufacturer,
+      'usage': widget.usage,
+      'precautions_before_use': widget.precautionsBeforeUse,
+      'usage_precautions': widget.usagePrecautions,
+      'drug_food_interactions': widget.drugFoodInteractions,
+      'side_effects': widget.sideEffects,
+      'storage_instructions': widget.storageInstructions,
+      'pill_image': '',
+      'pill_info': '',
+      'predicted_category_id': widget.predictedCategoryId, 
+  };
+
+
+
+  try {
+    // Send the recommendation request to the Django backend
+    final response = await http.post(
+      Uri.parse('https://80d4-113-198-180-184.ngrok-free.app/recommend/'), // URL to your Django view
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(recommendationData),
+    );
+
+    // Handle the response
+    if (response.statusCode == 201) {
+      final responseData = jsonDecode(response.body); // Parse the response
+      print('추천이 성공적으로 전송되었습니다: ${responseData['recommendation']}');
+    } else {
+      print('추천 전송 실패: ${response.statusCode} - ${response.body}');
+    }
+  } catch (e) {
+    print('예외 발생: $e'); // Handle exceptions
+  }
+}
+
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
@@ -207,47 +345,24 @@ Future<void> _removeFromFavorites() async {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // FutureBuilder를 사용하여 비동기적으로 이미지 로드
-//        if (widget.categoryId.isNotEmpty)
-//   FutureBuilder<String>(
-//   future: fetchImageUrl(widget.categoryId), // categoryId에 따른 이미지 URL을 비동기적으로 가져옴
-//   builder: (context, snapshot) {
-//     if (snapshot.connectionState == ConnectionState.waiting) {
-//       return Center(child: CircularProgressIndicator()); // 로딩 중
-//     } else if (snapshot.hasError) {
-//       return Center(child: Text('Error: ${snapshot.error}')); // 에러 발생 시
-//     } else if (snapshot.hasData) {
-//       String imageUrl = snapshot.data!; // 성공적으로 데이터가 로드됨
-//       return Center(
-//         child: Image.network(imageUrl, height: 200), // 이미지를 화면에 표시
-//       );
-//     } else {
-//       return Center(child: Text('No image available')); // 이미지가 없을 때
-//     }
-//   },
-// ),
-if (widget.predictedCategoryId.isNotEmpty)
-Center(
-  child: GestureDetector(
-    child: Image.asset(
-
-      'assets/data/${widget.predictedCategoryId}.png',
-      width: MediaQuery.of(context).size.width * 0.9,  // 화면 너비의 80%로 설정
-      height: MediaQuery.of(context).size.height * 0.3,  // 화면 높이의 40%로 설정
-      fit: BoxFit.contain,  // 비율을 유지하며 이미지 맞춤
-      errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
-            return Icon(
-               Icons.healing ,  // 병원 아이콘
-              size: MediaQuery.of(context).size.height * 0.09,  // 아이콘 크기 설정
-                    color: Colors.purple[200], 
-    );
-    },
-
-    ),
-  ),
-),
-
-
+            if (widget.predictedCategoryId.isNotEmpty)
+              Center(
+                child: GestureDetector(
+                  child: Image.asset(
+                    'assets/data/${widget.predictedCategoryId}.png',
+                    width: MediaQuery.of(context).size.width * 0.9,
+                    height: MediaQuery.of(context).size.height * 0.3,
+                    fit: BoxFit.contain,
+                    errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
+                      return Icon(
+                        Icons.healing,
+                        size: MediaQuery.of(context).size.height * 0.09,
+                        color: Colors.purple[200],
+                      );
+                    },
+                  ),
+                ),
+              ),
             SizedBox(height: 20),
             Container(
               padding: EdgeInsets.all(16.0),
@@ -271,17 +386,15 @@ Center(
                         ),
                       ],
                     ),
-                  //  if (widget.categoryId.isNotEmpty)
-                   Row(
-  children: [
-    Expanded(child: Text('예측된 카테고리 ID: ${widget.predictedCategoryId}\n', style: TextStyle(fontSize: 16))),
-    IconButton(
-      icon: Icon(Icons.volume_up),
-      onPressed: () => speak('예측된 카테고리 ID: ${widget.predictedCategoryId}'),
-    ),
-  ],
-),
- 
+                  Row(
+                    children: [
+                      Expanded(child: Text('예측된 카테고리 ID: ${widget.predictedCategoryId}\n', style: TextStyle(fontSize: 16))),
+                      IconButton(
+                        icon: Icon(Icons.volume_up),
+                        onPressed: () => speak('예측된 카테고리 ID: ${widget.predictedCategoryId}'),
+                      ),
+                    ],
+                  ),
                   if (widget.pillName.isNotEmpty)
                     Row(
                       children: [
@@ -345,40 +458,40 @@ Center(
                   if (widget.usagePrecautions.isNotEmpty)
                     Row(
                       children: [
-                        Expanded(child: Text('이 약의 사용상 주의사항은 무엇입니까?\n${widget.usagePrecautions}\n', style: TextStyle(fontSize: 16))),
+                        Expanded(child: Text('이 약을 사용할 때 주의해야 할 점은 무엇입니까?\n${widget.usagePrecautions}\n', style: TextStyle(fontSize: 16))),
                         IconButton(
                           icon: Icon(Icons.volume_up),
-                          onPressed: () => speak('이 약의 사용상 주의사항은 무엇입니까? ${widget.usagePrecautions}'),
+                          onPressed: () => speak('이 약을 사용할 때 주의해야 할 점은 무엇입니까? ${widget.usagePrecautions}'),
                         ),
                       ],
                     ),
                   if (widget.drugFoodInteractions.isNotEmpty)
                     Row(
                       children: [
-                        Expanded(child: Text('이 약을 사용하는 동안 주의해야 할 약 또는 음식은 무엇입니까?\n${widget.drugFoodInteractions}\n', style: TextStyle(fontSize: 16))),
+                        Expanded(child: Text('이 약과 음식의 상호작용은 무엇입니까?\n${widget.drugFoodInteractions}\n', style: TextStyle(fontSize: 16))),
                         IconButton(
                           icon: Icon(Icons.volume_up),
-                          onPressed: () => speak('이 약을 사용하는 동안 주의해야 할 약 또는 음식은 무엇입니까? ${widget.drugFoodInteractions}'),
+                          onPressed: () => speak('이 약과 음식의 상호작용은 무엇입니까? ${widget.drugFoodInteractions}'),
                         ),
                       ],
                     ),
                   if (widget.sideEffects.isNotEmpty)
                     Row(
                       children: [
-                        Expanded(child: Text('이 약은 어떤 이상반응이 나타날 수 있습니까?\n${widget.sideEffects}\n', style: TextStyle(fontSize: 16))),
+                        Expanded(child: Text('이 약의 부작용은 무엇입니까?\n${widget.sideEffects}\n', style: TextStyle(fontSize: 16))),
                         IconButton(
                           icon: Icon(Icons.volume_up),
-                          onPressed: () => speak('이 약은 어떤 이상반응이 나타날 수 있습니까? ${widget.sideEffects}'),
+                          onPressed: () => speak('이 약의 부작용은 무엇입니까? ${widget.sideEffects}'),
                         ),
                       ],
                     ),
                   if (widget.storageInstructions.isNotEmpty)
                     Row(
                       children: [
-                        Expanded(child: Text('이 약은 어떻게 보관해야 합니까?\n${widget.storageInstructions}\n', style: TextStyle(fontSize: 16))),
+                        Expanded(child: Text('이 약의 보관 방법은 무엇입니까?\n${widget.storageInstructions}\n', style: TextStyle(fontSize: 16))),
                         IconButton(
                           icon: Icon(Icons.volume_up),
-                          onPressed: () => speak('이 약은 어떻게 보관해야 합니까? ${widget.storageInstructions}'),
+                          onPressed: () => speak('이 약의 보관 방법은 무엇입니까? ${widget.storageInstructions}'),
                         ),
                       ],
                     ),
@@ -388,13 +501,9 @@ Center(
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => BookmarkScreen(userId: widget.userId),
-                  ),
-                );
+                recommendPill(); // 추천하기 함수 호출
               },
-              child: Text('View Favorites'),
+              child: Text('추천하기'),
             ),
           ],
         ),
@@ -402,6 +511,205 @@ Center(
     );
   }
 }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       backgroundColor: Colors.white,
+//       appBar: AppBar(
+//         leading: IconButton(
+//           icon: Icon(Icons.arrow_back),
+//           onPressed: () {
+//             Navigator.of(context).pop();
+//           },
+//         ),
+//         actions: [
+//           IconButton(
+//             icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
+//             onPressed: toggleFavorite,
+//           ),
+//         ],
+//       ),
+//       body: SingleChildScrollView(
+//         padding: const EdgeInsets.all(16.0),
+//         child: Column(
+//           crossAxisAlignment: CrossAxisAlignment.start,
+//           children: [
+//             if (widget.predictedCategoryId.isNotEmpty)
+//               Center(
+//                 child: GestureDetector(
+//                   child: Image.asset(
+//                     'assets/data/${widget.predictedCategoryId}.png',
+//                     width: MediaQuery.of(context).size.width * 0.9,
+//                     height: MediaQuery.of(context).size.height * 0.3,
+//                     fit: BoxFit.contain,
+//                     errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
+//                       return Icon(
+//                         Icons.healing,
+//                         size: MediaQuery.of(context).size.height * 0.09,
+//                         color: Colors.purple[200],
+//                       );
+//                     },
+//                   ),
+//                 ),
+//               ),
+//             SizedBox(height: 20),
+//             Container(
+//               padding: EdgeInsets.all(16.0),
+//               decoration: BoxDecoration(
+//                 borderRadius: BorderRadius.circular(8.0),
+//                 border: Border.all(
+//                   color: Colors.grey,
+//                   width: 2.0,
+//                 ),
+//               ),
+//               child: Column(
+//                 crossAxisAlignment: CrossAxisAlignment.start,
+//                 children: [
+//                   if (widget.pillCode.isNotEmpty)
+//                     Row(
+//                       children: [
+//                         Expanded(child: Text('품목기준코드: ${widget.pillCode}\n', style: TextStyle(fontSize: 16))),
+//                         IconButton(
+//                           icon: Icon(Icons.volume_up),
+//                           onPressed: () => speak('품목기준코드: ${widget.pillCode}'),
+//                         ),
+//                       ],
+//                     ),
+//                   Row(
+//                     children: [
+//                       Expanded(child: Text('예측된 카테고리 ID: ${widget.predictedCategoryId}\n', style: TextStyle(fontSize: 16))),
+//                       IconButton(
+//                         icon: Icon(Icons.volume_up),
+//                         onPressed: () => speak('예측된 카테고리 ID: ${widget.predictedCategoryId}'),
+//                       ),
+//                     ],
+//                   ),
+//                   if (widget.pillName.isNotEmpty)
+//                     Row(
+//                       children: [
+//                         Expanded(child: Text('제품명: ${widget.pillName}\n', style: TextStyle(fontSize: 16))),
+//                         IconButton(
+//                           icon: Icon(Icons.volume_up),
+//                           onPressed: () => speak('제품명: ${widget.pillName}'),
+//                         ),
+//                       ],
+//                     ),
+//                   if (widget.confidence.isNotEmpty)
+//                     Row(
+//                       children: [
+//                         Expanded(child: Text('예측 확률: ${widget.confidence}\n', style: TextStyle(fontSize: 16))),
+//                         IconButton(
+//                           icon: Icon(Icons.volume_up),
+//                           onPressed: () => speak('예측 확률: ${widget.confidence}'),
+//                         ),
+//                       ],
+//                     ),
+//                   if (widget.efficacy.isNotEmpty)
+//                     Row(
+//                       children: [
+//                         Expanded(child: Text('이 약의 효능은 무엇입니까?\n${widget.efficacy}\n', style: TextStyle(fontSize: 16))),
+//                         IconButton(
+//                           icon: Icon(Icons.volume_up),
+//                           onPressed: () => speak('이 약의 효능은 무엇입니까? ${widget.efficacy}'),
+//                         ),
+//                       ],
+//                     ),
+//                   if (widget.manufacturer.isNotEmpty)
+//                     Row(
+//                       children: [
+//                         Expanded(child: Text('제조/수입사: ${widget.manufacturer}\n', style: TextStyle(fontSize: 16))),
+//                         IconButton(
+//                           icon: Icon(Icons.volume_up),
+//                           onPressed: () => speak('제조/수입사: ${widget.manufacturer}'),
+//                         ),
+//                       ],
+//                     ),
+//                   if (widget.usage.isNotEmpty)
+//                     Row(
+//                       children: [
+//                         Expanded(child: Text('이 약은 어떻게 사용합니까?\n${widget.usage}\n', style: TextStyle(fontSize: 16))),
+//                         IconButton(
+//                           icon: Icon(Icons.volume_up),
+//                           onPressed: () => speak('이 약은 어떻게 사용합니까? ${widget.usage}'),
+//                         ),
+//                       ],
+//                     ),
+//                   if (widget.precautionsBeforeUse.isNotEmpty)
+//                     Row(
+//                       children: [
+//                         Expanded(child: Text('이 약을 사용하기 전에 반드시 알아야 할 내용은 무엇입니까?\n${widget.precautionsBeforeUse}\n', style: TextStyle(fontSize: 16))),
+//                         IconButton(
+//                           icon: Icon(Icons.volume_up),
+//                           onPressed: () => speak('이 약을 사용하기 전에 반드시 알아야 할 내용은 무엇입니까? ${widget.precautionsBeforeUse}'),
+//                         ),
+//                       ],
+//                     ),
+//                   if (widget.usagePrecautions.isNotEmpty)
+//                     Row(
+//                       children: [
+//                         Expanded(child: Text('이 약의 사용상 주의사항은 무엇입니까?\n${widget.usagePrecautions}\n', style: TextStyle(fontSize: 16))),
+//                         IconButton(
+//                           icon: Icon(Icons.volume_up),
+//                           onPressed: () => speak('이 약의 사용상 주의사항은 무엇입니까? ${widget.usagePrecautions}'),
+//                         ),
+//                       ],
+//                     ),
+//                   if (widget.drugFoodInteractions.isNotEmpty)
+//                     Row(
+//                       children: [
+//                         Expanded(child: Text('이 약을 사용하는 동안 주의해야 할 약 또는 음식은 무엇입니까?\n${widget.drugFoodInteractions}\n', style: TextStyle(fontSize: 16))),
+//                         IconButton(
+//                           icon: Icon(Icons.volume_up),
+//                           onPressed: () => speak('이 약을 사용하는 동안 주의해야 할 약 또는 음식은 무엇입니까? ${widget.drugFoodInteractions}'),
+//                         ),
+//                       ],
+//                     ),
+//                   if (widget.sideEffects.isNotEmpty)
+//                     Row(
+//                       children: [
+//                         Expanded(child: Text('이 약은 어떤 이상반응이 나타날 수 있습니까?\n${widget.sideEffects}\n', style: TextStyle(fontSize: 16))),
+//                         IconButton(
+//                           icon: Icon(Icons.volume_up),
+//                           onPressed: () => speak('이 약은 어떤 이상반응이 나타날 수 있습니까? ${widget.sideEffects}'),
+//                         ),
+//                       ],
+//                     ),
+//                   if (widget.storageInstructions.isNotEmpty)
+//                     Row(
+//                       children: [
+//                         Expanded(child: Text('이 약은 어떻게 보관해야 합니까?\n${widget.storageInstructions}\n', style: TextStyle(fontSize: 16))),
+//                         IconButton(
+//                           icon: Icon(Icons.volume_up),
+//                           onPressed: () => speak('이 약은 어떻게 보관해야 합니까? ${widget.storageInstructions}'),
+//                         ),
+//                       ],
+//                     ),
+//                 ],
+//               ),
+//             ),
+//             SizedBox(height: 20),
+//             ElevatedButton(
+//               onPressed: () {
+//                 Navigator.of(context).push(
+//                   MaterialPageRoute(
+//                     builder: (context) => BookmarkScreen(userId: widget.userId),
+//                   ),
+//                 );
+//               },
+//               child: Text('View Favorites'),
+//             ),
+//             SizedBox(height: 20),
+//             ElevatedButton(
+//       onPressed: _recommendToFamily,
+//       child: Text('가족에게 추천하기'),
+//     ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
 
 
 class PillInfo {
@@ -574,3 +882,4 @@ class _SearchHistoryScreenState extends State<SearchHistoryScreen> {
     );
   }
 }
+

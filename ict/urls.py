@@ -5,8 +5,11 @@ from django.urls import path
 
 from django.conf.urls.static import static
 from django.conf import settings
-
+from .views import RecommendPillView  # Import your view
 from .views import  create_alarm, list_alarms,UpdateAlarmView, DeleteAlarmView
+
+from .views import RecommendPillView, RecommendationListView  # RecommendationListView 임포트 추가
+
 
 urlpatterns = [
     path('predict/', views.predict, name='predict'),  # Ensure this line exists
@@ -32,7 +35,10 @@ urlpatterns = [
    path('family/send/', views.send_family_info, name='send_family_info'),
    path('images/<str:image_filename>/', views.serve_image, name='serve_image'),  # 이미지 서빙 URL 패턴
     #  path('family/sent-items/', views.get_sent_items, name='get_sent_items'),
-path('getfamilymembers/<str:user_id>/', views.get_family_members, name='get_family_members'), 
+path('getfamilymembers/<str:user_id>/', views.get_family_members, name='get_family_members'),
+ path('recommendations/<str:user_id>/', RecommendationListView.as_view(), name='recommendation_list'),
+    # Other paths...
+ path('recommend/', RecommendPillView.as_view(), name='recommend-pill'),  # URL pattern for the recommendation view
 
    ]
 

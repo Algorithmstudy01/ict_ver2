@@ -1,4 +1,5 @@
 import 'package:chungbuk_ict/familylist.dart';
+import 'package:chungbuk_ict/recommended.dart';
 import 'package:flutter/material.dart';
 
 import 'Change_Password.dart'; // 비밀번호 변경 페이지
@@ -163,6 +164,20 @@ class _MyPageState extends State<MyPage> {
                 );
               },
             ),
+            ListTile(
+  title: Text("추천 받은 목록"), // 메뉴 제목
+  trailing: Icon(Icons.chevron_right), // 화살표 아이콘
+  onTap: () {
+    // 추천 받은 목록 화면으로 이동
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => RecommendationScreen(userId: widget.userId), // 추천 목록으로 이동
+      ),
+    );
+  },
+),
+
           ],
         ),
       ),

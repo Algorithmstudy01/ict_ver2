@@ -379,25 +379,6 @@ from django.views.decorators.csrf import csrf_exempt
 from .models import Userlist, FamilyMember  # FamilyMember를 추가하세요
 
 
-# 가족 추가 API
-
-# @api_view(['POST'])
-# def add_family_member(request, user_id):
-#     try:
-#         user = Userlist.objects.get(id=user_id)
-#     except Userlist.DoesNotExist:
-#         return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
-
-#     serializer = FamilyMemberSerializer(data=request.data)
-#     if serializer.is_valid():
-#         family_member = serializer.save(user=user)
-#         return Response({'message': 'Family member added successfully'}, status=status.HTTP_201_CREATED)
-#     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from rest_framework import status
-
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -419,7 +400,9 @@ def add_family_member(request, user_id):
         elif relationship == "자녀":
             relationship = "부모"  # 자녀를 선택한 경우, 부모로 설정
         elif relationship == "배우자":
-            relationship = "배우자"  # 배우자를 선택한 경우 그대로 설정
+            relationship = "배우자" 
+        elif relationship == "형제/자매":
+            relationship = "형제/자매" 
 
         # 가족 정보를 DB에 저장
         family_member = serializer.save(user=user)  # A 사용자의 가족으로 등록
@@ -942,3 +925,135 @@ def serve_image(request, image_filename):
             return HttpResponse(f.read(), content_type="image/png")  # 이미지 파일을 반환
     else:
         return HttpResponse(status=404)  # 이미지가 없을 때 404 에러 반환
+
+
+
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
+
+from django.http import JsonResponse
+from django.views import View
+import json
+
+from .models import Userlist, PillRecommendation  # UserList와 PillRecommendation 모델을 임포트합니다.
+from django.http import JsonResponse
+from django.views import View
+import json
+class RecommendPillView(View):
+    def post(self, request):
+        try:
+            # Get the data from the request
+            data = json.loads(request.body)
+            family_member_name = data.get('family_member_name')
+            user_id = data['user_id']
+            pill_code = data['pill_code']
+            pill_name = data['pill_name']
+            confidence = data['confidence']
+            efficacy = data['efficacy']
+            manufacturer = data['manufacturer']
+            usage = data['usage']
+            precautions_before_use = data['precautions_before_use']
+            usage_precautions = data['usage_precautions']
+            drug_food_interactions = data['drug_food_interactions']
+            side_effects = data['side_effects']
+            storage_instructions = data['storage_instructions']
+            pill_image = data['pill_image']
+            pill_info = data['pill_info']
+            predicted_category_id = data['predicted_category_id']  # 대괄호로 수정
+            
+            # Validate input
+            if not user_id or not family_member_name or not pill_code or not pill_name:
+                return JsonResponse({'message': 'Invalid input'}, status=400)
+
+            # Get the User instance for the recommended user (가족을 선택)
+            recommended_user = Userlist.objects.filter(nickname=family_member_name).first()
+            if not recommended_user:
+                return JsonResponse({'message': 'User not found'}, status=404)
+
+            # Create a new PillRecommendation entry
+            recommendation = PillRecommendation.objects.create(
+                user=recommended_user,
+                pill_code=pill_code,
+                pill_name=pill_name,
+                confidence=confidence,
+                efficacy=efficacy,
+                manufacturer=manufacturer,
+                usage=usage,
+                precautions_before_use=precautions_before_use,
+                usage_precautions=usage_precautions,
+                drug_food_interactions=drug_food_interactions,
+                side_effects=side_effects,
+                storage_instructions=storage_instructions,
+                pill_image=pill_image,
+                pill_info=pill_info,
+                predicted_category_id=predicted_category_id, 
+
+            )
+
+            # Prepare the response data
+            response_data = {
+                'id': recommendation.id,
+                'pill_code': recommendation.pill_code,
+                'pill_name': recommendation.pill_name,
+                'confidence': recommendation.confidence,
+                'efficacy': recommendation.efficacy,
+                'manufacturer': recommendation.manufacturer,
+                'usage': recommendation.usage,
+                'precautions_before_use': recommendation.precautions_before_use,
+                'usage_precautions': recommendation.usage_precautions,
+                'drug_food_interactions': recommendation.drug_food_interactions,
+                'side_effects': recommendation.side_effects,
+                'storage_instructions': recommendation.storage_instructions,
+                'pill_image': recommendation.pill_image,
+                'pill_info': recommendation.pill_info,
+                'created_at': recommendation.created_at,
+                'user_id': recommendation.user.id,
+                'predicted_category_id': recommendation.predicted_category_id,
+            }
+
+            # Return success response with all pill details
+            return JsonResponse({
+                'message': 'Recommendation successful',
+                'recommendation': response_data
+            }, status=201)
+
+        except Exception as e:
+            return JsonResponse({'message': str(e)}, status=500)
+from django.http import JsonResponse
+from django.views import View
+from .models import PillRecommendation
+
+class RecommendationListView(View):
+    def get(self, request, user_id):
+        try:
+            # Get recommendations for the given user_id
+            recommendations = PillRecommendation.objects.filter(user_id=user_id)
+
+            # Convert recommendations to JSON format
+            recommendations_data = [
+                {
+                    'id': recommendation.id,
+                    'pill_code': recommendation.pill_code,
+                    'pill_name': recommendation.pill_name,
+                    'confidence': recommendation.confidence,
+                    'efficacy': recommendation.efficacy,
+                    'manufacturer': recommendation.manufacturer,
+                    'usage': recommendation.usage,
+                    'precautions_before_use': recommendation.precautions_before_use,
+                    'usage_precautions': recommendation.usage_precautions,
+                    'drug_food_interactions': recommendation.drug_food_interactions,
+                    'side_effects': recommendation.side_effects,
+                    'storage_instructions': recommendation.storage_instructions,
+                    'pill_image': recommendation.pill_image,
+                    'pill_info': recommendation.pill_info,
+                    'created_at': recommendation.created_at,
+                    'user_id': recommendation.user.id,
+                    'predicted_category_id': recommendation.predicted_category_id,
+                }
+                for recommendation in recommendations
+            ]
+
+            return JsonResponse({'recommendations': recommendations_data}, status=200)
+        except Exception as e:
+            return JsonResponse({'message': str(e)}, status=500)

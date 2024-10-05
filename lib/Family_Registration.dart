@@ -112,7 +112,7 @@ class _FamilyRegisterState extends State<FamilyRegister> {
                 labelText: '관계 선택',
               ),
               value: _selectedRelationship,
-              items: ['자녀', '부모', '배우자']
+              items: ['자녀', '부모', '배우자','형제/자매']
                   .map((relationship) => DropdownMenuItem<String>(
                         value: relationship,
                         child: Text(relationship),

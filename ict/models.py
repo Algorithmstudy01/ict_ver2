@@ -149,3 +149,22 @@ class SentItem(models.Model):
 
     def __str__(self):
         return f"{self.pill_name} sent to {self.user.username}"
+
+
+class PillRecommendation(models.Model):
+    pill_code = models.CharField(max_length=255)
+    pill_name = models.CharField(max_length=255)
+    confidence = models.CharField(max_length=255)
+    efficacy = models.TextField()
+    manufacturer = models.CharField(max_length=255)
+    usage = models.TextField()
+    precautions_before_use = models.TextField()
+    usage_precautions = models.TextField()
+    drug_food_interactions = models.TextField()
+    side_effects = models.TextField()
+    storage_instructions = models.TextField()
+    pill_image = models.TextField()
+    pill_info = models.TextField(null=True, blank=True)  
+    created_at = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey('UserList', on_delete=models.CASCADE)
+    predicted_category_id = models.IntegerField(null=True, blank=True)  # 새 필드 추가
