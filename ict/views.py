@@ -378,60 +378,85 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import Userlist, FamilyMember  # FamilyMember를 추가하세요
 
-
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from .models import Userlist, FamilyMember
+from .serializers import FamilyMemberSerializer
 from rest_framework import status
 
 @api_view(['POST'])
 def add_family_member(request, user_id):
     try:
-        user = Userlist.objects.get(id=user_id)  # 현재 로그인한 사용자
+        user = Userlist.objects.get(id=user_id)
     except Userlist.DoesNotExist:
         return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
-    # Serializer를 사용하여 가족 정보를 추가
     serializer = FamilyMemberSerializer(data=request.data)
     if serializer.is_valid():
-        # 선택한 가족 관계를 확인하고 적절히 설정
         relationship = serializer.validated_data.get('relationship', '')
         if relationship == "부모":
-            relationship = "자녀"  # 부모를 선택한 경우, 자녀로 설정
+            relationship = "자녀"
         elif relationship == "자녀":
-            relationship = "부모"  # 자녀를 선택한 경우, 부모로 설정
+            relationship = "부모"
         elif relationship == "배우자":
-            relationship = "배우자" 
+            relationship = "배우자"
         elif relationship == "형제/자매":
-            relationship = "형제/자매" 
+            relationship = "형제/자매"
 
-        # 가족 정보를 DB에 저장
-        family_member = serializer.save(user=user)  # A 사용자의 가족으로 등록
-
-        # 방금 추가한 가족의 ID를 가져오기
+        family_member = serializer.save(user=user)
         family_member_user = FamilyMember(
-            user=Userlist.objects.get(id=serializer.validated_data['name']),  # 추가한 가족의 Userlist 인스턴스
-            name=user.nickname,  # 추가한 가족의 이름
-            relationship=relationship,  # 수정된 가족의 관계
-            phone_number=user.email,  # 추가한 가족의 전화번호를 Userlist에서 가져옴
-            address=user.location  # 사용자 위치
+            user=Userlist.objects.get(id=serializer.validated_data['name']),
+            name=user.nickname,
+            relationship=relationship,
+            phone_number=user.email,
+            address=user.location
         )
-        family_member_user.save()  # 방금 추가한 가족에게 현재 사용자를 가족으로 추가 저장
+        family_member_user.save()
 
         return Response({'message': 'Family member added successfully'}, status=status.HTTP_201_CREATED)
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from .models import Userlist, FamilyMember
-from .serializers import FamilyMemberSerializer
-from rest_framework import status
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .models import Userlist, FamilyMember
-from .serializers import FamilyMemberSerializer
 from rest_framework import status
+from .models import FamilyMember  # 모델 import
+
+# views.py
+
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
+from .models import FamilyMember
+
+@api_view(['DELETE'])
+def delete_family_member(request, name):
+    # 이름으로 가족 구성원 찾기
+    try:
+        family_members = FamilyMember.objects.filter(name=name)
+
+        if family_members.exists():
+            family_members.delete()  # 모든 관련 가족 구성원 삭제
+            return Response({'message': 'Family member(s) deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response({'error': 'Family member not found'}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['PUT'])
+def update_family_member(request, family_member_id):
+    try:
+        family_member = FamilyMember.objects.get(id=family_member_id)
+    except FamilyMember.DoesNotExist:
+        return Response({'error': 'Family member not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    serializer = FamilyMemberSerializer(family_member, data=request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response({'message': 'Family member updated successfully'}, status=status.HTTP_200_OK)
+
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
 def get_family_members(request, user_id):
@@ -443,10 +468,11 @@ def get_family_members(request, user_id):
     family_members = FamilyMember.objects.filter(user=user)
     serializer = FamilyMemberSerializer(family_members, many=True)
     response = Response(serializer.data, status=status.HTTP_200_OK)
-    
+
     # Explicitly set Content-Type header (optional)
     response['Content-Type'] = 'application/json; charset=utf-8'
     return response
+
 
 @csrf_exempt
 def check_member(request, user_id):
