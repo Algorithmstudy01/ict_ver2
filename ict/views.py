@@ -492,7 +492,7 @@ class UpdateAlarmView(APIView):
         try:
             alarm = Alarm.objects.get(pk=pk)
         except Alarm.DoesNotExist:
-            return Response({'error': 'Alarm not found'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'Alㄹarm not found'}, status=status.HTTP_404_NOT_FOUND)
         
         serializer = AlarmSerializer(alarm, data=request.data, partial=True)
         if serializer.is_valid():

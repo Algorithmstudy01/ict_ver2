@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 
 class RecommendationScreen extends StatefulWidget {
   final String userId;
@@ -14,11 +15,18 @@ class RecommendationScreen extends StatefulWidget {
 class _RecommendationScreenState extends State<RecommendationScreen> {
   List recommendations = []; // 추천 목록을 저장합니다.
   bool isLoading = true; // 로딩 상태
+  FlutterTts flutterTts = FlutterTts(); // flutterTts 객체 생성
 
   @override
   void initState() {
     super.initState();
     fetchRecommendations(); // 초기화 시 추천 목록을 가져옵니다.
+    initTts(); // TTS 초기화
+  }
+
+  Future<void> initTts() async {
+    await flutterTts.setLanguage("ko-KR"); // 한국어 설정
+    await flutterTts.setSpeechRate(0.4); // 말하는 속도 설정
   }
 
   Future<void> fetchRecommendations() async {
@@ -82,10 +90,33 @@ class _RecommendationScreenState extends State<RecommendationScreen> {
 }
 
 
-class RecommendationDetailScreen extends StatelessWidget {
+class RecommendationDetailScreen extends StatefulWidget {
   final Map recommendation;
 
   const RecommendationDetailScreen({Key? key, required this.recommendation}) : super(key: key);
+
+  @override
+  _RecommendationDetailScreenState createState() => _RecommendationDetailScreenState();
+}
+
+class _RecommendationDetailScreenState extends State<RecommendationDetailScreen> {
+  FlutterTts flutterTts = FlutterTts(); // flutterTts 객체 생성
+
+  @override
+  void initState() {
+    super.initState();
+    initTts(); // TTS 초기화
+  }
+
+Future<void> initTts() async {
+  await flutterTts.setLanguage("ko-KR"); // 한국어 설정
+  await flutterTts.setSpeechRate(0.6); // 빠른 말하기 속도
+}
+
+
+  Future<void> speak(String text) async {
+    await flutterTts.speak(text);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -98,32 +129,30 @@ class RecommendationDetailScreen extends StatelessWidget {
             Navigator.of(context).pop();
           },
         ),
-        
-        title: Text(recommendation['pill_name']),
+        title: Text(widget.recommendation['pill_name']),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-          Center(
-  child: GestureDetector(
-    child: Image.asset(
-      'assets/data/${recommendation['predicted_category_id']}.png', // 이 부분 수정
-      width: MediaQuery.of(context).size.width * 0.9,
-      height: MediaQuery.of(context).size.height * 0.3,
-      fit: BoxFit.contain,
-      errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
-        return Icon(
-          Icons.healing,
-          size: MediaQuery.of(context).size.height * 0.09,
-          color: Colors.purple[200],
-        );
-      },
-    ),
-  ),
-),
-
+            Center(
+              child: GestureDetector(
+                child: Image.asset(
+                  'assets/data/${widget.recommendation['predicted_category_id']}.png', // 이미지 파일 불러오기
+                  width: MediaQuery.of(context).size.width * 0.9,
+                  height: MediaQuery.of(context).size.height * 0.3,
+                  fit: BoxFit.contain,
+                  errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
+                    return Icon(
+                      Icons.healing,
+                      size: MediaQuery.of(context).size.height * 0.09,
+                      color: Colors.purple[200],
+                    );
+                  },
+                ),
+              ),
+            ),
             SizedBox(height: 20),
             Container(
               padding: EdgeInsets.all(16.0),
@@ -137,125 +166,127 @@ class RecommendationDetailScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (recommendation['pill_code'] != null)
+                  if (widget.recommendation['pill_code'] != null)
                     Row(
                       children: [
-                        Expanded(child: Text('품목기준코드: ${recommendation['pill_code']}\n', style: TextStyle(fontSize: 16))),
+                        Expanded(child: Text('품목기준코드: ${widget.recommendation['pill_code']}\n', style: TextStyle(fontSize: 16))),
                         IconButton(
                           icon: Icon(Icons.volume_up),
-                          onPressed: () => speak('품목기준코드: ${recommendation['pill_code']}'), // 음성 출력 함수
+                          onPressed: () => speak('품목기준코드: ${widget.recommendation['pill_code']}'), // 음성 출력
                         ),
                       ],
                     ),
-                  Row(
+                     Row(
                     children: [
-                      Expanded(child: Text('예측된 카테고리 ID: ${recommendation['predicted_category_id']}\n', style: TextStyle(fontSize: 16))),
+                      Expanded(child: Text('예측된 카테고리 ID: ${widget.recommendation['predicted_category_id']}\n', style: TextStyle(fontSize: 16))),
                       IconButton(
                         icon: Icon(Icons.volume_up),
-                        onPressed: () => speak('예측된 카테고리 ID: ${recommendation['predicted_category_id']}'),
+                        onPressed: () => speak('예측된 카테고리 ID: ${widget.recommendation['predicted_category_id']}'),
                       ),
                     ],
                   ),
-                  if (recommendation['pill_name'] != null)
+                  if (widget.recommendation['pill_name'] != null)
                     Row(
                       children: [
-                        Expanded(child: Text('제품명: ${recommendation['pill_name']}\n', style: TextStyle(fontSize: 16))),
+                        Expanded(child: Text('제품명: ${widget.recommendation['pill_name']}\n', style: TextStyle(fontSize: 16))),
                         IconButton(
                           icon: Icon(Icons.volume_up),
-                          onPressed: () => speak('제품명: ${recommendation['pill_name']}'),
+                          onPressed: () => speak('제품명: ${widget.recommendation['pill_name']}'),
                         ),
                       ],
                     ),
-                  if (recommendation['confidence'] != null)
+                     if (widget.recommendation['confidence'] != null)
                     Row(
                       children: [
-                        Expanded(child: Text('예측 확률: ${recommendation['confidence']}\n', style: TextStyle(fontSize: 16))),
+                        Expanded(child: Text('예측 확률: ${widget.recommendation['confidence']}\n', style: TextStyle(fontSize: 16))),
                         IconButton(
                           icon: Icon(Icons.volume_up),
-                          onPressed: () => speak('예측 확률: ${recommendation['confidence']}'),
+                          onPressed: () => speak('예측 확률: ${widget.recommendation['confidence']}'),
                         ),
                       ],
                     ),
-                  if (recommendation['efficacy'] != null)
+                  if (widget.recommendation['efficacy'] != null)
                     Row(
                       children: [
-                        Expanded(child: Text('이 약의 효능은 무엇입니까?\n${recommendation['efficacy']}\n', style: TextStyle(fontSize: 16))),
+                        Expanded(child: Text('이 약의 효능은 무엇입니까?\n${widget.recommendation['efficacy']}\n', style: TextStyle(fontSize: 16))),
                         IconButton(
                           icon: Icon(Icons.volume_up),
-                          onPressed: () => speak('이 약의 효능은 무엇입니까? ${recommendation['efficacy']}'),
+                          onPressed: () => speak('이 약의 효능은 무엇입니까? ${widget.recommendation['efficacy']}'),
                         ),
                       ],
                     ),
-                  if (recommendation['manufacturer'] != null)
+                  if (widget.recommendation['manufacturer'] != null)
                     Row(
                       children: [
-                        Expanded(child: Text('제조/수입사: ${recommendation['manufacturer']}\n', style: TextStyle(fontSize: 16))),
+                        Expanded(child: Text('제조/수입사: ${widget.recommendation['manufacturer']}\n', style: TextStyle(fontSize: 16))),
                         IconButton(
                           icon: Icon(Icons.volume_up),
-                          onPressed: () => speak('제조/수입사: ${recommendation['manufacturer']}'),
+                          onPressed: () => speak('제조/수입사: ${widget.recommendation['manufacturer']}'),
                         ),
                       ],
                     ),
-                  if (recommendation['usage'] != null)
+                    if (widget.recommendation['usage'] != null)
                     Row(
                       children: [
-                        Expanded(child: Text('이 약은 어떻게 사용합니까?\n${recommendation['usage']}\n', style: TextStyle(fontSize: 16))),
+                        Expanded(child: Text('이 약은 어떻게 사용합니까?\n${widget.recommendation['usage']}\n', style: TextStyle(fontSize: 16))),
                         IconButton(
                           icon: Icon(Icons.volume_up),
-                          onPressed: () => speak('이 약은 어떻게 사용합니까? ${recommendation['usage']}'),
+                          onPressed: () => speak('이 약은 어떻게 사용합니까? ${widget.recommendation['usage']}'),
                         ),
                       ],
                     ),
-                  if (recommendation['precautions_before_use'] != null)
+                  if (widget.recommendation['precautions_before_use'] != null)
                     Row(
                       children: [
-                        Expanded(child: Text('이 약을 사용하기 전에 반드시 알아야 할 내용은 무엇입니까?\n${recommendation['precautions_before_use']}\n', style: TextStyle(fontSize: 16))),
+                        Expanded(child: Text('이 약을 사용하기 전에 반드시 알아야 할 내용은 무엇입니까?\n${widget.recommendation['precautions_before_use']}\n', style: TextStyle(fontSize: 16))),
                         IconButton(
                           icon: Icon(Icons.volume_up),
-                          onPressed: () => speak('이 약을 사용하기 전에 반드시 알아야 할 내용은 무엇입니까? ${recommendation['precautions_before_use']}'),
+                          onPressed: () => speak('이 약을 사용하기 전에 반드시 알아야 할 내용은 무엇입니까? ${widget.recommendation['precautions_before_use']}'),
                         ),
                       ],
                     ),
-                  if (recommendation['usage_precautions'] != null)
+                    if (widget.recommendation['usage_precautions'] != null)
                     Row(
                       children: [
-                        Expanded(child: Text('이 약을 사용할 때 주의해야 할 점은 무엇입니까?\n${recommendation['usage_precautions']}\n', style: TextStyle(fontSize: 16))),
+                        Expanded(child: Text('이 약을 사용할 때 주의해야 할 점은 무엇입니까?\n${widget.recommendation['usage_precautions']}\n', style: TextStyle(fontSize: 16))),
                         IconButton(
                           icon: Icon(Icons.volume_up),
-                          onPressed: () => speak('이 약을 사용할 때 주의해야 할 점은 무엇입니까? ${recommendation['usage_precautions']}'),
+                          onPressed: () => speak('이 약을 사용할 때 주의해야 할 점은 무엇입니까? ${widget.recommendation['usage_precautions']}'),
                         ),
                       ],
                     ),
-                  if (recommendation['drug_food_interactions'] != null)
+                  if (widget.recommendation['drug_food_interactions'] != null)
                     Row(
                       children: [
-                        Expanded(child: Text('이 약과 음식의 상호작용은 무엇입니까?\n${recommendation['drug_food_interactions']}\n', style: TextStyle(fontSize: 16))),
+                        Expanded(child: Text('이 약과 음식의 상호작용은 무엇입니까?\n${widget.recommendation['drug_food_interactions']}\n', style: TextStyle(fontSize: 16))),
                         IconButton(
                           icon: Icon(Icons.volume_up),
-                          onPressed: () => speak('이 약과 음식의 상호작용은 무엇입니까? ${recommendation['drug_food_interactions']}'),
+                          onPressed: () => speak('이 약과 음식의 상호작용은 무엇입니까? ${widget.recommendation['drug_food_interactions']}'),
+                        ),
+                      ],
+                    ),if (widget.recommendation['side_effects'] != null)
+                    Row(
+                      children: [
+                        Expanded(child: Text('이 약의 부작용은 무엇입니까?\n${widget.recommendation['side_effects']}\n', style: TextStyle(fontSize: 16))),
+                        IconButton(
+                          icon: Icon(Icons.volume_up),
+                          onPressed: () => speak('이 약의 부작용은 무엇입니까? ${widget.recommendation['side_effects']}'),
                         ),
                       ],
                     ),
-                  if (recommendation['side_effects'] != null)
+                  if (widget.recommendation['storage_instructions'] != null)
                     Row(
                       children: [
-                        Expanded(child: Text('이 약의 부작용은 무엇입니까?\n${recommendation['side_effects']}\n', style: TextStyle(fontSize: 16))),
+                        Expanded(child: Text('이 약의 보관 방법은 무엇입니까?\n${widget.recommendation['storage_instructions']}\n', style: TextStyle(fontSize: 16))),
                         IconButton(
                           icon: Icon(Icons.volume_up),
-                          onPressed: () => speak('이 약의 부작용은 무엇입니까? ${recommendation['side_effects']}'),
+                          onPressed: () => speak('이 약의 보관 방법은 무엇입니까? ${widget.recommendation['storage_instructions']}'),
                         ),
                       ],
                     ),
-                  if (recommendation['storage_instructions'] != null)
-                    Row(
-                      children: [
-                        Expanded(child: Text('이 약의 보관 방법은 무엇입니까?\n${recommendation['storage_instructions']}\n', style: TextStyle(fontSize: 16))),
-                        IconButton(
-                          icon: Icon(Icons.volume_up),
-                          onPressed: () => speak('이 약의 보관 방법은 무엇입니까? ${recommendation['storage_instructions']}'),
-                        ),
-                      ],
-                    ),
+
+
+                  // 나머지 정보들을 같은 방식으로 보여주고 TTS 제공
                 ],
               ),
             ),
@@ -266,8 +297,9 @@ class RecommendationDetailScreen extends StatelessWidget {
     );
   }
 
-  void speak(String text) {
-    // 음성을 출력하는 기능을 구현해야 합니다.
-    // 예를 들어, Text-to-Speech 기능을 사용하여 text를 음성으로 변환합니다.
+  @override
+  void dispose() {
+    flutterTts.stop(); // TTS 중지
+    super.dispose();
   }
 }

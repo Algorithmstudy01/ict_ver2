@@ -190,191 +190,241 @@ class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
     DateTime today = DateTime(now.year, now.month, now.day);
     selectedDateTime = selectedDateTime.subtract(Duration(days: selectedDateTime.difference(today).inDays));
     selectedDateTime = getPeriodDays();
-  }@override
-Widget build(BuildContext context) {
-  return Scaffold(
-    body: SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 30),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context, false),
-                  child: Text(
-                    '취소',
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleLarge!
-                        .copyWith(color: Colors.blueAccent),
-                  ),
-                ),
-                TextButton(
-                  onPressed: saveAlarm,
-                  child: loading
-                      ? const CircularProgressIndicator()
-                      : Text(
-                          '저장',
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleLarge!
-                              .copyWith(color: Colors.blueAccent),
-                        ),
-                ),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                // The rest of your checkbox code remains unchanged
-              ],
-            ),
-            Text(
-              getDay(),
-              style: Theme.of(context)
-                  .textTheme
-                  .titleMedium!
-                  .copyWith(color: Colors.blueAccent.withOpacity(0.8)),
-            ),
-            RawMaterialButton(
-              onPressed: pickTime,
-              fillColor: Colors.grey[200],
-              child: Container(
-                margin: const EdgeInsets.all(20),
+  }
+
+  @override
+  Widget build(BuildContext context) {
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 30),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
                 child: Text(
-                  TimeOfDay.fromDateTime(selectedDateTime).format(context),
+                  '취소',
                   style: Theme.of(context)
                       .textTheme
-                      .displayMedium!
+                      .titleLarge!
                       .copyWith(color: Colors.blueAccent),
                 ),
               ),
-            ),
-            TextField(
-              controller: myController,
-              decoration: InputDecoration(
-                hintText: alarmName != '' ? alarmName : '약 이름',
-              ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  '알람음 반복',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                Switch(
-                  value: loopAudio,
-                  onChanged: (value) => setState(() => loopAudio = value),
-                ),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  '진동',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                Switch(
-                  value: vibrate,
-                  onChanged: (value) => setState(() => vibrate = value),
-                ),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  '알람음',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                DropdownButton(
-                  value: assetAudio,
-                  items: const [
-                    DropdownMenuItem<String>(
-                      value: 'assets/marimba.mp3',
-                      child: Text('Marimba'),
-                    ),
-                    DropdownMenuItem<String>(
-                      value: 'assets/nokia.mp3',
-                      child: Text('Nokia'),
-                    ),
-                    DropdownMenuItem<String>(
-                      value: 'assets/mozart.mp3',
-                      child: Text('Mozart'),
-                    ),
-                    DropdownMenuItem<String>(
-                      value: 'assets/star_wars.mp3',
-                      child: Text('Star Wars'),
-                    ),
-                    DropdownMenuItem<String>(
-                      value: 'assets/one_piece.mp3',
-                      child: Text('One Piece'),
-                    ),
-                  ],
-                  onChanged: (value) => setState(() => assetAudio = value!),
-                ),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  '볼륨 조절',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                Switch(
-                  value: volume != null,
-                  onChanged: (value) =>
-                      setState(() => volume = value ? 0.5 : null),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 30,
-              child: volume != null
-                  ? Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Icon(
-                          volume! > 0.7
-                              ? Icons.volume_up_rounded
-                              : volume! > 0.1
-                                  ? Icons.volume_down_rounded
-                                  : Icons.volume_mute_rounded,
-                        ),
-                        Expanded(
-                          child: Slider(
-                            value: volume!,
-                            onChanged: (value) {
-                              setState(() => volume = value);
-                            },
-                          ),
-                        ),
-                      ],
-                    )
-                  : const SizedBox(),
-            ),
-            if (!creating)
               TextButton(
-                onPressed: deleteAlarm,
-                child: Text(
-                  '알람 제거',
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleMedium!
-                      .copyWith(color: Colors.red),
-                ),
+                onPressed: saveAlarm,
+                child: loading
+                    ? const CircularProgressIndicator()
+                    : Text(
+                        '저장',
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleLarge!
+                            .copyWith(color: Colors.blueAccent),
+                      ),
               ),
-            const SizedBox(),
-          ],
-        ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Column(children: [
+                Checkbox(value: sun, onChanged: (value) => setState(() {
+                  sun = value!;
+                  dayCount();
+                })),
+                Text('일', style: TextStyle(color: sun ? Colors.red : Colors.grey),)
+              ],),
+              Column(children: [
+                Checkbox(value: mon, onChanged: (value) => setState(() {
+                  mon = value!;
+                  dayCount();
+                })),
+                Text('월', style: TextStyle(color: mon ? Colors.black : Colors.grey),)
+              ],),
+              Column(children: [
+                Checkbox(value: tue, onChanged: (value) => setState(() {
+                  tue = value!;
+                  dayCount();
+                })),
+                Text('화', style: TextStyle(color: tue ? Colors.black : Colors.grey),)
+              ],),
+              Column(children: [
+                Checkbox(value: wed, onChanged: (value) => setState(() {
+                  wed = value!;
+                  dayCount();
+                })),
+                Text('수', style: TextStyle(color: wed ? Colors.black : Colors.grey),)
+              ],),
+              Column(children: [
+                Checkbox(value: thu, onChanged: (value) => setState(() {
+                  thu = value!;
+                  dayCount();
+                })),
+                Text('목', style: TextStyle(color: thu ? Colors.black : Colors.grey),)
+              ],),
+              Column(children: [
+                Checkbox(value: fri, onChanged: (value) => setState(() {
+                  fri = value!;
+                  dayCount();
+                })),
+                Text('금', style: TextStyle(color: fri ? Colors.black : Colors.grey),)
+              ],),
+              Column(children: [
+                Checkbox(value: sat, onChanged: (value) => setState(() {
+                  sat = value!;
+                  dayCount();
+                })),
+                Text('토', style: TextStyle(color: sat ? Colors.blueAccent : Colors.grey),)
+              ],),
+
+
+            ],
+          ),
+          Text(
+            getDay(),
+            style: Theme.of(context)
+                .textTheme
+                .titleMedium!
+                .copyWith(color: Colors.blueAccent.withOpacity(0.8)),
+          ),
+          RawMaterialButton(
+            onPressed: pickTime,
+            fillColor: Colors.grey[200],
+            child: Container(
+              margin: const EdgeInsets.all(20),
+              child: Text(
+                TimeOfDay.fromDateTime(selectedDateTime).format(context),
+                style: Theme.of(context)
+                    .textTheme
+                    .displayMedium!
+                    .copyWith(color: Colors.blueAccent),
+              ),
+            ),
+          ),
+          TextField(
+            controller: myController,
+            decoration: InputDecoration(
+              hintText: alarmName != '' ? alarmName : '약 이름'
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                '알람음 반복',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              Switch(
+                value: loopAudio,
+                onChanged: (value) => setState(() => loopAudio = value),
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                '진동',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              Switch(
+                value: vibrate,
+                onChanged: (value) => setState(() => vibrate = value),
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                '알람음',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              DropdownButton(
+                value: assetAudio,
+                items: const [
+                  DropdownMenuItem<String>(
+                    value: 'assets/marimba.mp3',
+                    child: Text('Marimba'),
+                  ),
+                  DropdownMenuItem<String>(
+                    value: 'assets/nokia.mp3',
+                    child: Text('Nokia'),
+                  ),
+                  DropdownMenuItem<String>(
+                    value: 'assets/mozart.mp3',
+                    child: Text('Mozart'),
+                  ),
+                  DropdownMenuItem<String>(
+                    value: 'assets/star_wars.mp3',
+                    child: Text('Star Wars'),
+                  ),
+                  DropdownMenuItem<String>(
+                    value: 'assets/one_piece.mp3',
+                    child: Text('One Piece'),
+                  ),
+                ],
+                onChanged: (value) => setState(() => assetAudio = value!),
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                '볼륨 조절',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              Switch(
+                value: volume != null,
+                onChanged: (value) =>
+                    setState(() => volume = value ? 0.5 : null),
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 30,
+            child: volume != null
+                ? Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Icon(
+                        volume! > 0.7
+                            ? Icons.volume_up_rounded
+                            : volume! > 0.1
+                                ? Icons.volume_down_rounded
+                                : Icons.volume_mute_rounded,
+                      ),
+                      Expanded(
+                        child: Slider(
+                          value: volume!,
+                          onChanged: (value) {
+                            setState(() => volume = value);
+                          },
+                        ),
+                      ),
+                    ],
+                  )
+                : const SizedBox(),
+          ),
+          if (!creating)
+            TextButton(
+              onPressed: deleteAlarm,
+              child: Text(
+                '알람 제거',
+                style: Theme.of(context)
+                    .textTheme
+                    .titleMedium!
+                    .copyWith(color: Colors.red),
+              ),
+            ),
+          const SizedBox(),
+        ],
       ),
-    ),
-  );
+    );
+  }
 }
-}
+

@@ -82,6 +82,10 @@ Future<String> fetchImageUrl(String predictedCategoryId) async {
 Future<void> _initTts() async {
     flutterTts = FlutterTts();
 
+  await flutterTts.setSpeechRate(0.6); // 빠른 말하기 속도
+
+
+
     // TTS 엔진 초기화
     await flutterTts.awaitSpeakCompletion(true);
     
@@ -182,6 +186,13 @@ Future<void> _removeFromFavorites() async {
 
   void speak(String text) async {
     await flutterTts.speak(text);
+  }
+
+  @override
+  void dispose() {
+    // TTS를 사용하지 않을 때 해제
+    flutterTts.stop();
+    super.dispose();
   }
 
 
