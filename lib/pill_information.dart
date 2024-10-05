@@ -285,26 +285,24 @@ void _recommendToFamily(String familyMemberName) async {
     'family_member_name': familyMemberName, // 추천받는 사람의 이름
     'pill_code': widget.pillCode, // 약 코드
     'pill_name': widget.pillName, // 약 이름
-      'confidence': widget.confidence,
-      'efficacy': widget.efficacy,
-      'manufacturer': widget.manufacturer,
-      'usage': widget.usage,
-      'precautions_before_use': widget.precautionsBeforeUse,
-      'usage_precautions': widget.usagePrecautions,
-      'drug_food_interactions': widget.drugFoodInteractions,
-      'side_effects': widget.sideEffects,
-      'storage_instructions': widget.storageInstructions,
-      'pill_image': '',
-      'pill_info': '',
-      'predicted_category_id': widget.predictedCategoryId, 
+    'confidence': widget.confidence,
+    'efficacy': widget.efficacy,
+    'manufacturer': widget.manufacturer,
+    'usage': widget.usage,
+    'precautions_before_use': widget.precautionsBeforeUse,
+    'usage_precautions': widget.usagePrecautions,
+    'drug_food_interactions': widget.drugFoodInteractions,
+    'side_effects': widget.sideEffects,
+    'storage_instructions': widget.storageInstructions,
+    'pill_image': '',
+    'pill_info': '',
+    'predicted_category_id': widget.predictedCategoryId, 
   };
-
-
 
   try {
     // Send the recommendation request to the Django backend
     final response = await http.post(
-      Uri.parse('https://80d4-113-198-180-184.ngrok-free.app/recommend/'), // URL to your Django view
+      Uri.parse('https://80d4-113-198-180-184.ngrok-free.app/recommend/'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(recommendationData),
     );
@@ -313,6 +311,9 @@ void _recommendToFamily(String familyMemberName) async {
     if (response.statusCode == 201) {
       final responseData = jsonDecode(response.body); // Parse the response
       print('추천이 성공적으로 전송되었습니다: ${responseData['recommendation']}');
+      
+      // 추천이 성공적으로 전송되었을 때 팝업 표시
+      _showSuccessDialog();
     } else {
       print('추천 전송 실패: ${response.statusCode} - ${response.body}');
     }
@@ -320,6 +321,25 @@ void _recommendToFamily(String familyMemberName) async {
     print('예외 발생: $e'); // Handle exceptions
   }
 }
+
+void _showSuccessDialog() {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('성공'),
+        content: Text('추천이 완료되었습니다.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text('확인'),
+          ),
+        ],
+      );
+    },
+  );
+}
+
 
 
   @override
