@@ -46,6 +46,7 @@ dependencies:
   flutter_fgbg: ^0.6.0
   alarm: ^3.1.5
   google_fonts: ^4.0.4 
+  flutter_native_image: ^0.0.6+1
 
  
   

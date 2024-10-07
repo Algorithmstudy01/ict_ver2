@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-import 'login_section.dart'; // Import the Login section
+import 'login_section.dart'; // 로그인 섹션 import
 
 class FindPasswordSection extends StatefulWidget {
   @override
@@ -12,7 +12,7 @@ class FindPasswordSection extends StatefulWidget {
 class _FindPasswordSectionState extends State<FindPasswordSection> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
-  String _resultMessage = ''; // This will hold the result message or password
+  String _resultMessage = ''; // 결과 메시지나 비밀번호를 저장하는 변수
 
   Future<void> _findPassword() async {
     final String id = _usernameController.text;
@@ -25,7 +25,7 @@ class _FindPasswordSectionState extends State<FindPasswordSection> {
       return;
     }
 
-    final url = 'https://80d4-113-198-180-184.ngrok-free.app/find_password/'; // Replace with your Django endpoint
+    final url = 'https://80d4-113-198-180-184.ngrok-free.app/find_password/'; // Django 엔드포인트
     final response = await http.post(
       Uri.parse(url),
       headers: {'Content-Type': 'application/json'},
@@ -35,7 +35,7 @@ class _FindPasswordSectionState extends State<FindPasswordSection> {
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       setState(() {
-        _resultMessage = '비밀번호: ${data['password']}'; // Display the retrieved password
+        _resultMessage = '비밀번호: ${data['password']}'; // 가져온 비밀번호를 표시
       });
     } else {
       final data = jsonDecode(response.body);
@@ -49,7 +49,18 @@ class _FindPasswordSectionState extends State<FindPasswordSection> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-
+      appBar: AppBar(
+        title: Text('비밀번호 찾기'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => LoginSection()), // 뒤로가기 버튼 누르면 로그인 섹션으로 이동
+            );
+          },
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -76,18 +87,18 @@ class _FindPasswordSectionState extends State<FindPasswordSection> {
             SizedBox(height: 20),
             Center(
               child: GestureDetector(
-                onTap: _findPassword, // Attach the password finding logic
+                onTap: _findPassword, // 비밀번호 찾기 로직
                 child: Image.asset(
-                  'assets/img/find_pw.png', // Use the correct path to your image
-                  width: 450, // Adjust the width as needed
-                  fit: BoxFit.contain, // Ensure the image scales correctly
+                  'assets/img/find_pw.png', // 이미지 경로 수정 필요
+                  width: 450, // 이미지 너비 조정
+                  fit: BoxFit.contain, // 이미지 크기 조정
                 ),
               ),
             ),
             SizedBox(height: 20),
             Center(
               child: Text(
-                _resultMessage, // Display the result message or password
+                _resultMessage, // 결과 메시지 또는 비밀번호 출력
                 style: TextStyle(
                   color: _resultMessage.contains('비밀번호:') ? Colors.green : Colors.red,
                   fontSize: 16,
@@ -99,7 +110,6 @@ class _FindPasswordSectionState extends State<FindPasswordSection> {
             Center(
               child: TextButton(
                 onPressed: () {
-                  // Navigate to Login section
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => LoginSection()),
