@@ -107,16 +107,34 @@ class _MyPageState extends State<MyPage> {
               height: 8, // Increase height to make it thicker
             ),
 
+            // 검색 기록
             ListTile(
               title: Text("검색 기록"),
               trailing: Icon(Icons.chevron_right),
               onTap: openPillInformation, // Updated to call the correct function
             ),
+
+            // 추천 받은 목록
+            ListTile(
+              title: Text("추천 받은 목록"), // 메뉴 제목
+              trailing: Icon(Icons.chevron_right), // 화살표 아이콘
+              onTap: () {
+                // 추천 받은 목록 화면으로 이동
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => RecommendationScreen(userId: widget.userId), // 추천 목록으로 이동
+                  ),
+                );
+              },
+            ),
+
             Container(
               color: Colors.grey[300], // Thicker separator color
               height: 8, // Increase height to make it thicker
             ),
 
+            // 비밀번호 변경
             ListTile(
               title: Text("비밀번호 변경"),
               trailing: Icon(Icons.chevron_right),
@@ -129,8 +147,9 @@ class _MyPageState extends State<MyPage> {
               },
             ),
 
+            // 가족 등록 하기
             ListTile(
-              title: Text("가족 등록하기"),
+              title: Text("가족 등록 하기"),
               trailing: Icon(Icons.chevron_right),
               onTap: () {
                 // 가족 등록하기 화면으로 이동
@@ -141,7 +160,7 @@ class _MyPageState extends State<MyPage> {
               },
             ),
 
-            // 가족 목록 보기 기능 추가
+            // 가족 목록 보기
             ListTile(
               title: Text("가족 목록 보기"),
               trailing: Icon(Icons.chevron_right),
@@ -153,6 +172,7 @@ class _MyPageState extends State<MyPage> {
               height: 8, // Increase height to make it thicker
             ),
 
+            // 회원탈퇴
             ListTile(
               title: Text("회원탈퇴"),
               trailing: Icon(Icons.chevron_right),
@@ -164,20 +184,6 @@ class _MyPageState extends State<MyPage> {
                 );
               },
             ),
-            ListTile(
-  title: Text("추천 받은 목록"), // 메뉴 제목
-  trailing: Icon(Icons.chevron_right), // 화살표 아이콘
-  onTap: () {
-    // 추천 받은 목록 화면으로 이동
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => RecommendationScreen(userId: widget.userId), // 추천 목록으로 이동
-      ),
-    );
-  },
-),
-
           ],
         ),
       ),
