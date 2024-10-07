@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import predict
+# from .views import predict
 from . import views
 from django.urls import path
 
@@ -12,7 +12,7 @@ from .views import RecommendPillView, RecommendationListView  # RecommendationLi
 
 
 urlpatterns = [
-    path('predict/', views.predict, name='predict'),  # Ensure this line exists
+    # path('predict/', views.predict, name='predict'),  # Ensure this line exists
     path('predict2/', views.predict2, name='predict'),  # Ensure this line exists
 
     path('user_info/<str:user_id>/', views.user_info, name='get_user_info'),
