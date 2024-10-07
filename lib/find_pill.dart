@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 import 'package:chungbuk_ict/pill_information.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
@@ -7,6 +8,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_native_image/flutter_native_image.dart';
+
 
 import 'Camera.dart';
 class PillInfo {
@@ -85,6 +88,7 @@ class _FindPillState extends State<FindPill> with AutomaticKeepAliveClientMixin 
   late CameraController controller;
   late List<CameraDescription> _cameras;
   XFile? _image;
+  File? imageFile;
   bool _isLoading = false;
   Map<String, dynamic> _pillInfo = {};
 
@@ -130,20 +134,36 @@ class _FindPillState extends State<FindPill> with AutomaticKeepAliveClientMixin 
   }
 
 Future<void> _takePicture() async {
+
   if (!controller.value.isInitialized) {
     print("Camera controller is not initialized.");
     return;
   }
   try {
     final XFile file = await controller.takePicture();
+
+    if  (file != null) {
+      ImageProperties properties = await FlutterNativeImage. getImageProperties (file.path);
+      var cropSize =  min (properties.width!, properties.height!);
+      int offsetX = (properties.width! - cropSize) ~/2;
+      int offsetY = (properties.height! - cropSize) ~/2;
+      imageFile = await FlutterNativeImage. cropImage (file.path, offsetX, offsetY, cropSize, cropSize);
+
+      if  (imageFile != null)
+        print ( "Good" );
+    }  else  {
+      print ( "Error" );
+    }
+
     setState(() {
       _image = file;
       _pillInfo = {};
       _isLoading = true; // 업로드가 시작될 때 로딩 상태를 표시
     });
 
+
     // 촬영한 이미지를 서버로 업로드
-    await _uploadImage(File(file.path));
+    await _uploadImage(imageFile!);
   } catch (e) {
     print('Error taking picture: $e');
     _showErrorDialog('이미지 촬영 중 오류가 발생했습니다.');
@@ -332,63 +352,62 @@ Widget build(BuildContext context) {
     automaticallyImplyLeading: true,  // 기본 뒤로가기 버튼 추가
   ),
 
-    body: Container(
+    body: Expanded(child: Container(
       color: Colors.white, // AppBar 제외한 백그라운드 흰색 설정
-      child: SingleChildScrollView(
-        child: Padding(
+      child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 50.0),
           child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                SizedBox(
+                Expanded(child: SizedBox(
                   width: size.width * 0.8,
                   height: size.height * 0.06,
-                  child: const Text(
+                  child: Text(
                     '알약 촬영하기',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: Colors.black,
-                      fontSize: 25,
+                      fontSize: size.height * 0.03,
                       fontFamily: 'Manrope',
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                ),
+                ),),
                 Column(
                   children: [
                     SizedBox(
                       width: size.width * 0.8,
                       height: size.height * 0.09,
-                      child: const Text.rich(
+                      child: Text.rich(
                         TextSpan(
                           children: [
                             TextSpan(
                               text: '정확한 알약 확인을 위해 사진을 준비해 주세요.\n아래의 ',
                               style: TextStyle(
                                 color: Colors.black,
-                                fontSize: 16,
+                                fontSize: size.height * 0.02,
                                 fontFamily: 'Manrope',
-                                height: 1.5,
+                                height: size.height * 0.001,
                               ),
                             ),
                             TextSpan(
                               text: '촬영하기',
                               style: TextStyle(
                                 color: Colors.black,
-                                fontSize: 16,
+                                fontSize: size.height * 0.021,
                                 fontFamily: 'Manrope',
                                 fontWeight: FontWeight.bold,
-                                height: 1.5,
+                                height: size.height * 0.001,
                               ),
                             ),
                             TextSpan(
                               text: ' 버튼을 눌러 사진을 찍어주세요.',
                               style: TextStyle(
                                 color: Colors.black,
-                                fontSize: 16,
+                                fontSize: size.height * 0.02,
                                 fontFamily: 'Manrope',
-                                height: 1.5,
+                                height: size.height * 0.001,
                               ),
                             ),
                           ],
@@ -399,8 +418,8 @@ Widget build(BuildContext context) {
                     Padding(
                       padding: EdgeInsets.all(20.0),
                       child: SizedBox(
-                        width: size.width * 0.7,
-                        height: size.width * 0.7,
+                        width: size.height * 0.4,
+                        height: size.height * 0.4,
                         child: _isLoading
                             ? Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -410,7 +429,7 @@ Widget build(BuildContext context) {
                                   Text(
                                     '알약 검색 중입니다...',
                                     style: TextStyle(
-                                      fontSize: 16,
+                                      fontSize: size.width * 0.038,
                                       color: Colors.black,
                                     ),
                                   ),
@@ -418,23 +437,31 @@ Widget build(BuildContext context) {
                               )
                             : (_image != null
                                 ? Image.file(
-                                    File(_image!.path),
-                                    fit: BoxFit.cover,
+                                    imageFile!,
+                                    fit: BoxFit.contain,
                                   )
                                 : (controller.value.isInitialized
-                                    ? CameraPreview(controller)
+                                    ? AspectRatio(aspectRatio: 1,
+                        child: ClipRect(
+                          child: Transform.scale(
+                            scale: controller.value.aspectRatio,
+                              child: Center(
+                                child: CameraPreview(controller),
+                              ),
+                          ),
+                        ),)
                                     : Container(color: Colors.grey))),
                       ),
                     ),
                     SizedBox(
                       width: size.width * 0.9,
                       height: size.height * 0.09,
-                      child: const Text(
+                      child: Text(
                         '사진을 촬영, 등록하면, 위의 그림과 같이 텍스트를 \n인식하여 자동으로 알약의 정보를 불러옵니다.',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          color: Color(0xFF4F4F4F),
-                          fontSize: 16,
+                          color: const Color(0xFF4F4F4F),
+                          fontSize: size.width * 0.038,
                           fontFamily: 'Manrope',
                           height: 1.5,
                         ),
@@ -454,7 +481,7 @@ Widget build(BuildContext context) {
                             fit: BoxFit.contain,
                           ),
                         ),
-                        SizedBox(height: 16),
+                        SizedBox(height: size.width * 0.038),
                         GestureDetector(
                           onTap: _startSearch,
                           child: Image.asset(
@@ -481,9 +508,9 @@ Widget build(BuildContext context) {
                         child: Text(
                           _image == null ? '갤러리에서 사진 가져오기' : '다른 사진 등록하기',
                           textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            color: Color(0xFF383838),
-                            fontSize: 16,
+                          style: TextStyle(
+                            color: const Color(0xFF383838),
+                            fontSize: size.width * 0.038,
                             fontFamily: 'Manrope',
                           ),
                         ),
@@ -496,8 +523,8 @@ Widget build(BuildContext context) {
           ),
         ),
       ),
-    ),
-  );
+    ),);
+
 }
 
 
