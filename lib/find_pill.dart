@@ -352,18 +352,20 @@ Widget build(BuildContext context) {
     automaticallyImplyLeading: true,  // 기본 뒤로가기 버튼 추가
   ),
 
-    body: Expanded(child: Container(
+    body: SingleChildScrollView(
+    child: Container(
+      padding: EdgeInsets.symmetric(vertical: size.height * 0.03),
       color: Colors.white, // AppBar 제외한 백그라운드 흰색 설정
-      child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 50.0),
           child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Expanded(child: SizedBox(
-                  width: size.width * 0.8,
+                SizedBox(
+                  width: size.width * 0.85,
                   height: size.height * 0.06,
-                  child: Text(
+                  child: FittedBox(
+                    fit: BoxFit.contain,
+                    child: Text(
                     '알약 촬영하기',
                     textAlign: TextAlign.center,
                     style: TextStyle(
@@ -371,15 +373,20 @@ Widget build(BuildContext context) {
                       fontSize: size.height * 0.03,
                       fontFamily: 'Manrope',
                       fontWeight: FontWeight.bold,
+
                     ),
                   ),
-                ),),
+                  ),
+                ),
                 Column(
                   children: [
-                    SizedBox(
-                      width: size.width * 0.8,
+                    Container(
+                      margin: EdgeInsets.symmetric(vertical: size.height * 0.01),
+                      width: size.width * 0.85,
                       height: size.height * 0.09,
-                      child: Text.rich(
+                      child: FittedBox(
+                        fit: BoxFit.contain,
+                        child:Text.rich(
                         TextSpan(
                           children: [
                             TextSpan(
@@ -388,7 +395,7 @@ Widget build(BuildContext context) {
                                 color: Colors.black,
                                 fontSize: size.height * 0.02,
                                 fontFamily: 'Manrope',
-                                height: size.height * 0.001,
+
                               ),
                             ),
                             TextSpan(
@@ -398,7 +405,7 @@ Widget build(BuildContext context) {
                                 fontSize: size.height * 0.021,
                                 fontFamily: 'Manrope',
                                 fontWeight: FontWeight.bold,
-                                height: size.height * 0.001,
+
                               ),
                             ),
                             TextSpan(
@@ -407,16 +414,16 @@ Widget build(BuildContext context) {
                                 color: Colors.black,
                                 fontSize: size.height * 0.02,
                                 fontFamily: 'Manrope',
-                                height: size.height * 0.001,
+
                               ),
                             ),
                           ],
                         ),
                         textAlign: TextAlign.center,
                       ),
-                    ),
+                    ),),
                     Padding(
-                      padding: EdgeInsets.all(20.0),
+                      padding: EdgeInsets.all(10.0),
                       child: SizedBox(
                         width: size.height * 0.4,
                         height: size.height * 0.4,
@@ -456,28 +463,30 @@ Widget build(BuildContext context) {
                     SizedBox(
                       width: size.width * 0.9,
                       height: size.height * 0.09,
-                      child: Text(
+                      child: FittedBox(
+                        fit: BoxFit.contain,
+                        child:Text(
                         '사진을 촬영, 등록하면, 위의 그림과 같이 텍스트를 \n인식하여 자동으로 알약의 정보를 불러옵니다.',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: const Color(0xFF4F4F4F),
-                          fontSize: size.width * 0.038,
+                          fontSize: size.height * 0.02,
                           fontFamily: 'Manrope',
-                          height: 1.5,
                         ),
                       ),
-                    ),
+                    ),),
                   ],
                 ),
                 Column(
                   children: [
                     Column(
                       children: [
-                        GestureDetector(
+                        /*GestureDetector(
                           onTap: controller.value.isInitialized ? _takePicture : null,
                           child: Image.asset(
                             'assets/img/camera.png',
-                            width: 350,
+                            width: size.width * 0.7,
+                            height: size.height * 0.05,
                             fit: BoxFit.contain,
                           ),
                         ),
@@ -486,16 +495,42 @@ Widget build(BuildContext context) {
                           onTap: _startSearch,
                           child: Image.asset(
                             'assets/img/search.png',
-                            width: 355,
+                            width: size.width * 0.7,
+                            height: size.height * 0.05,
                             fit: BoxFit.contain,
                           ),
-                        ),
+                        ),*/
+                        Container(
+                            margin: EdgeInsets.symmetric(vertical: size.height * 0.01),
+                          width: size.width * 0.7,
+                          height: size.height * 0.06,
+                          child: FittedBox(
+                            fit: BoxFit.contain,
+                            child: ElevatedButton(
+                                onPressed: _image == null ? _takePicture : _startSearch,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: _image == null ? Color(0xffC22AF8) : Color(0xff852C83),
+                                  shape: BeveledRectangleBorder(),
+                                  minimumSize: Size(size.width * 0.7, size.height * 0.06),
+                                ),
+                                child: Text(
+                                  _image == null ? '촬영하기': '검색하기',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: size.height * 0.025
+                                  ),
+                                )),
+                          )
+                        )
                       ],
                     ),
                     SizedBox(
-                      width: 335,
-                      height: 56,
-                      child: TextButton(
+                      width: size.width * 0.7,
+                      height: size.height * 0.06,
+                      child: FittedBox(
+                        fit: BoxFit.contain,
+                        child: TextButton(
                         onPressed: () {
                           if (_image == null) {
                             getImage(ImageSource.gallery);
@@ -505,25 +540,27 @@ Widget build(BuildContext context) {
                             });
                           }
                         },
-                        child: Text(
+                        child: FittedBox(
+                          fit: BoxFit.contain,
+                          child: Text(
                           _image == null ? '갤러리에서 사진 가져오기' : '다른 사진 등록하기',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color: const Color(0xFF383838),
-                            fontSize: size.width * 0.038,
+                            fontSize: size.height * 0.02,
                             fontFamily: 'Manrope',
                           ),
                         ),
-                      ),
-                    ),
+                      ),),
+                    ),),
                   ],
                 ),
               ],
             ),
           ),
-        ),
-      ),
-    ),);
+
+      ),),
+    );
 
 }
 
