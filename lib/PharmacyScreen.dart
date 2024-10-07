@@ -81,10 +81,22 @@ class TestPageState extends State<TestPage> {
 
   Widget _naverMapSection() => NaverMap(
     options: const NaverMapViewOptions(
+        zoomGesturesEnable: true,// 줌(확대)
+        rotationGesturesEnable: true,// 회전
+      mapType : NMapType.navi,
+        activeLayerGroups: [
+          NLayerGroup.building,
+          NLayerGroup.transit
+        ], // 건물(건물 형상, 주소 심벌 등)과 대중교통 레이어(철도, 지하철 노선 등)
         indoorEnable: true,
         locationButtonEnable: false,
         consumeSymbolTapEvents: false),
-    onMapReady: (controller) async {
+
+
+
+    onMapTapped: (point, latLng) {}, // 지도를 클릭했을 때 발생
+    onSymbolTapped: (symbol) {}, // 심볼을 클릭했을 때 발생
+    onMapReady: (controller) async { // 지도가 준비되었을 때 발생
       _mapController = controller;
       mapControllerCompleter.complete(controller);
       log("onMapReady", name: "onMapReady");
