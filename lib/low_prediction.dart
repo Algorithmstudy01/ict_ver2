@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'pill_information.dart';
+import 'package:chungbuk_ict/pill_information.dart';
 
 // 예측률이 낮을 때 발생하는 파일입니다.
 class LowPrediction extends StatelessWidget {
@@ -40,11 +40,26 @@ class LowPrediction extends StatelessWidget {
                     padding: const EdgeInsets.only(bottom: 16.0),
                     child: GestureDetector(
                       onTap: () {
-                        // 알약 선택 시의 동작: pill_information.dart 파일로 이동
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => _InformationScreenState(),
+                            builder: (context) => InformationScreen(
+                              pillCode: 'example_code', // 필수 매개변수에 실제 값을 전달
+                              pillName: 'example_name',
+                              confidence: '0.95',
+                              extractedText: 'extracted text example',
+                              userId: 'user123',
+                              usage: 'example usage',
+                              precautionsBeforeUse: 'example precautions before use',
+                              usagePrecautions: 'example usage precautions',
+                              drugFoodInteractions: 'example interactions',
+                              sideEffects: 'example side effects',
+                              storageInstructions: 'store in a cool place',
+                              efficacy: 'example efficacy',
+                              manufacturer: 'example manufacturer',
+                              imageUrl: 'https://example.com/image.png', // 이미지 URL 예시
+                              predictedCategoryId: '1', // 예측된 카테고리 ID 예시
+                            ),
                           ),
                         );
                       },
