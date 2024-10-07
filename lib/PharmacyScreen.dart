@@ -52,26 +52,46 @@ class _NearbyPharmacyPageState extends State<NearbyPharmacyPage> {
 
   Widget _naverMapSection() => NaverMap(
     options: const NaverMapViewOptions(
-        zoomGesturesEnable: true,// 줌(확대)
-        rotationGesturesEnable: true,// 회전
-        mapType : NMapType.navi,
-        activeLayerGroups: [
-          NLayerGroup.building,
-          NLayerGroup.transit
-        ], // 건물(건물 형상, 주소 심벌 등)과 대중교통 레이어(철도, 지하철 노선 등)
-        indoorEnable: true,
-        locationButtonEnable: false,
-        consumeSymbolTapEvents: false),
-
-
-
+      zoomGesturesEnable: true,
+      rotationGesturesEnable: true,
+      mapType: NMapType.navi,
+      activeLayerGroups: [
+        NLayerGroup.building,
+        NLayerGroup.transit
+      ],
+      indoorEnable: true,
+      locationButtonEnable: true, // 위치 버튼 활성화
+      consumeSymbolTapEvents: false,
+    ),
     onMapTapped: (point, latLng) {}, // 지도를 클릭했을 때 발생
     onSymbolTapped: (symbol) {}, // 심볼을 클릭했을 때 발생
-    onMapReady: (controller) async { // 지도가 준비되었을 때 발생
+    onMapReady: (controller) async {
       _mapController = controller;
       mapControllerCompleter.complete(controller);
       log("onMapReady", name: "onMapReady");
 
+      // 마커 생성 및 추가
+      final marker = NMarker(
+        id: 'test',
+        position: const NLatLng(37.506932467450326, 127.05578661133796),
+      );
+      final marker1 = NMarker(
+        id: 'test1',
+        position: const NLatLng(37.606932467450326, 127.05578661133796),
+      );
+
+      // 마커를 지도에 추가
+      _mapController.addOverlayAll({marker, marker1});
+
+      // 위치 추적 모드 설정
+      _mapController.setLocationTrackingMode(NLocationTrackingMode.follow);
+
+      // 마커에 인포 윈도우 추가
+      final infoWindow = NInfoWindow.onMarker(
+        id: marker.info.id,
+        text: "약국 위치",
+      );
+      marker.openInfoWindow(infoWindow);
     },
   );
 }
