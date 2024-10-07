@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-import 'Find_Password_section.dart'; // Import the Find Password section
-import 'login_section.dart'; // Import the Login section
+import 'Find_Password_section.dart'; // 비밀번호 찾기 섹션 import
+import 'login_section.dart'; // 로그인 섹션 import
 
 class FindIDSection extends StatefulWidget {
   @override
@@ -12,7 +12,7 @@ class FindIDSection extends StatefulWidget {
 
 class _FindIDSectionState extends State<FindIDSection> {
   final TextEditingController _emailController = TextEditingController();
-  String _resultMessage = ''; // This will hold the username or error message
+  String _resultMessage = ''; // 아이디 또는 오류 메시지를 저장
 
   Future<void> _findUserID() async {
     final String email = _emailController.text;
@@ -24,7 +24,7 @@ class _FindIDSectionState extends State<FindIDSection> {
       return;
     }
 
-    final url = 'https://80d4-113-198-180-184.ngrok-free.app/find_user_id/'; // Replace with your Django endpoint
+    final url = 'https://80d4-113-198-180-184.ngrok-free.app/find_user_id/'; // Django 엔드포인트
     final response = await http.post(
       Uri.parse(url),
       headers: {'Content-Type': 'application/json'},
@@ -34,7 +34,7 @@ class _FindIDSectionState extends State<FindIDSection> {
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       setState(() {
-        _resultMessage = '아이디: ${data['id']}'; // Display the retrieved username
+        _resultMessage = '아이디: ${data['id']}'; // 가져온 아이디 표시
       });
     } else {
       final data = jsonDecode(response.body);
@@ -48,7 +48,18 @@ class _FindIDSectionState extends State<FindIDSection> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-
+      appBar: AppBar(
+        title: Text('아이디 찾기'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => LoginSection()),
+            ); // 뒤로가기 버튼 눌렀을 때 LoginSection으로 이동
+          },
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -64,19 +75,18 @@ class _FindIDSectionState extends State<FindIDSection> {
             SizedBox(height: 20),
             Center(
               child: GestureDetector(
-                onTap: _findUserID, // Attach the password finding logic
+                onTap: _findUserID,
                 child: Image.asset(
-                  'assets/img/find_id.png', // Use the correct path to your image
-                  // Adjust the width as needed
-                  fit: BoxFit.contain, // Ensure the image scales correctly
+                  'assets/img/find_id.png', // 이미지 경로 수정 필요
+                  fit: BoxFit.contain,
                 ),
               ),
             ),
             SizedBox(height: 20),
             Text(
-              _resultMessage, // Display the result message or username
+              _resultMessage,
               style: TextStyle(
-                color: _resultMessage.contains('사용자 이름:') ? Colors.green : Colors.red,
+                color: _resultMessage.contains('아이디:') ? Colors.green : Colors.red,
                 fontSize: 16,
               ),
               textAlign: TextAlign.center,
@@ -87,7 +97,6 @@ class _FindIDSectionState extends State<FindIDSection> {
               children: <Widget>[
                 TextButton(
                   onPressed: () {
-                    // Navigate to Find Password section
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => FindPasswordSection()),
@@ -101,7 +110,6 @@ class _FindIDSectionState extends State<FindIDSection> {
                 Text('|', style: TextStyle(color: Colors.black)),
                 TextButton(
                   onPressed: () {
-                    // Navigate to Login section
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => LoginSection()),
