@@ -51,7 +51,15 @@ class _RecommendationScreenState extends State<RecommendationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('추천 목록')),
+      appBar: AppBar(
+        title: Text('추천 목록'),
+        backgroundColor: Colors.white,
+        elevation: 4,
+        centerTitle: true,
+        foregroundColor: Colors.black,
+        shadowColor: Colors.grey.withOpacity(0.5),
+      ),
+      backgroundColor: Colors.white,
       body: isLoading
           ? Center(child: CircularProgressIndicator()) // 로딩 인디케이터 표시
           : ListView.builder(
