@@ -136,76 +136,76 @@ def find_pill_info_from_csv(predicted_category_id, csv_path):
                 return pill_info
     return None
 
-@api_view(['POST'])
-@csrf_exempt
-def predict(request):
-    if 'image' not in request.FILES:
-        return JsonResponse({'error': 'No image file provided'}, status=400)
+# @api_view(['POST'])
+# @csrf_exempt
+# def predict(request):
+#     if 'image' not in request.FILES:
+#         return JsonResponse({'error': 'No image file provided'}, status=400)
 
-    image_file = request.FILES['image']
-    image_path = '/tmp/temp_image.jpg'
+#     image_file = request.FILES['image']
+#     image_path = '/tmp/temp_image.jpg'
     
-    try:
-        with open(image_path, 'wb') as f:
-            for chunk in image_file.chunks():
-                f.write(chunk)
+#     try:
+#         with open(image_path, 'wb') as f:
+#             for chunk in image_file.chunks():
+#                 f.write(chunk)
         
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+#         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-        num_classes = 54  
-        model = get_model(num_classes=num_classes)
+#         num_classes = 54  
+#         model = get_model(num_classes=num_classes)
         
-        model.load_state_dict(torch.load('/Users/seon/Desktop/model/pill_detection_4.pth', map_location=device))
-        model.to(device)  
+#         model.load_state_dict(torch.load('/Users/seon/Desktop/model/pill_detection_4.pth', map_location=device))
+#         model.to(device)  
         
-        image = Image.open(image_path).convert("RGB")
-        transform = T.Compose([T.ToTensor()])
-        image_tensor = transform(image).unsqueeze(0).to(device)  # Ensure the tensor is on the same device
-    except Exception as e:
-        return JsonResponse({'error': f'Error loading model or processing image: {str(e)}'}, status=500)
+#         image = Image.open(image_path).convert("RGB")
+#         transform = T.Compose([T.ToTensor()])
+#         image_tensor = transform(image).unsqueeze(0).to(device)  # Ensure the tensor is on the same device
+#     except Exception as e:
+#         return JsonResponse({'error': f'Error loading model or processing image: {str(e)}'}, status=500)
 
-    try:
-        model.eval()
-        with torch.no_grad():
-            outputs = model(image_tensor)
+#     try:
+#         model.eval()
+#         with torch.no_grad():
+#             outputs = model(image_tensor)
         
-        threshold = 0.5
-        pred_scores = outputs[0]['scores'].cpu().numpy()
-        pred_labels = outputs[0]['labels'].cpu().numpy()
-        pred_labels = pred_labels[pred_scores >= threshold]
-        pred_scores = pred_scores[pred_scores >= threshold]
+       
+#         pred_scores = outputs[0]['scores'].cpu().numpy()
+#         pred_labels = outputs[0]['labels'].cpu().numpy()
+#         pred_labels = pred_labels[pred_scores >= threshold]
+#         pred_scores = pred_scores[pred_scores >= threshold]
 
-        if len(pred_labels) == 0:
-            return JsonResponse({'message': 'No predictions made'}, status=200)
+#         if len(pred_labels) == 0:
+#             return JsonResponse({'message': 'No predictions made'}, status=200)
 
-        max_score_idx = pred_scores.argmax()
-        predicted_category_id = pred_labels[max_score_idx]
+#         max_score_idx = pred_scores.argmax()
+#         predicted_category_id = pred_labels[max_score_idx]
 
-        csv_path = '/Users/seon/Desktop/model/info.csv'
+#         csv_path = '/Users/seon/Desktop/model/info.csv
 
-        pill_info_csv = find_pill_info_from_csv(predicted_category_id, csv_path)
 
-        response_data = {
-            'prediction_score': float(pred_scores[max_score_idx]),
-            'product_name': pill_info_csv.get('제품명', 'Unknown'),
-            'manufacturer': pill_info_csv.get('제조/수입사', 'Unknown'),
-            'pill_code': pill_info_csv.get('품목기준코드', 'Unknown'),
-            'efficacy': pill_info_csv.get('이 약의 효능은 무엇입니까?', 'No information'),
-            'usage': pill_info_csv.get('이 약은 어떻게 사용합니까?', 'No information'),
-            'precautions_before_use': pill_info_csv.get('이 약을 사용하기 전에 반드시 알아야 할 내용은 무엇입니까?', 'No information'),
-            'usage_precautions': pill_info_csv.get('이 약의 사용상 주의사항은 무엇입니까?', 'No information'),
-            'drug_food_interactions': pill_info_csv.get('이 약을 사용하는 동안 주의해야 할 약 또는 음식은 무엇입니까?', 'No information'),
-            'side_effects': pill_info_csv.get('이 약은 어떤 이상반응이 나타날 수 있습니까?', 'No information'),
-            'storage_instructions': pill_info_csv.get('이 약은 어떻게 보관해야 합니까?', 'No information'),
-             'predicted_category_id': int(predicted_category_id),  # Ensure this is included
-        }
-    except Exception as e:
-        return JsonResponse({'error': f'Error during prediction: {str(e)}'}, status=500)
-    finally:
-        if os.path.exists(image_path):
-            os.remove(image_path)
 
-    return JsonResponse(response_data, status=200)
+    #     response_data = {
+    #         'prediction_score': float(pred_scores[max_score_idx]),
+    #         'product_name': pill_info_csv.get('제품명', 'Unknown'),
+    #         'manufacturer': pill_info_csv.get('제조/수입사', 'Unknown'),
+    #         'pill_code': pill_info_csv.get('품목기준코드', 'Unknown'),
+    #         'efficacy': pill_info_csv.get('이 약의 효능은 무엇입니까?', 'No information'),
+    #         'usage': pill_info_csv.get('이 약은 어떻게 사용합니까?', 'No information'),
+    #         'precautions_before_use': pill_info_csv.get('이 약을 사용하기 전에 반드시 알아야 할 내용은 무엇입니까?', 'No information'),
+    #         'usage_precautions': pill_info_csv.get('이 약의 사용상 주의사항은 무엇입니까?', 'No information'),
+    #         'drug_food_interactions': pill_info_csv.get('이 약을 사용하는 동안 주의해야 할 약 또는 음식은 무엇입니까?', 'No information'),
+    #         'side_effects': pill_info_csv.get('이 약은 어떤 이상반응이 나타날 수 있습니까?', 'No information'),
+    #         'storage_instructions': pill_info_csv.get('이 약은 어떻게 보관해야 합니까?', 'No information'),
+    #          'predicted_category_id': int(predicted_category_id),  # Ensure this is included
+    #     }
+    # except Exception as e:
+    #     return JsonResponse({'error': f'Error during prediction: {str(e)}'}, status=500)
+    # finally:
+    #     if os.path.exists(image_path):
+    #         os.remove(image_path)
+
+    # return JsonResponse(response_data, status=200)
 
 
 from django.views.decorators.csrf import csrf_exempt
@@ -861,6 +861,92 @@ def find_pill_info(predicted_category_id, root_dir):
         return None
 
 
+import os
+import torch
+import json
+import logging
+from PIL import Image
+from django.http import JsonResponse
+import torchvision.transforms as T
+
+
+import os
+import torch
+import json
+import logging
+from PIL import Image
+from django.http import JsonResponse
+import torchvision.transforms as T
+
+import numpy as np
+from django.http import JsonResponse
+import numpy as np
+from django.http import JsonResponse
+from rest_framework.response import Response
+from django.http import JsonResponse
+import torch
+from PIL import Image
+import torchvision.transforms as T
+import numpy as np
+import os
+import logging
+
+logger = logging.getLogger(__name__)
+
+import logging
+import numpy as np
+
+logger = logging.getLogger(__name__)
+def prompt_user_selection(image_path, top_indices, pred_labels, pred_scores, csv_path, root_dir, pill_info_csv=None):
+    print(f"(이미지의 예측 확률이 0.1 이상, 0.6 미만입니다.)")
+
+    pill_options = []
+
+    # 알약 정보 생성
+    for idx in range(len(pred_labels)):
+        predicted_category_id = int(pred_labels[idx])
+        pill_info_csv = find_pill_info_from_csv2(predicted_category_id, csv_path)
+
+        # pill_info = {
+        #     'predicted_category_id': predicted_category_id,
+        #     '제품명': pill_info_csv.get('제품명', f'Pill {predicted_category_id}'),  # CSV에서 가져온 제품명
+        #     'product_name': pill_info_csv.get('제품명', 'Unknown'),  # 제품명
+        #     'pill_code': predicted_category_id,
+            
+
+        #     'confidence': float(pred_scores[idx]) if isinstance(pred_scores[idx], (float, np.floating)) else pred_scores[idx],
+        # }
+        pill_info = {
+                    'predicted_category_id': int(predicted_category_id),  # 예측된 카테고리 ID
+                    'pillName': pill_info_csv.get('제품명', f'Pill {predicted_category_id}'),  # CSV에서 가져온 제품명
+                    'pill_code': pill_info_csv.get('품목기준코드', predicted_category_id),  # 알약 코드 (없을 경우 predicted_category_id)
+                    'product_name': pill_info_csv.get('제품명', 'Unknown') if pill_info_csv else 'Unknown',
+
+                    # confidence 값이 float 또는 numpy floating 타입이면 float으로 변환
+                    'confidence': float(pred_scores[idx]) if isinstance(pred_scores[idx], (float, np.floating)) else pred_scores[idx],
+                    
+                    # 추가 정보
+                    'manufacturer': pill_info_csv.get('제조/수입사', 'Unknown') if pill_info_csv else 'Unknown',  # 제조사 정보
+                    'efficacy': pill_info_csv.get('이 약의 효능은 무엇입니까?', 'No information') if pill_info_csv else 'No information',  # 효능
+                    'usage': pill_info_csv.get('이 약은 어떻게 사용합니까?', 'No information') if pill_info_csv else 'No information',  # 사용법
+                    'precautions_before_use': pill_info_csv.get('이 약을 사용하기 전에 반드시 알아야 할 내용은 무엇입니까?', 'No information') if pill_info_csv else 'No information',  # 사용 전 주의사항
+                    'usage_precautions': pill_info_csv.get('이 약의 사용상 주의사항은 무엇입니까?', 'No information') if pill_info_csv else 'No information',  # 사용상 주의사항
+                    'drug_food_interactions': pill_info_csv.get('이 약을 사용하는 동안 주의해야 할 약 또는 음식은 무엇입니까?', 'No information') if pill_info_csv else 'No information',  # 약물/음식 상호작용
+                    'side_effects': pill_info_csv.get('이 약은 어떤 이상반응이 나타날 수 있습니까?', 'No information') if pill_info_csv else 'No information',  # 부작용
+                    'storage_instructions': pill_info_csv.get('이 약은 어떻게 보관해야 합니까?', 'No information') if pill_info_csv else 'No information',  # 보관 방법
+                }
+
+        pill_options.append(pill_info)
+
+    num_options = min(len(pill_options), 3)  # 최대 3개 선택
+    pill_options = pill_options[:num_options]
+
+    # JSON으로 Flutter에 전달할 데이터
+    response_data = {
+        'pill_options': pill_options,
+    }
+
+    return response_data
 
 @api_view(['POST'])
 @csrf_exempt
@@ -871,7 +957,7 @@ def predict2(request):
 
     image_file = request.FILES['image']
     image_path = '/tmp/temp_image.jpg'
-    
+
     try:
         with open(image_path, 'wb') as f:
             for chunk in image_file.chunks():
@@ -899,45 +985,50 @@ def predict2(request):
         with torch.no_grad():
             outputs = model(image_tensor)
 
-        threshold = 0.5
         pred_scores = outputs[0]['scores'].cpu().numpy()
         pred_labels = outputs[0]['labels'].cpu().numpy()
-        pred_labels = pred_labels[pred_scores >= threshold]
-        pred_scores = pred_scores[pred_scores >= threshold]
+
+        # 예측률 적용
+        threshold_low = 0.1
+        threshold_high = 0.6
+
+        # Apply thresholds
+        pred_labels = pred_labels[pred_scores >= threshold_low]
+        pred_scores = pred_scores[pred_scores >= threshold_low]
 
         if len(pred_labels) == 0:
             logger.info('No predictions made')
             return JsonResponse({'message': 'No predictions made'}, status=200)
 
+        # 최상위 예측값 인덱스 찾기
         max_score_idx = pred_scores.argmax()
         predicted_category_id = pred_labels[max_score_idx]
+        csv_path = '/Users/seon/Desktop/model/info.csv'
 
-        print(f'Predicted category ID: {predicted_category_id}')  # 추가된 부분
+        # pill_info_csv 초기화
+        pill_info_csv = {}
 
+        # 예측률에 따른 로직
+        if pred_scores[max_score_idx] < threshold_low:
+            return JsonResponse({'message': 'Prediction failed'}, status=200)
+        elif threshold_low <= pred_scores[max_score_idx] < threshold_high:
+            response_data = prompt_user_selection(image_path, None, pred_labels, pred_scores, csv_path, None)
+            # 여기에서 response_data를 사용하여 Flutter 앱으로 전달해야 합니다.
+            response_data['predicted_category_id'] = int(predicted_category_id)
+            response_data['prediction_score'] = float(pred_scores[max_score_idx])
+            return JsonResponse(response_data, status=200)
 
-        logger.info(f'Predicted category ID: {predicted_category_id}')
+            predicted_category_id = int(selected_category_id)  # 선택된 카테고리 ID로 업데이트
+            pill_info_csv = find_pill_info_from_csv(predicted_category_id, csv_path)
 
-        csv_path = '/Users/seon/Desktop/Ict_FIN/info.csv'
-        pill_info_csv = find_pill_info_from_csv2(predicted_category_id, csv_path)
-
-        # Set the image path based on the predicted_category_id
-        image_filename = f"{predicted_category_id}.png"
-        image_full_path = f"/Users/seon/Desktop/Ict_FIN/ict_chungbuk/assets/data/{image_filename}"
-        image_url = f"https://80d4-113-198-180-184.ngrok-free.app/images/{image_filename}"
-
-        # Check if the image exists
-        if not os.path.exists(image_full_path):
-            logger.warning(f"Image not found: {image_full_path}")
-            image_full_path = None  # Set to None if the image does not exist
         else:
-            print(f"Image path: {image_full_path}")
+            # 예측률이 0.6 이상인 경우
+            pill_info_csv = find_pill_info_from_csv(predicted_category_id, csv_path)
 
-   
-
+        # Response 준비
         response_data = {
-            'predicted_category_id': int(predicted_category_id),  # Ensure this is correct
+            'predicted_category_id': int(predicted_category_id),
             'prediction_score': float(pred_scores[max_score_idx]),
-             # Add the predicted_category_id
             'product_name': pill_info_csv.get('제품명', 'Unknown') if pill_info_csv else 'Unknown',
             'manufacturer': pill_info_csv.get('제조/수입사', 'Unknown') if pill_info_csv else 'Unknown',
             'pill_code': pill_info_csv.get('품목기준코드', 'Unknown') if pill_info_csv else 'Unknown',
@@ -948,8 +1039,8 @@ def predict2(request):
             'drug_food_interactions': pill_info_csv.get('이 약을 사용하는 동안 주의해야 할 약 또는 음식은 무엇입니까?', 'No information') if pill_info_csv else 'No information',
             'side_effects': pill_info_csv.get('이 약은 어떤 이상반응이 나타날 수 있습니까?', 'No information') if pill_info_csv else 'No information',
             'storage_instructions': pill_info_csv.get('이 약은 어떻게 보관해야 합니까?', 'No information') if pill_info_csv else 'No information',
-            'image_path': image_full_path  # Include the path to the image file
         }
+
     except Exception as e:
         logger.error(f'Error during prediction: {str(e)}')
         return JsonResponse({'error': f'Error during prediction: {str(e)}'}, status=500)
