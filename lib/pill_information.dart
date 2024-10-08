@@ -836,8 +836,13 @@ class _SearchHistoryScreenState extends State<SearchHistoryScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('검색 기록'),
-        backgroundColor: Colors.white, // Light purple color for AppBar
+        backgroundColor: Colors.white,
+        elevation: 4,
+        centerTitle: true,
+        foregroundColor: Colors.black,
+        shadowColor: Colors.grey.withOpacity(0.5),
       ),
+      backgroundColor: Colors.white,
       body: FutureBuilder<List<PillInfo>>(
         future: _searchHistory,
         builder: (context, snapshot) {
