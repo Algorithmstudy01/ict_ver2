@@ -9,6 +9,7 @@ import 'my_page.dart';
 import 'NewAlarm/NewAlarm.dart';
 import 'pill_information.dart';
 import 'package:chungbuk_ict/recommended.dart';
+import 'package:chungbuk_ict/PharmacyScreen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -241,9 +242,12 @@ class _MyHomePageState extends State<MyHomePage> {
                         children: [
                           Expanded(
                             child: IconButton(
-                              onPressed: () {
-                                // NearbyPharmacyScreen 기능 제거됨
-                              },
+                              onPressed: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const NearbyPharmacyPage(), // NaverMapApp 화면으로 이동
+                                ),
+                              ),
                               icon: Image.asset('assets/img/pharmacy.png'),
                               iconSize: size.width * 0.15,
                               padding: EdgeInsets.all(10),
