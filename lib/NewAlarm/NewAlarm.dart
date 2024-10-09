@@ -73,7 +73,11 @@ class _ExampleAlarmHomeScreenState extends State<ExampleAlarmHomeScreen> with Au
     super.build(context);
     return Scaffold(
       backgroundColor: Colors.white,
+<<<<<<< HEAD
    
+=======
+
+>>>>>>> a06fa944da92b934f8e934b38998c4ec9fe8505d
       body: SafeArea(
         child: alarms.isNotEmpty
             ? ListView.separated(

@@ -18,11 +18,17 @@ class LoginSection extends StatefulWidget {
 class _LoginSectionState extends State<LoginSection> {
   final TextEditingController _idController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+
   bool _showPassword = false; // 비밀번호 보이기 여부
+
 
 void _login() async {
     final String id = _idController.text;
     final String password = _passwordController.text;
+    Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+      // 성공 시 페이지 이동
+      return TabbarFrame(userId: id);
+    }));
 
  if (id.isNotEmpty && password.isNotEmpty) {
       try {
