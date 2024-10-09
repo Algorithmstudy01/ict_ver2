@@ -73,15 +73,7 @@ class _ExampleAlarmHomeScreenState extends State<ExampleAlarmHomeScreen> with Au
     super.build(context);
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text('알람 등록'),
-        centerTitle: true,
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-        elevation: 4, // Adjust elevation to add shadow
-        shadowColor: Colors.grey.withOpacity(0.5), // Set shadow color
-        automaticallyImplyLeading: false,
-      ),
+   
       body: SafeArea(
         child: alarms.isNotEmpty
             ? ListView.separated(
