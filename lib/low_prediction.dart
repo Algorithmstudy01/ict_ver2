@@ -91,11 +91,8 @@ class _LowPredictionState extends State<LowPrediction> {
                             Padding(
                               padding: const EdgeInsets.all(16.0),
                               child: Image.asset(
-<<<<<<< HEAD
-                                'assets/data/${option['predicted_category_id'].toString()}.png',
-=======
-                                'assets/data/${option['predicted_category_id'].toString()}.png', width: size.width * 0.2,
->>>>>>> a06fa944da92b934f8e934b38998c4ec9fe8505d
+                                'assets/data/${option['predicted_category_id'].toString()}.png', 
+                                width: size.width * 0.2,
                                 height: size.width * 0.2,
                                 fit: BoxFit.contain,
                                 errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
