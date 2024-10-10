@@ -234,14 +234,18 @@ Future<void> _uploadImage(File image) async {
       double predictionScore = decodedData['prediction_score']?.toDouble() ?? 0.0;
 
       if (predictedCategoryId == 0) {
-        _showErrorDialog('예상 범주 ID를 찾을 수 없습니다.');
+        _showErrorDialog('사진을 다시 촬영해주세요');
+        setState(() {
+          _isLoading = false;
+        });
         return;
       }
 
-      setState(() {
-        _pillInfo = decodedData;
-        _isLoading = false;
-      });
+    setState(() {
+  _pillInfo = decodedData;
+  print("Pill Info: $_pillInfo"); // Debugging line
+  _isLoading = false;
+});
 
       // 예측 확률에 따른 내비게이션
       if (predictionScore >= 0.6) {
@@ -254,19 +258,19 @@ Future<void> _uploadImage(File image) async {
           context,
           MaterialPageRoute(
             builder: (context) => InformationScreen(
-              pillCode: _pillInfo['pill_code'] ?? 'Unknown',
-              pillName: _pillInfo['product_name'] ?? 'Unknown',
+              pillCode: _pillInfo?['pill_code'] ?? 'Unknown',
+              pillName: _pillInfo?['product_name'] ?? 'Unknown',
               confidence: predictionScore.toString(),
               userId: widget.userId,
-              usage: _pillInfo['usage'] ?? 'No information',
-              precautionsBeforeUse: _pillInfo['precautions_before_use'] ?? 'No information',
-              usagePrecautions: _pillInfo['usage_precautions'] ?? 'No information',
-              drugFoodInteractions: _pillInfo['drug_food_interactions'] ?? 'No information',
-              sideEffects: _pillInfo['side_effects'] ?? 'No information',
-              storageInstructions: _pillInfo['storage_instructions'] ?? 'No information',
-              efficacy: _pillInfo['efficacy'] ?? 'No information',
-              manufacturer: _pillInfo['manufacturer'] ?? 'No information',
-              imageUrl: _pillInfo['image_url'] ?? '',
+              usage: _pillInfo?['usage'] ?? 'No information',
+              precautionsBeforeUse: _pillInfo?['precautions_before_use'] ?? 'No information',
+              usagePrecautions: _pillInfo?['usage_precautions'] ?? 'No information',
+              drugFoodInteractions: _pillInfo?['drug_food_interactions'] ?? 'No information',
+              sideEffects: _pillInfo?['side_effects'] ?? 'No information',
+              storageInstructions: _pillInfo?['storage_instructions'] ?? 'No information',
+              efficacy: _pillInfo?['efficacy'] ?? 'No information',
+              manufacturer: _pillInfo?['manufacturer'] ?? 'No information',
+              imageUrl: _pillInfo?['image_url'] ?? '',
               extractedText: '',
               predictedCategoryId: predictedCategoryId.toString(),
             ),
@@ -285,8 +289,8 @@ Future<void> _uploadImage(File image) async {
               context, 
               MaterialPageRoute(
                 builder: (context) => InformationScreen(
-                  pillCode: option['pill_code'], 
-                  pillName: option['product_name'],
+                  pillCode: option['pill_code'] ?? 'Unknown', 
+                  pillName: option['product_name'] ?? 'Unknown',
                   confidence: (option['confidence'] is String 
                       ? double.parse(option['confidence']) 
                       : option['confidence']).toStringAsFixed(2),
@@ -336,6 +340,7 @@ Future<void> _uploadImage(File image) async {
     });
   }
 }
+
 
 
 Future<void> _saveSearchHistory(PillInfo pillInfo) async {
@@ -425,11 +430,51 @@ Future<void> _saveSearchHistory(PillInfo pillInfo) async {
                 Column(
                   children: [
 
-                    Padding(
-                      padding: EdgeInsets.only(top: size.height*0.1),
+                    // Padding(
+                    //   padding: EdgeInsets.only(top: size.height*0.1),
+                    //   child: SizedBox(
+                    //     width: size.height * 0.4,
+                    //     height: size.height * 0.4,
+                    //     child: _isLoading
+                    //         ? Column(
+                    //             mainAxisAlignment: MainAxisAlignment.center,
+                    //             children: [
+                    //               CircularProgressIndicator(),
+                    //               SizedBox(height: 10),
+                    //               Text(
+                    //                 '알약 검색 중입니다...',
+                    //                 style: TextStyle(
+                    //                   fontSize: size.width * 0.038,
+                    //                   color: Colors.black,
+                    //                 ),
+                    //               ),
+                    //             ],
+                    //           )
+                    //         : 
+                    //     //(_image != null
+                    //     //         ? Image.file(
+                    //     //             imageFile!,
+                    //     //             fit: BoxFit.contain,
+                    //     //           )
+                    //     //         : (controller.value.isInitialized
+                    //     //             ? AspectRatio(aspectRatio: 1,
+                    //     // child: ClipRect(
+                    //     //   child: Transform.scale(
+                    //     //     scale: controller.value.aspectRatio,
+                    //     //       child: Center(
+                    //     //         child: CameraPreview(controller),
+                    //     //       ),
+                    //     //   ),
+                    //     // ),)
+                    //     //             : Container(color: Colors.grey))
+                    //     //             ),
+                    // //   ),
+                    // // ),
+ Padding(
+                      padding: EdgeInsets.all(20.0),
                       child: SizedBox(
-                        width: size.height * 0.4,
-                        height: size.height * 0.4,
+                        width: size.width * 0.7,
+                        height: size.width * 0.7,
                         child: _isLoading
                             ? Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -439,7 +484,7 @@ Future<void> _saveSearchHistory(PillInfo pillInfo) async {
                                   Text(
                                     '알약 검색 중입니다...',
                                     style: TextStyle(
-                                      fontSize: size.width * 0.038,
+                                      fontSize: 16,
                                       color: Colors.black,
                                     ),
                                   ),
@@ -447,23 +492,15 @@ Future<void> _saveSearchHistory(PillInfo pillInfo) async {
                               )
                             : (_image != null
                                 ? Image.file(
-                                    imageFile!,
-                                    fit: BoxFit.contain,
+                                    File(_image!.path),
+                                    fit: BoxFit.cover,
                                   )
                                 : (controller.value.isInitialized
-                                    ? AspectRatio(aspectRatio: 1,
-                        child: ClipRect(
-                          child: Transform.scale(
-                            scale: controller.value.aspectRatio,
-                              child: Center(
-                                child: CameraPreview(controller),
-                              ),
-                          ),
-                        ),)
+                                    ? CameraPreview(controller)
                                     : Container(color: Colors.grey))),
                       ),
                     ),
-                    
+
                     SizedBox(
                       width: size.width * 0.9,
                       height: size.height * 0.09,
@@ -601,9 +638,11 @@ Future<void> _uploadImage(File image) async {
       }
 
       setState(() {
-        _pillInfo = decodedData;
-        _isLoading = false;
-      });
+  _pillInfo = decodedData;
+  print("Pill Info: $_pillInfo"); // Debugging line
+  _isLoading = false;
+});
+
 
       final pillInfo = PillInfo.fromJson(_pillInfo);
       await _saveSearchHistory(pillInfo);
