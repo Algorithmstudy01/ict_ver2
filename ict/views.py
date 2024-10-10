@@ -968,10 +968,9 @@ def predict2(request):
         model = get_model2(num_classes=num_classes)
 
         logger.info('모델 가중치 로딩 중')
-        model.load_state_dict(torch.load('../ict_chungbuk/pill_detection_4.pth', map_location=device))
+        model.load_state_dict(torch.load('/Users/seon/Desktop/Ict_FIN/pill_detection_4.pth', map_location=device))
         model.to(device)
         logger.info('모델 가중치가 성공적으로 로드되었습니다.')
-
         # 이미지 변환
         image = Image.open(image_path).convert("RGB")
         transform = T.Compose([T.ToTensor()])
