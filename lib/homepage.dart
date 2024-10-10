@@ -10,6 +10,8 @@ import 'NewAlarm/NewAlarm.dart';
 import 'pill_information.dart';
 import 'package:chungbuk_ict/recommended.dart';
 import 'package:chungbuk_ict/PharmacyScreen.dart';
+import 'package:chungbuk_ict/text_OCR.dart';
+
 
 void main() {
   runApp(const MyApp());
@@ -245,7 +247,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               onPressed: () => Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => const NearbyPharmacyPage(), // NaverMapApp 화면으로 이동
+                                  builder: (context) => const FindText(), // NaverMapApp 화면으로 이동
                                 ),
                               ),
                               icon: Image.asset('assets/img/pharmacy.png'),

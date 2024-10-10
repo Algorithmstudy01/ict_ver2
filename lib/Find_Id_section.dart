@@ -50,6 +50,12 @@ class _FindIDSectionState extends State<FindIDSection> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text('아이디 찾기'),
+        backgroundColor: Colors.white,
+        elevation: 4, // Add elevation for shadow
+        centerTitle: true,
+        foregroundColor: Colors.black,
+        shadowColor: Colors.grey.withOpacity(0.5), // Set shadow color
+      
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
