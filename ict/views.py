@@ -124,7 +124,6 @@ def find_pill_info_from_csv(predicted_category_id, csv_path):
                     "제품명": row["제품명"],
                     "drug_N": row["drug_N"],
                     "품목기준코드": row["품목기준코드"],
-                    "제조/수입사": row["제조/수입사"],
                     "이 약의 효능은 무엇입니까?": row["이 약의 효능은 무엇입니까?"],
                     "이 약은 어떻게 사용합니까?": row["이 약은 어떻게 사용합니까?"],
                     "이 약을 사용하기 전에 반드시 알아야 할 내용은 무엇입니까?": row["이 약을 사용하기 전에 반드시 알아야 할 내용은 무엇입니까?"],
@@ -833,7 +832,6 @@ def find_pill_info_from_csv2(predicted_category_id, csv_path):
                     "제품명": row["제품명"],
                     "drug_N": row["drug_N"],
                     "품목기준코드": row["품목기준코드"],
-                    "제조/수입사": row["제조/수입사"],
                     "이 약의 효능은 무엇입니까?": row["이 약의 효능은 무엇입니까?"],
                     "이 약은 어떻게 사용합니까?": row["이 약은 어떻게 사용합니까?"],
                     "이 약을 사용하기 전에 반드시 알아야 할 내용은 무엇입니까?": row["이 약을 사용하기 전에 반드시 알아야 할 내용은 무엇입니까?"],
@@ -921,7 +919,6 @@ def prompt_user_selection(image_path, top_indices, pred_labels, pred_scores, csv
             'confidence': float(pred_scores[idx]) if isinstance(pred_scores[idx], (float, np.floating)) else pred_scores[idx],
 
             # 제조사 및 부가 정보들, null일 경우 기본값 제공
-            'manufacturer': pill_info_csv.get('제조/수입사', 'Unknown') if pill_info_csv else 'Unknown',  # 제조사 정보
             'efficacy': pill_info_csv.get('이 약의 효능은 무엇입니까?', 'No information') if pill_info_csv else 'No information',  # 효능
             'usage': pill_info_csv.get('이 약은 어떻게 사용합니까?', 'No information') if pill_info_csv else 'No information',  # 사용법
             'precautions_before_use': pill_info_csv.get('이 약을 사용하기 전에 반드시 알아야 할 내용은 무엇입니까?', 'No information') if pill_info_csv else 'No information',  # 사용 전 주의사항
@@ -1004,7 +1001,7 @@ def predict2(request):
         # 가장 높은 확률의 예측값 인덱스
         max_score_idx = pred_scores.argmax()
         predicted_category_id = pred_labels[max_score_idx]
-        csv_path = '../ict_chungbuk/info.csv'
+        csv_path = '../ict_chungbuk/info_1.csv'
 
         # pill_info_csv 초기화
         pill_info_csv = {}
@@ -1025,7 +1022,6 @@ def predict2(request):
             'predicted_category_id': int(predicted_category_id),
             'prediction_score': float(pred_scores[max_score_idx]),
             'product_name': pill_info_csv.get('제품명', 'Unknown') if pill_info_csv else 'Unknown',
-            'manufacturer': pill_info_csv.get('제조/수입사', 'Unknown') if pill_info_csv else 'Unknown',
             'pill_code': pill_info_csv.get('품목기준코드', 'Unknown') if pill_info_csv else 'Unknown',
             'efficacy': pill_info_csv.get('이 약의 효능은 무엇입니까?', 'No information') if pill_info_csv else 'No information',
             'usage': pill_info_csv.get('이 약은 어떻게 사용합니까?', 'No information') if pill_info_csv else 'No information',
@@ -1190,3 +1186,50 @@ class RecommendationListView(View):
             return JsonResponse({'recommendations': recommendations_data}, status=200)
         except Exception as e:
             return JsonResponse({'message': str(e)}, status=500)
+
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+import requests
+import json
+import uuid
+import time
+
+secret_key = "VUVZTm1UYk5ocEJSaHZHRVpuc0lCc0ZUc29vTXpxdmE="
+api_url = "https://fqml315j1i.apigw.ntruss.com/custom/v1/34920/3850f8f6acb98a9f5c4375a18ec018ef3062e8636574ca5963ef4a8e618805df/general"
+
+@api_view(['POST'])
+def ocr_view(request):
+    image_file = request.FILES['image']
+
+    # Request 생성
+    request_json = {
+        'images': [
+            {
+                'format': 'jpg',
+                'name': 'demo'
+            }
+        ],
+        'requestId': str(uuid.uuid4()),
+        'version': 'V2',
+        'timestamp': int(round(time.time() * 1000))
+    }
+
+    payload = {'message': json.dumps(request_json).encode('UTF-8')}
+    files = [('file', image_file)]
+    headers = {'X-OCR-SECRET': secret_key}
+
+    # OCR 요청
+    response = requests.request("POST", api_url, headers=headers, data=payload, files=files)
+
+    if response.status_code == 200:
+        ocr_results = json.loads(response.text)
+        all_texts = []
+        for image_result in ocr_results['images']:
+            for field in image_result['fields']:
+                text = field['inferText']
+                all_texts.append(text)
+        
+        full_text = ' '.join(all_texts)
+        return Response({"text": full_text})
+    else:
+        return Response({"error": f"OCR 실패: 상태 코드 {response.status_code}"}, status=response.status_code)

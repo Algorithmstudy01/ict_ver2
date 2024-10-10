@@ -471,35 +471,44 @@ Future<void> _saveSearchHistory(PillInfo pillInfo) async {
                     // //   ),
                     // // ),
  Padding(
-                      padding: EdgeInsets.all(20.0),
-                      child: SizedBox(
-                        width: size.width * 0.7,
-                        height: size.width * 0.7,
-                        child: _isLoading
-                            ? Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  CircularProgressIndicator(),
-                                  SizedBox(height: 10),
-                                  Text(
-                                    '알약 검색 중입니다...',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                ],
-                              )
-                            : (_image != null
-                                ? Image.file(
-                                    File(_image!.path),
-                                    fit: BoxFit.cover,
-                                  )
-                                : (controller.value.isInitialized
-                                    ? CameraPreview(controller)
-                                    : Container(color: Colors.grey))),
-                      ),
-                    ),
+  padding: EdgeInsets.all(20.0),
+  child: SizedBox(
+    width: size.width * 0.7,
+    height: size.width * 0.7,
+    child: _isLoading
+        ? Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(height: 10),
+              Text(
+                '알약 검색 중입니다...',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.black,
+                ),
+              ),
+              SizedBox(height: 5), // 추가적인 간격
+              Text(
+                '실제 복약 지침은 전문가의 조언을 우선시하세요',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.black54, // 색상 조정
+                ),
+                textAlign: TextAlign.center, // 텍스트 정렬
+              ),
+            ],
+          )
+        : (_image != null
+            ? Image.file(
+                File(_image!.path),
+                fit: BoxFit.cover,
+              )
+            : (controller.value.isInitialized
+                ? CameraPreview(controller)
+                : Container(color: Colors.grey))),
+  ),
+),
 
                     SizedBox(
                       width: size.width * 0.9,
