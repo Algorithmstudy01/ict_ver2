@@ -112,15 +112,12 @@ class _FindPillState extends State<FindPill> with AutomaticKeepAliveClientMixin 
         enableAudio: false,
       );
 
-
-
     }
     controller.initialize().then((_) {
       if (!mounted) {
         return;
       }
       setState(() {
-        controller.setZoomLevel(7.0);
       });
     })
         .catchError((Object e) {
@@ -234,18 +231,14 @@ Future<void> _uploadImage(File image) async {
       double predictionScore = decodedData['prediction_score']?.toDouble() ?? 0.0;
 
       if (predictedCategoryId == 0) {
-        _showErrorDialog('사진을 다시 촬영해주세요');
-        setState(() {
-          _isLoading = false;
-        });
+        _showErrorDialog('예상 범주 ID를 찾을 수 없습니다.');
         return;
       }
 
-    setState(() {
-  _pillInfo = decodedData;
-  print("Pill Info: $_pillInfo"); // Debugging line
-  _isLoading = false;
-});
+      setState(() {
+        _pillInfo = decodedData;
+        _isLoading = false;
+      });
 
       // 예측 확률에 따른 내비게이션
       if (predictionScore >= 0.6) {
@@ -258,19 +251,19 @@ Future<void> _uploadImage(File image) async {
           context,
           MaterialPageRoute(
             builder: (context) => InformationScreen(
-              pillCode: _pillInfo?['pill_code'] ?? 'Unknown',
-              pillName: _pillInfo?['product_name'] ?? 'Unknown',
+              pillCode: _pillInfo['pill_code'] ?? 'Unknown',
+              pillName: _pillInfo['product_name'] ?? 'Unknown',
               confidence: predictionScore.toString(),
               userId: widget.userId,
-              usage: _pillInfo?['usage'] ?? 'No information',
-              precautionsBeforeUse: _pillInfo?['precautions_before_use'] ?? 'No information',
-              usagePrecautions: _pillInfo?['usage_precautions'] ?? 'No information',
-              drugFoodInteractions: _pillInfo?['drug_food_interactions'] ?? 'No information',
-              sideEffects: _pillInfo?['side_effects'] ?? 'No information',
-              storageInstructions: _pillInfo?['storage_instructions'] ?? 'No information',
-              efficacy: _pillInfo?['efficacy'] ?? 'No information',
-              manufacturer: _pillInfo?['manufacturer'] ?? 'No information',
-              imageUrl: _pillInfo?['image_url'] ?? '',
+              usage: _pillInfo['usage'] ?? 'No information',
+              precautionsBeforeUse: _pillInfo['precautions_before_use'] ?? 'No information',
+              usagePrecautions: _pillInfo['usage_precautions'] ?? 'No information',
+              drugFoodInteractions: _pillInfo['drug_food_interactions'] ?? 'No information',
+              sideEffects: _pillInfo['side_effects'] ?? 'No information',
+              storageInstructions: _pillInfo['storage_instructions'] ?? 'No information',
+              efficacy: _pillInfo['efficacy'] ?? 'No information',
+              manufacturer: _pillInfo['manufacturer'] ?? 'No information',
+              imageUrl: _pillInfo['image_url'] ?? '',
               extractedText: '',
               predictedCategoryId: predictedCategoryId.toString(),
             ),
@@ -289,8 +282,8 @@ Future<void> _uploadImage(File image) async {
               context, 
               MaterialPageRoute(
                 builder: (context) => InformationScreen(
-                  pillCode: option['pill_code'] ?? 'Unknown', 
-                  pillName: option['product_name'] ?? 'Unknown',
+                  pillCode: option['pill_code'], 
+                  pillName: option['product_name'],
                   confidence: (option['confidence'] is String 
                       ? double.parse(option['confidence']) 
                       : option['confidence']).toStringAsFixed(2),
@@ -340,7 +333,6 @@ Future<void> _uploadImage(File image) async {
     });
   }
 }
-
 
 
 Future<void> _saveSearchHistory(PillInfo pillInfo) async {
@@ -426,95 +418,119 @@ Future<void> _saveSearchHistory(PillInfo pillInfo) async {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-
+                SizedBox(
+                   width: size.width * 0.85,
+                  height: size.height * 0.06,
+                 child: FittedBox(
+                    fit: BoxFit.contain,
+                    child: Text(
+                    '알약 촬영하기',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: size.height * 0.03,
+                      fontFamily: 'Manrope',
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                ),
                 Column(
                   children: [
-
-                    // Padding(
-                    //   padding: EdgeInsets.only(top: size.height*0.1),
-                    //   child: SizedBox(
-                    //     width: size.height * 0.4,
-                    //     height: size.height * 0.4,
-                    //     child: _isLoading
-                    //         ? Column(
-                    //             mainAxisAlignment: MainAxisAlignment.center,
-                    //             children: [
-                    //               CircularProgressIndicator(),
-                    //               SizedBox(height: 10),
-                    //               Text(
-                    //                 '알약 검색 중입니다...',
-                    //                 style: TextStyle(
-                    //                   fontSize: size.width * 0.038,
-                    //                   color: Colors.black,
-                    //                 ),
-                    //               ),
-                    //             ],
-                    //           )
-                    //         : 
-                    //     //(_image != null
-                    //     //         ? Image.file(
-                    //     //             imageFile!,
-                    //     //             fit: BoxFit.contain,
-                    //     //           )
-                    //     //         : (controller.value.isInitialized
-                    //     //             ? AspectRatio(aspectRatio: 1,
-                    //     // child: ClipRect(
-                    //     //   child: Transform.scale(
-                    //     //     scale: controller.value.aspectRatio,
-                    //     //       child: Center(
-                    //     //         child: CameraPreview(controller),
-                    //     //       ),
-                    //     //   ),
-                    //     // ),)
-                    //     //             : Container(color: Colors.grey))
-                    //     //             ),
-                    // //   ),
-                    // // ),
- Padding(
-  padding: EdgeInsets.all(20.0),
-  child: SizedBox(
-    width: size.width * 0.7,
-    height: size.width * 0.7,
-    child: _isLoading
-        ? Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircularProgressIndicator(),
-              SizedBox(height: 10),
-              Text(
-                '알약 검색 중입니다...',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.black,
-                ),
-              ),
-              SizedBox(height: 5), // 추가적인 간격
-              Text(
-                '실제 복약 지침은 전문가의 조언을 우선시하세요',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.black54, // 색상 조정
-                ),
-                textAlign: TextAlign.center, // 텍스트 정렬
-              ),
-            ],
-          )
-        : (_image != null
-            ? Image.file(
-                File(_image!.path),
-                fit: BoxFit.cover,
-              )
-            : (controller.value.isInitialized
-                ? CameraPreview(controller)
-                : Container(color: Colors.grey))),
-  ),
-),
-
+                     Container(
+                      margin: EdgeInsets.symmetric(vertical: size.height * 0.01),
+                      width: size.width * 0.85,
+                      height: size.height * 0.09,
+                        child: FittedBox(
+                        fit: BoxFit.contain,
+                        child:Text.rich(
+                        TextSpan(
+                          children: [
+                            TextSpan(
+                              text: '정확한 알약 확인을 위해 사진을 준비해 주세요.\n아래의 ',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: size.height * 0.02,
+                                fontFamily: 'Manrope',
+                                height: size.height * 0.001,
+                              ),
+                            ),
+                            TextSpan(
+                              text: '촬영하기',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: size.height * 0.021,
+                                fontFamily: 'Manrope',
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            TextSpan(
+                              text: ' 버튼을 눌러 사진을 찍어주세요.',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: size.height * 0.02,
+                                fontFamily: 'Manrope',
+                              ),
+                            ),
+                          ],
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                     ),),
+                    Padding(
+                      padding: EdgeInsets.all(10.0),
+                      child: SizedBox(
+                        width: size.height * 0.4,
+                        height: size.height * 0.4,
+                        child: _isLoading
+                            ? Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  CircularProgressIndicator(),
+                                  SizedBox(height: 10),
+                                  Text(
+                                    '알약 검색 중입니다...',
+                                    style: TextStyle(
+                                      fontSize: size.width * 0.038,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : (_image != null
+                                ? Image.file(
+                                    imageFile!,
+                                    fit: BoxFit.contain,
+                                  )
+                                : (controller.value.isInitialized
+                                    ? AspectRatio(aspectRatio: 1,
+                        child: ClipRect(
+                          child: Transform.scale(
+                            scale: controller.value.aspectRatio,
+                              child: Center(
+                                child: CameraPreview(controller),
+                              ),
+                          ),
+                        ),)
+                                    : Container(color: Colors.grey))),
+                      ),
+                    ),
+                    
                     SizedBox(
                       width: size.width * 0.9,
                       height: size.height * 0.09,
-
-                    ),
+                      child: FittedBox(
+                        fit: BoxFit.contain,
+                        child:Text(
+                        '사진을 촬영, 등록하면, 위의 그림과 같이 텍스트를 \n인식하여 자동으로 알약의 정보를 불러옵니다.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: const Color(0xFF4F4F4F),
+                           fontSize: size.height * 0.02,
+                          fontFamily: 'Manrope',
+                         ),
+                      ),
+                    ),),
                   ],
                 ),
                 Column(
@@ -647,11 +663,9 @@ Future<void> _uploadImage(File image) async {
       }
 
       setState(() {
-  _pillInfo = decodedData;
-  print("Pill Info: $_pillInfo"); // Debugging line
-  _isLoading = false;
-});
-
+        _pillInfo = decodedData;
+        _isLoading = false;
+      });
 
       final pillInfo = PillInfo.fromJson(_pillInfo);
       await _saveSearchHistory(pillInfo);

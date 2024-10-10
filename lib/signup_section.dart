@@ -115,20 +115,16 @@ class _SignUpSectionState extends State<SignUpSection> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => LoginSection()),
-            );
-          },
-        ),
-        backgroundColor: Colors.white,
-        elevation: 0,
-      ),
       backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: Text('회원가입'),
+        backgroundColor: Colors.white,
+        elevation: 4, // Add elevation for shadow
+        centerTitle: true,
+        foregroundColor: Colors.black,
+        shadowColor: Colors.grey.withOpacity(0.5), // Set shadow color
+      ),
+
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
