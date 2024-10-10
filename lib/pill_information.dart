@@ -407,7 +407,7 @@ void _showSuccessDialog() {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (widget.pillCode.isNotEmpty)
+                  /*if (widget.pillCode.isNotEmpty)
                     Row(
                       children: [
                         Expanded(child: Text('품목기준코드: ${widget.pillCode}\n', style: TextStyle(fontSize: 16))),
@@ -425,18 +425,26 @@ void _showSuccessDialog() {
                         onPressed: () => speak('예측된 카테고리 ID: ${widget.predictedCategoryId}'),
                       ),
                     ],
-                  ),
+                  ),*/
                   if (widget.pillName.isNotEmpty)
                     Row(
                       children: [
-                        Expanded(child: Text('제품명: ${widget.pillName}\n', style: TextStyle(fontSize: 16))),
+                        Expanded(
+                          child: Text(
+                            '제품명 : \n${widget.usage}\n',
+                            style: TextStyle(
+                              fontSize: 25,
+                              fontWeight: FontWeight.bold, // 글씨체를 굵게 설정
+                            ),
+                          ),
+                        ),
                         IconButton(
                           icon: Icon(Icons.volume_up),
-                          onPressed: () => speak('제품명: ${widget.pillName}'),
+                          onPressed: () => speak('제품명 ${widget.pillName}'),
                         ),
                       ],
                     ),
-                  if (widget.confidence.isNotEmpty)
+                 /* if (widget.confidence.isNotEmpty)
                     Row(
                       children: [
                         Expanded(child: Text('예측 확률: ${widget.confidence}\n', style: TextStyle(fontSize: 16))),
@@ -445,18 +453,26 @@ void _showSuccessDialog() {
                           onPressed: () => speak('예측 확률: ${widget.confidence}'),
                         ),
                       ],
-                    ),
+                    ),*/
                   if (widget.efficacy.isNotEmpty)
                     Row(
-                      children: [
-                        Expanded(child: Text('이 약의 효능은 무엇입니까?\n${widget.efficacy}\n', style: TextStyle(fontSize: 16))),
+                          children: [
+                            Expanded(
+                              child: Text(
+                                '효능 : \n${widget.usage}\n',
+                                style: TextStyle(
+                                  fontSize: 25,
+                                  fontWeight: FontWeight.bold, // 글씨체를 굵게 설정
+                                ),
+                              ),
+                            ),
                         IconButton(
                           icon: Icon(Icons.volume_up),
-                          onPressed: () => speak('이 약의 효능은 무엇입니까? ${widget.efficacy}'),
+                          onPressed: () => speak('효능 ${widget.efficacy}'),
                         ),
                       ],
                     ),
-                  if (widget.manufacturer.isNotEmpty)
+                  /*if (widget.manufacturer.isNotEmpty)
                     Row(
                       children: [
                         Expanded(child: Text('제조/수입사: ${widget.manufacturer}\n', style: TextStyle(fontSize: 16))),
@@ -465,18 +481,26 @@ void _showSuccessDialog() {
                           onPressed: () => speak('제조/수입사: ${widget.manufacturer}'),
                         ),
                       ],
-                    ),
+                    ),*/
                   if (widget.usage.isNotEmpty)
                     Row(
                       children: [
-                        Expanded(child: Text('이 약은 어떻게 사용합니까?\n${widget.usage}\n', style: TextStyle(fontSize: 16))),
+                        Expanded(
+                          child: Text(
+                            '사용법 : \n${widget.usage}\n',
+                            style: TextStyle(
+                              fontSize: 25,
+                              fontWeight: FontWeight.bold, // 글씨체를 굵게 설정
+                            ),
+                          ),
+                        ),
                         IconButton(
                           icon: Icon(Icons.volume_up),
-                          onPressed: () => speak('이 약은 어떻게 사용합니까? ${widget.usage}'),
+                          onPressed: () => speak('사용법 ${widget.usage}'),
                         ),
                       ],
                     ),
-                  if (widget.precautionsBeforeUse.isNotEmpty)
+                 /* if (widget.precautionsBeforeUse.isNotEmpty)
                     Row(
                       children: [
                         Expanded(child: Text('이 약을 사용하기 전에 반드시 알아야 할 내용은 무엇입니까?\n${widget.precautionsBeforeUse}\n', style: TextStyle(fontSize: 16))),
@@ -485,8 +509,8 @@ void _showSuccessDialog() {
                           onPressed: () => speak('이 약을 사용하기 전에 반드시 알아야 할 내용은 무엇입니까? ${widget.precautionsBeforeUse}'),
                         ),
                       ],
-                    ),
-                  if (widget.usagePrecautions.isNotEmpty)
+                    ),*/
+                  /*if (widget.usagePrecautions.isNotEmpty)
                     Row(
                       children: [
                         Expanded(child: Text('이 약을 사용할 때 주의해야 할 점은 무엇입니까?\n${widget.usagePrecautions}\n', style: TextStyle(fontSize: 16))),
@@ -495,8 +519,8 @@ void _showSuccessDialog() {
                           onPressed: () => speak('이 약을 사용할 때 주의해야 할 점은 무엇입니까? ${widget.usagePrecautions}'),
                         ),
                       ],
-                    ),
-                  if (widget.drugFoodInteractions.isNotEmpty)
+                    ),*/
+                  /*if (widget.drugFoodInteractions.isNotEmpty)
                     Row(
                       children: [
                         Expanded(child: Text('이 약과 음식의 상호작용은 무엇입니까?\n${widget.drugFoodInteractions}\n', style: TextStyle(fontSize: 16))),
@@ -505,8 +529,8 @@ void _showSuccessDialog() {
                           onPressed: () => speak('이 약과 음식의 상호작용은 무엇입니까? ${widget.drugFoodInteractions}'),
                         ),
                       ],
-                    ),
-                  if (widget.sideEffects.isNotEmpty)
+                    ),*/
+                  /*if (widget.sideEffects.isNotEmpty)
                     Row(
                       children: [
                         Expanded(child: Text('이 약의 부작용은 무엇입니까?\n${widget.sideEffects}\n', style: TextStyle(fontSize: 16))),
@@ -515,8 +539,8 @@ void _showSuccessDialog() {
                           onPressed: () => speak('이 약의 부작용은 무엇입니까? ${widget.sideEffects}'),
                         ),
                       ],
-                    ),
-                  if (widget.storageInstructions.isNotEmpty)
+                    ),*/
+                  /*if (widget.storageInstructions.isNotEmpty)
                     Row(
                       children: [
                         Expanded(child: Text('이 약의 보관 방법은 무엇입니까?\n${widget.storageInstructions}\n', style: TextStyle(fontSize: 16))),
@@ -525,7 +549,7 @@ void _showSuccessDialog() {
                           onPressed: () => speak('이 약의 보관 방법은 무엇입니까? ${widget.storageInstructions}'),
                         ),
                       ],
-                    ),
+                    ),*/
                 ],
               ),
             ),
