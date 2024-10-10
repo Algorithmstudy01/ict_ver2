@@ -968,7 +968,7 @@ def predict2(request):
         model = get_model2(num_classes=num_classes)
 
         logger.info('모델 가중치 로딩 중')
-        model.load_state_dict(torch.load('/Users/seon/Desktop/Ict_FIN/pill_detection_4.pth', map_location=device))
+        model.load_state_dict(torch.load('../ict_chungbuk/pill_detection_4.pth', map_location=device))
         model.to(device)
         logger.info('모델 가중치가 성공적으로 로드되었습니다.')
 
@@ -1005,7 +1005,7 @@ def predict2(request):
         # 가장 높은 확률의 예측값 인덱스
         max_score_idx = pred_scores.argmax()
         predicted_category_id = pred_labels[max_score_idx]
-        csv_path = '/Users/seon/Desktop/model/info.csv'
+        csv_path = '../ict_chungbuk/info.csv'
 
         # pill_info_csv 초기화
         pill_info_csv = {}
