@@ -10,6 +10,8 @@ import 'NewAlarm/NewAlarm.dart';
 import 'pill_information.dart';
 import 'package:chungbuk_ict/recommended.dart';
 import 'package:chungbuk_ict/PharmacyScreen.dart';
+import 'package:chungbuk_ict/text_OCR.dart';
+
 
 void main() {
   runApp(const MyApp());
@@ -245,7 +247,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               onPressed: () => Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => const NearbyPharmacyPage(), // NaverMapApp 화면으로 이동
+                                  builder: (context) => const FindText(), // NaverMapApp 화면으로 이동
                                 ),
                               ),
                               icon: Image.asset('assets/img/pharmacy.png'),
@@ -308,65 +310,9 @@ class _MyHomePageState extends State<MyHomePage> {
                             TextSpan(
                               text: '야금야금은 다양한 약을 꾸준히 복용해야 하는 분들에게 쉽고 정확하게 약을 복용할 수 있도록 도와주는 어플리케이션입니다.\n\n\n',
                             ),
+
                             TextSpan(
-                              text: '- 약 검색\n',
-                              style: GoogleFonts.roboto(
-                                textStyle: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: size.width * 0.05,
-                                ),
-                              ),
-                            ),
-                            TextSpan(
-                              text: '알약 사진을 촬영하면 야금야금이 해당 약물의 이름과 복용 방법을 알려줍니다. 알약 정보에서 음성 아이콘을 누르고 알약의 상세정보를 음성으로 들어보세요!\n\n',
-                            ),
-                            TextSpan(
-                              text: '- 즐겨찾기\n',
-                              style: GoogleFonts.roboto(
-                                textStyle: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: size.width * 0.05,
-                                ),
-                              ),
-                            ),
-                            TextSpan(
-                              text: '사용자가 즐겨 찾는 알약을 즐겨찾기에 추가할 수 있습니다. 나만의 알약 목록을 만들어 편하게 사용해보세요!\n\n',
-                            ),
-                            TextSpan(
-                              text: '- 알람\n',
-                              style: GoogleFonts.roboto(
-                                textStyle: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: size.width * 0.05,
-                                ),
-                              ),
-                            ),
-                            TextSpan(
-                              text: '알약을 먹어야 할 시간을 등록하면 복용 시간마다 알림이 울립니다.\n\n',
-                            ),
-                            TextSpan(
-                              text: '- 내 정보\n',
-                              style: GoogleFonts.roboto(
-                                textStyle: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: size.width * 0.05,
-                                ),
-                              ),
-                            ),
-                            TextSpan(
-                              text: '• 지금까지 검색한 알약 기록을 확인할 수 있습니다.\n• 비밀번호를 변경할 수 있습니다.\n• 가족을 등록하고 가족에게 알약을 추천해줄 수 있습니다.\n\n\n',
-                            ),
-                            TextSpan(
-                              text: '⚠️ 주의사항\n\n',
-                              style: GoogleFonts.roboto(
-                                textStyle: TextStyle(
-                                  fontSize: size.width * 0.065,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                            TextSpan(
-                              text: '- 이 어플은 참고용이며, 실제 복약 지침은 의료 전문가의 조언을 우선시하세요.\n- 기기 설정에 따라 알림이 울리지 않을 수 있으니 중요한 약물 복용 시 소리 모드를 적용해주세요.',
+                              text: '- 이 어플은 참고용이며, 실제 복약 지침은 의료 전문가의 조언을 우선시하세요.\n'
                             ),
                           ],
                         ),

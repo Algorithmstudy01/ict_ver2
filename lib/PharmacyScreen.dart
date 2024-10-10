@@ -24,7 +24,7 @@ class _NearbyPharmacyPageState extends State<NearbyPharmacyPage> {
   Future<void> _initializeNaverMap() async {
     WidgetsFlutterBinding.ensureInitialized();
     await NaverMapSdk.instance.initialize(
-      clientId: '<Client id>',
+      clientId: 'rwquqodfmt',
       onAuthFailed: (ex) => log("********* 네이버맵 인증오류 : $ex *********"),
     );
     setState(() {

@@ -149,7 +149,7 @@ class _MyPageState extends State<MyPage> {
 
             // 가족 등록 하기
             ListTile(
-              title: Text("가족 등록 하기"),
+              title: Text("가족 등록"),
               trailing: Icon(Icons.chevron_right),
               onTap: () {
                 // 가족 등록하기 화면으로 이동
@@ -162,7 +162,7 @@ class _MyPageState extends State<MyPage> {
 
             // 가족 목록 보기
             ListTile(
-              title: Text("가족 목록 보기"),
+              title: Text("가족 목록"),
               trailing: Icon(Icons.chevron_right),
               onTap: openFamilyList, // 가족 목록 화면으로 이동
             ),
