@@ -1195,3 +1195,50 @@ class RecommendationListView(View):
             return JsonResponse({'recommendations': recommendations_data}, status=200)
         except Exception as e:
             return JsonResponse({'message': str(e)}, status=500)
+
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+import requests
+import json
+import uuid
+import time
+
+secret_key = ""
+api_url = "https://fqml315j1i.apigw.ntruss.com/custom/v1/34920/3850f8f6acb98a9f5c4375a18ec018ef3062e8636574ca5963ef4a8e618805df/general"
+
+@api_view(['POST'])
+def ocr_view(request):
+    image_file = request.FILES['image']
+
+    # Request 생성
+    request_json = {
+        'images': [
+            {
+                'format': 'jpg',
+                'name': 'demo'
+            }
+        ],
+        'requestId': str(uuid.uuid4()),
+        'version': 'V2',
+        'timestamp': int(round(time.time() * 1000))
+    }
+
+    payload = {'message': json.dumps(request_json).encode('UTF-8')}
+    files = [('file', image_file)]
+    headers = {'X-OCR-SECRET': secret_key}
+
+    # OCR 요청
+    response = requests.request("POST", api_url, headers=headers, data=payload, files=files)
+
+    if response.status_code == 200:
+        ocr_results = json.loads(response.text)
+        all_texts = []
+        for image_result in ocr_results['images']:
+            for field in image_result['fields']:
+                text = field['inferText']
+                all_texts.append(text)
+        
+        full_text = ' '.join(all_texts)
+        return Response({"text": full_text})
+    else:
+        return Response({"error": f"OCR 실패: 상태 코드 {response.status_code}"}, status=response.status_code)
