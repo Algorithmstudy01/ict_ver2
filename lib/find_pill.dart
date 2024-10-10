@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
-import 'package:chungbuk_ict/low_prediction.dart';
 import 'package:chungbuk_ict/pill_information.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
@@ -112,15 +111,12 @@ class _FindPillState extends State<FindPill> with AutomaticKeepAliveClientMixin 
         enableAudio: false,
       );
 
-
-
     }
     controller.initialize().then((_) {
       if (!mounted) {
         return;
       }
       setState(() {
-        controller.setZoomLevel(7.0);
       });
     })
         .catchError((Object e) {
@@ -219,11 +215,9 @@ Future<void> _uploadImage(File image) async {
       final responseData = await response.stream.bytesToString();
       final decodedData = json.decode(responseData);
 
-      // 디버그: 응답 데이터 출력
-      print(decodedData);
-
-      if (decodedData == null || decodedData.containsKey('error')) {
-        _showErrorDialog(decodedData?['error'] ?? 'Unknown error occurred');
+      // Check if the decodedData contains the expected keys
+      if (decodedData.isEmpty || !decodedData.containsKey('pill_code')) {
+        _showErrorDialog('사진을 다시 촬영해주세요.');
         setState(() {
           _isLoading = false;
         });
@@ -231,106 +225,53 @@ Future<void> _uploadImage(File image) async {
       }
 
       int predictedCategoryId = decodedData['predicted_category_id'] ?? 0;
-      double predictionScore = decodedData['prediction_score']?.toDouble() ?? 0.0;
+if (predictedCategoryId == 0) {
+    _showErrorDialog('예상 범주 ID를 찾을 수 없습니다.'); // 적절한 오류 메시지 출력
+    return;
+}
 
-      if (predictedCategoryId == 0) {
-        _showErrorDialog('예상 범주 ID를 찾을 수 없습니다.');
-        return;
-      }
-
+      // Setting the state with the decoded data
       setState(() {
         _pillInfo = decodedData;
         _isLoading = false;
       });
 
-      // 예측 확률에 따른 내비게이션
-      if (predictionScore >= 0.6) {
-        // Save search history only for high confidence
-        final pillInfo = PillInfo.fromJson(decodedData);
-        await _saveSearchHistory(pillInfo);
+      // Create PillInfo instance
+      final pillInfo = PillInfo.fromJson(_pillInfo);
+      await _saveSearchHistory(pillInfo);
 
-        // 바로 정보 화면으로 이동
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => InformationScreen(
-              pillCode: _pillInfo['pill_code'] ?? 'Unknown',
-              pillName: _pillInfo['product_name'] ?? 'Unknown',
-              confidence: predictionScore.toString(),
-              userId: widget.userId,
-              usage: _pillInfo['usage'] ?? 'No information',
-              precautionsBeforeUse: _pillInfo['precautions_before_use'] ?? 'No information',
-              usagePrecautions: _pillInfo['usage_precautions'] ?? 'No information',
-              drugFoodInteractions: _pillInfo['drug_food_interactions'] ?? 'No information',
-              sideEffects: _pillInfo['side_effects'] ?? 'No information',
-              storageInstructions: _pillInfo['storage_instructions'] ?? 'No information',
-              efficacy: _pillInfo['efficacy'] ?? 'No information',
-              manufacturer: _pillInfo['manufacturer'] ?? 'No information',
-              imageUrl: _pillInfo['image_url'] ?? '',
-              extractedText: '',
-              predictedCategoryId: predictedCategoryId.toString(),
-            ),
+      // Navigate to the InformationScreen with extracted data
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => InformationScreen(
+            pillCode: _pillInfo['pill_code'] ?? 'Unknown',
+            pillName: _pillInfo['product_name'] ?? 'Unknown',
+            confidence: _pillInfo['prediction_score']?.toString() ?? 'Unknown',
+            userId: widget.userId,
+            usage: _pillInfo['usage'] ?? 'No information',
+            precautionsBeforeUse: _pillInfo['precautions_before_use'] ?? 'No information',
+            usagePrecautions: _pillInfo['usage_precautions'] ?? 'No information',
+            drugFoodInteractions: _pillInfo['drug_food_interactions'] ?? 'No information',
+            sideEffects: _pillInfo['side_effects'] ?? 'No information',
+            storageInstructions: _pillInfo['storage_instructions'] ?? 'No information',
+            efficacy: _pillInfo['efficacy'] ?? 'No information',
+            manufacturer: _pillInfo['manufacturer'] ?? 'No information',
+            imageUrl: _pillInfo['image_url'] ?? '', // 이미지 URL 추가
+            extractedText: '',
+            // categoryId: _pillInfo['category_id'] ?? 'No information',
+            predictedCategoryId: predictedCategoryId.toString(), // 이 부분이 중요 // Ensure categoryId is included
           ),
-        );
-      } else if (predictionScore >= 0.1 && predictionScore < 0.6) {
-        // 낮은 확신의 예측
-        List<dynamic> pillOptions = decodedData['pill_options'] ?? [];
-        List<double> predScores = decodedData['pred_scores']?.map<double>((score) => score.toDouble()).toList() ?? [];
-
-        if (pillOptions.isNotEmpty) {
-          // 선택지의 개수에 따라 처리
-          if (pillOptions.length == 1) {
-            var option = pillOptions[0]; // pillOptions의 첫 번째 항목
-            Navigator.push(
-              context, 
-              MaterialPageRoute(
-                builder: (context) => InformationScreen(
-                  pillCode: option['pill_code'], 
-                  pillName: option['product_name'],
-                  confidence: (option['confidence'] is String 
-                      ? double.parse(option['confidence']) 
-                      : option['confidence']).toStringAsFixed(2),
-                  extractedText: '',
-                  userId: widget.userId,
-                  usage: option['usage'] ?? 'No information',
-                  precautionsBeforeUse: option['precautions_before_use'] ?? 'No information',
-                  usagePrecautions: option['usage_precautions'] ?? 'No information',
-                  drugFoodInteractions: option['drug_food_interactions'] ?? 'No information',
-                  sideEffects: option['side_effects'] ?? 'No information',
-                  storageInstructions: option['storage_instructions'] ?? 'No information',
-                  efficacy: option['efficacy'] ?? 'No information',
-                  manufacturer: option['manufacturer'] ?? 'Unknown',
-                  imageUrl: option['image_url'] ?? '',
-                  predictedCategoryId: option['predicted_category_id']?.toString() ?? 'Unknown',
-                ),
-              ),
-            );
-          } else {
-            // 여러 개일 경우: 선택할 수 있도록 LowPrediction 페이지로 이동
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => LowPrediction(
-                  options: pillOptions,
-                  userId: widget.userId,
-                ),
-              ),
-            );
-          }
-        } else {
-          _showErrorDialog('알약 옵션을 찾을 수 없습니다.');
-        }
-      } else {
-        _showErrorDialog('예측 실패');
-      }
+        ),
+      );
     } else {
-      _showErrorDialog('서버에서 오류가 발생했습니다. 상태 코드: ${response.statusCode}');
+      _showErrorDialog('서버에서 오류가 발생했습니다.');
       setState(() {
         _isLoading = false;
       });
     }
   } catch (e) {
-    _showErrorDialog('업로드 중 오류가 발생했습니다: $e');
+    _showErrorDialog('업로드 중 오류가 발생했습니다.');
     setState(() {
       _isLoading = false;
     });
@@ -395,10 +336,10 @@ Future<void> _saveSearchHistory(PillInfo pillInfo) async {
   void dispose() {
     controller.dispose();
     super.dispose();
-  }Widget build(BuildContext context) {
+  }@override
+Widget build(BuildContext context) {
   super.build(context);
   final Size size = MediaQuery.of(context).size;
-
 
  return Scaffold(
   appBar: AppBar(
@@ -415,18 +356,74 @@ Future<void> _saveSearchHistory(PillInfo pillInfo) async {
     child: Container(
       padding: EdgeInsets.symmetric(vertical: size.height * 0.03),
       color: Colors.white, // AppBar 제외한 백그라운드 흰색 설정
-     // AppBar 제외한 백그라운드 흰색 설정
-
           child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
+                SizedBox(
+                  width: size.width * 0.85,
+                  height: size.height * 0.06,
+                  child: FittedBox(
+                    fit: BoxFit.contain,
+                    child: Text(
+                    '알약 촬영하기',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: size.height * 0.03,
+                      fontFamily: 'Manrope',
+                      fontWeight: FontWeight.bold,
 
+                    ),
+                  ),
+                  ),
+                ),
                 Column(
                   children: [
+                    Container(
+                      margin: EdgeInsets.symmetric(vertical: size.height * 0.01),
+                      width: size.width * 0.85,
+                      height: size.height * 0.09,
+                      child: FittedBox(
+                        fit: BoxFit.contain,
+                        child:Text.rich(
+                        TextSpan(
+                          children: [
+                            TextSpan(
+                              text: '정확한 알약 확인을 위해 사진을 준비해 주세요.\n아래의 ',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: size.height * 0.02,
+                                fontFamily: 'Manrope',
 
+                              ),
+                            ),
+                            TextSpan(
+                              text: '촬영하기',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: size.height * 0.021,
+                                fontFamily: 'Manrope',
+                                fontWeight: FontWeight.bold,
+
+                              ),
+                            ),
+                            TextSpan(
+                              text: ' 버튼을 눌러 사진을 찍어주세요.',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: size.height * 0.02,
+                                fontFamily: 'Manrope',
+
+                              ),
+                            ),
+                          ],
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),),
                     Padding(
-                      padding: EdgeInsets.only(top: size.height*0.1),
+                      padding: EdgeInsets.all(10.0),
                       child: SizedBox(
                         width: size.height * 0.4,
                         height: size.height * 0.4,
@@ -463,38 +460,47 @@ Future<void> _saveSearchHistory(PillInfo pillInfo) async {
                                     : Container(color: Colors.grey))),
                       ),
                     ),
-                    
                     SizedBox(
                       width: size.width * 0.9,
                       height: size.height * 0.09,
-
-                    ),
+                      child: FittedBox(
+                        fit: BoxFit.contain,
+                        child:Text(
+                        '사진을 촬영, 등록하면, 위의 그림과 같이 텍스트를 \n인식하여 자동으로 알약의 정보를 불러옵니다.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: const Color(0xFF4F4F4F),
+                          fontSize: size.height * 0.02,
+                          fontFamily: 'Manrope',
+                        ),
+                      ),
+                    ),),
                   ],
                 ),
                 Column(
                   children: [
-                       Column(
+                    Column(
                       children: [
-                    //  GestureDetector(
-                    //   onTap: controller.value.isInitialized ? _takePicture : null,
-                    //   child: Image.asset(
-                    //     'assets/img/camera.png',
-                    //     width: size.width * 0.7,
-                    //         height: size.height * 0.05,
-                    //     fit: BoxFit.contain,
-                    //   ),
-                    // ),
-                    // SizedBox(height: size.width * 0.038),
-                    // GestureDetector(
-                    //   onTap: _startSearch,
-                    //   child: Image.asset(
-                    //     'assets/img/search.png',
-                    //     width: size.width * 0.7,
-                    //         height: size.height * 0.05,
-                    //     fit: BoxFit.contain,
-                    //   ),
-                    // ),
-                    Container(
+                        /*GestureDetector(
+                          onTap: controller.value.isInitialized ? _takePicture : null,
+                          child: Image.asset(
+                            'assets/img/camera.png',
+                            width: size.width * 0.7,
+                            height: size.height * 0.05,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                        SizedBox(height: size.width * 0.038),
+                        GestureDetector(
+                          onTap: _startSearch,
+                          child: Image.asset(
+                            'assets/img/search.png',
+                            width: size.width * 0.7,
+                            height: size.height * 0.05,
+                            fit: BoxFit.contain,
+                          ),
+                        ),*/
+                        Container(
                             margin: EdgeInsets.symmetric(vertical: size.height * 0.01),
                           width: size.width * 0.7,
                           height: size.height * 0.06,
@@ -534,17 +540,19 @@ Future<void> _saveSearchHistory(PillInfo pillInfo) async {
                             });
                           }
                         },
-                        child: Text(
+                        child: FittedBox(
+                          fit: BoxFit.contain,
+                          child: Text(
                           _image == null ? '갤러리에서 사진 가져오기' : '다른 사진 등록하기',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color: const Color(0xFF383838),
-                            fontSize: size.width * 0.038,
+                            fontSize: size.height * 0.02,
                             fontFamily: 'Manrope',
                           ),
                         ),
                       ),),
-                    ),
+                    ),),
                   ],
                 ),
               ],
@@ -555,6 +563,8 @@ Future<void> _saveSearchHistory(PillInfo pillInfo) async {
     );
 
 }
+
+
   @override
   bool get wantKeepAlive => true;
 }
@@ -676,4 +686,3 @@ Future<void> _uploadImage(File image) async {
     );
   }
 }
-   
