@@ -392,7 +392,9 @@ Future<void> _saveSearchHistory(PillInfo pillInfo) async {
   void dispose() {
     controller.dispose();
     super.dispose();
-  }Widget build(BuildContext context) {
+  }
+  @override
+  Widget build(BuildContext context) {
   super.build(context);
   final Size size = MediaQuery.of(context).size;
 
