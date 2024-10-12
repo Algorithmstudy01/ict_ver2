@@ -994,4 +994,3 @@ class _SearchHistoryScreenState extends State<SearchHistoryScreen> {
     );
   }
 }
-

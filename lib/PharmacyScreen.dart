@@ -2,25 +2,25 @@
 // import 'dart:developer' show log;
 // import 'package:flutter/material.dart';
 // import 'package:flutter_naver_map/flutter_naver_map.dart';
-
+//
 // class NearbyPharmacyPage extends StatefulWidget {
 //   const NearbyPharmacyPage({Key? key}) : super(key: key);
-
+//
 //   @override
 //   State<NearbyPharmacyPage> createState() => _NearbyPharmacyPageState();
 // }
-
+//
 // class _NearbyPharmacyPageState extends State<NearbyPharmacyPage> {
 //   late NaverMapController _mapController;
 //   final Completer<NaverMapController> mapControllerCompleter = Completer();
 //   bool _isInitialized = false;
-
+//
 //   @override
 //   void initState() {
 //     super.initState();
 //     _initializeNaverMap();
 //   }
-
+//
 //   Future<void> _initializeNaverMap() async {
 //     WidgetsFlutterBinding.ensureInitialized();
 //     await NaverMapSdk.instance.initialize(
@@ -31,7 +31,7 @@
 //       _isInitialized = true;
 //     });
 //   }
-
+//
 //   @override
 //   Widget build(BuildContext context) {
 //     return Scaffold(
@@ -49,7 +49,7 @@
 //       ),
 //     );
 //   }
-
+//
 //   Widget _naverMapSection() => NaverMap(
 //     options: const NaverMapViewOptions(
 //       zoomGesturesEnable: true,
@@ -69,7 +69,7 @@
 //       _mapController = controller;
 //       mapControllerCompleter.complete(controller);
 //       log("onMapReady", name: "onMapReady");
-
+//
 //       // 마커 생성 및 추가
 //       final marker = NMarker(
 //         id: 'test',
@@ -79,13 +79,13 @@
 //         id: 'test1',
 //         position: const NLatLng(37.606932467450326, 127.05578661133796),
 //       );
-
+//
 //       // 마커를 지도에 추가
 //       _mapController.addOverlayAll({marker, marker1});
-
+//
 //       // 위치 추적 모드 설정
 //       _mapController.setLocationTrackingMode(NLocationTrackingMode.follow);
-
+//
 //       // 마커에 인포 윈도우 추가
 //       final infoWindow = NInfoWindow.onMarker(
 //         id: marker.info.id,

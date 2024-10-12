@@ -9,6 +9,8 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -18,6 +20,8 @@ class MyApp extends StatelessWidget {
 }
 
 class OCRScreen extends StatefulWidget {
+  const OCRScreen({super.key});
+
   @override
   _OCRScreenState createState() => _OCRScreenState();
 }
@@ -51,8 +55,8 @@ class _OCRScreenState extends State<OCRScreen> {
 
   // 이미지 선택 및 서버로 전송
   Future<void> pickAndSendImage() async {
-    final ImagePicker _picker = ImagePicker();
-    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
 
     if (image != null) {
       File imageFile = File(image.path);
@@ -68,7 +72,7 @@ class _OCRScreenState extends State<OCRScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('OCR Image Upload'),
+        title: const Text('OCR Image Upload'),
       ),
       body: Center(
         child: Column(
@@ -80,19 +84,19 @@ class _OCRScreenState extends State<OCRScreen> {
               child: Text(
                 _ocrResult,
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 18),
+                style: const TextStyle(fontSize: 18),
               ),
             ),
             ElevatedButton(
               onPressed: pickAndSendImage,
-              child: Text('이미지 선택 후 OCR 요청'),
+              child: const Text('이미지 선택 후 OCR 요청'),
             ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: pickAndSendImage,
-        child: Icon(Icons.camera_alt),
+        child: const Icon(Icons.camera_alt),
       ),
     );
   }

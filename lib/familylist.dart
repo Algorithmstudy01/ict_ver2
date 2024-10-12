@@ -5,7 +5,7 @@ import 'dart:convert';
 class FamilyListScreen extends StatefulWidget {
   final String userId;
 
-  const FamilyListScreen({Key? key, required this.userId}) : super(key: key);
+  const FamilyListScreen({super.key, required this.userId});
 
   @override
   _FamilyListScreenState createState() => _FamilyListScreenState();
@@ -41,7 +41,7 @@ class _FamilyListScreenState extends State<FamilyListScreen> {
         _familyMembersFuture = _fetchFamilyMembers(); // 삭제 후 목록 새로 고침
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('가족 구성원이 삭제되었습니다.')),
+        const SnackBar(content: Text('가족 구성원이 삭제되었습니다.')),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -55,19 +55,19 @@ class _FamilyListScreenState extends State<FamilyListScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('삭제 확인'),
-          content: Text('이 가족 구성원을 삭제하시겠습니까?'),
+          title: const Text('삭제 확인'),
+          content: const Text('이 가족 구성원을 삭제하시겠습니까?'),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text('취소'),
+              child: const Text('취소'),
             ),
             TextButton(
               onPressed: () async {
                 Navigator.of(context).pop();
                 await _deleteFamilyMember(familyMemberName);
               },
-              child: Text('삭제'),
+              child: const Text('삭제'),
             ),
           ],
         );
@@ -90,25 +90,25 @@ class _FamilyListScreenState extends State<FamilyListScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('가족 정보 수정'),
+          title: const Text('가족 정보 수정'),
           content: SingleChildScrollView(
             child: Column(
               children: [
                 TextField(
                   controller: nameController,
-                  decoration: InputDecoration(labelText: '이름'),
+                  decoration: const InputDecoration(labelText: '이름'),
                 ),
                 TextField(
                   controller: relationshipController,
-                  decoration: InputDecoration(labelText: '관계'),
+                  decoration: const InputDecoration(labelText: '관계'),
                 ),
                 TextField(
                   controller: phoneController,
-                  decoration: InputDecoration(labelText: '전화번호'),
+                  decoration: const InputDecoration(labelText: '전화번호'),
                 ),
                 TextField(
                   controller: addressController,
-                  decoration: InputDecoration(labelText: '주소'),
+                  decoration: const InputDecoration(labelText: '주소'),
                 ),
               ],
             ),
@@ -116,7 +116,7 @@ class _FamilyListScreenState extends State<FamilyListScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text('취소'),
+              child: const Text('취소'),
             ),
             TextButton(
               onPressed: () async {
@@ -128,7 +128,7 @@ class _FamilyListScreenState extends State<FamilyListScreen> {
                 );
                 Navigator.of(context).pop();
               },
-              child: Text('수정'),
+              child: const Text('수정'),
             ),
           ],
         );
@@ -159,7 +159,7 @@ class _FamilyListScreenState extends State<FamilyListScreen> {
         _familyMembersFuture = _fetchFamilyMembers(); // 업데이트 후 목록 새로 고침
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('가족 정보가 성공적으로 수정되었습니다.')),
+        const SnackBar(content: Text('가족 정보가 성공적으로 수정되었습니다.')),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -172,7 +172,7 @@ class _FamilyListScreenState extends State<FamilyListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('가족 목록'),
+        title: const Text('가족 목록'),
         backgroundColor: Colors.white,
         elevation: 4,
         centerTitle: true,
@@ -184,11 +184,11 @@ class _FamilyListScreenState extends State<FamilyListScreen> {
         future: _familyMembersFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Center(child: Text('가족 목록을 불러오는 데 실패했습니다.'));
+            return const Center(child: Text('가족 목록을 불러오는 데 실패했습니다.'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('등록된 가족이 없습니다.'));
+            return const Center(child: Text('등록된 가족이 없습니다.'));
           }
 
           final familyMembers = snapshot.data!;
@@ -199,7 +199,7 @@ class _FamilyListScreenState extends State<FamilyListScreen> {
     final familyMember = familyMembers[index];
 
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
       decoration: BoxDecoration(
         color: Colors.white, // 카드 배경을 흰색으로 설정
         borderRadius: BorderRadius.circular(8), // 모서리를 둥글게 설정
@@ -214,7 +214,7 @@ class _FamilyListScreenState extends State<FamilyListScreen> {
                 color: Colors.grey.withOpacity(0.3), // 아래쪽 그림자 설정
                 spreadRadius: 2,
                 blurRadius: 4,
-                offset: Offset(0, 2), // 아래쪽으로만 그림자
+                offset: const Offset(0, 2), // 아래쪽으로만 그림자
               ),
             ],
           ),
@@ -224,7 +224,7 @@ class _FamilyListScreenState extends State<FamilyListScreen> {
               ListTile(
                title: Text(
                 familyMember['name'] ?? '이름 없음',
-                style: TextStyle(
+                style: const TextStyle(
                   fontWeight: FontWeight.bold, // 글꼴 굵기 설정
                   fontSize: 23, // 글씨 크기 설정
                   color: Colors.black, // 텍스트 색상 설정
@@ -255,17 +255,17 @@ class _FamilyListScreenState extends State<FamilyListScreen> {
                           familyMember['address'] ?? '',
                         );
                       },
-                      child: Text(
+                      child: const Text(
                         '수정',
                         style: TextStyle(color: Colors.black),
                       ),
                     ),
-                    SizedBox(width: 8), // 버튼 사이 간격 추가
+                    const SizedBox(width: 8), // 버튼 사이 간격 추가
                     TextButton(
                       onPressed: () {
                         _confirmDelete(familyMember['name'] ?? '');
                       },
-                      child: Text(
+                      child: const Text(
                         '삭제',
                         style: TextStyle(color: Colors.black),
                       ),
@@ -274,7 +274,7 @@ class _FamilyListScreenState extends State<FamilyListScreen> {
                 ),
               ),
               // 카드 하단에 회색선 추가
-              Divider(
+              const Divider(
                 color: Colors.grey, // 회색선 색상
                 thickness: 1, // 선 두께
                 height: 1, // 선의 높이

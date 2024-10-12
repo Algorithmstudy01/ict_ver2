@@ -6,6 +6,8 @@ import 'Find_Password_section.dart'; // 비밀번호 찾기 섹션 import
 import 'login_section.dart'; // 로그인 섹션 import
 
 class FindIDSection extends StatefulWidget {
+  const FindIDSection({super.key});
+
   @override
   _FindIDSectionState createState() => _FindIDSectionState();
 }
@@ -24,7 +26,7 @@ class _FindIDSectionState extends State<FindIDSection> {
       return;
     }
 
-    final url = 'https://80d4-113-198-180-184.ngrok-free.app/find_user_id/'; // Django 엔드포인트
+    const url = 'https://80d4-113-198-180-184.ngrok-free.app/find_user_id/'; // Django 엔드포인트
     final response = await http.post(
       Uri.parse(url),
       headers: {'Content-Type': 'application/json'},
@@ -49,7 +51,7 @@ class _FindIDSectionState extends State<FindIDSection> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text('아이디 찾기'),
+        title: const Text('아이디 찾기'),
         backgroundColor: Colors.white,
         elevation: 4, // Add elevation for shadow
         centerTitle: true,
@@ -57,11 +59,11 @@ class _FindIDSectionState extends State<FindIDSection> {
         shadowColor: Colors.grey.withOpacity(0.5), // Set shadow color
       
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => LoginSection()),
+              MaterialPageRoute(builder: (context) => const LoginSection()),
             ); // 뒤로가기 버튼 눌렀을 때 LoginSection으로 이동
           },
         ),
@@ -73,12 +75,12 @@ class _FindIDSectionState extends State<FindIDSection> {
           children: [
             TextField(
               controller: _emailController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: '아이디(이메일 아이디)',
                 border: OutlineInputBorder(),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Center(
               child: GestureDetector(
                 onTap: _findUserID,
@@ -88,7 +90,7 @@ class _FindIDSectionState extends State<FindIDSection> {
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Text(
               _resultMessage,
               style: TextStyle(
@@ -97,7 +99,7 @@ class _FindIDSectionState extends State<FindIDSection> {
               ),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
@@ -108,20 +110,20 @@ class _FindIDSectionState extends State<FindIDSection> {
                       MaterialPageRoute(builder: (context) => FindPasswordSection()),
                     );
                   },
-                  child: Text(
+                  child: const Text(
                     '비밀번호 찾기',
                     style: TextStyle(color: Colors.black),
                   ),
                 ),
-                Text('|', style: TextStyle(color: Colors.black)),
+                const Text('|', style: TextStyle(color: Colors.black)),
                 TextButton(
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => LoginSection()),
+                      MaterialPageRoute(builder: (context) => const LoginSection()),
                     );
                   },
-                  child: Text(
+                  child: const Text(
                     '로그인',
                     style: TextStyle(color: Colors.black),
                   ),

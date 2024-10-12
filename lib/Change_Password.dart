@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'login_section.dart'; // Import the Login Screen
 import 'my_page.dart'; // Import MyPage
 
 class ChangePW extends StatefulWidget {
   final String userId;
 
-  const ChangePW({Key? key, required this.userId}) : super(key: key);
+  const ChangePW({super.key, required this.userId});
 
   @override
   State<ChangePW> createState() => _ChangePWState();
@@ -81,7 +80,7 @@ class _ChangePWState extends State<ChangePW> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('확인'),
+              child: const Text('확인'),
             ),
           ],
         );
@@ -107,8 +106,8 @@ class _ChangePWState extends State<ChangePW> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('비밀번호 변경 성공'),
-            content: Text('비밀번호가 성공적으로 변경되었습니다.'),
+            title: const Text('비밀번호 변경 성공'),
+            content: const Text('비밀번호가 성공적으로 변경되었습니다.'),
             actions: [
               TextButton(
                 onPressed: () {
@@ -117,7 +116,7 @@ class _ChangePWState extends State<ChangePW> {
                     MaterialPageRoute(builder: (context) => MyPage(userId: widget.userId)),
                   );
                 },
-                child: Text('확인'),
+                child: const Text('확인'),
               ),
             ],
           );
@@ -133,7 +132,7 @@ class _ChangePWState extends State<ChangePW> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text('비밀번호 변경'),
+        title: const Text('비밀번호 변경'),
         backgroundColor: Colors.white,
         elevation: 4, // Add elevation for shadow
         centerTitle: true,
@@ -145,7 +144,7 @@ class _ChangePWState extends State<ChangePW> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start, // Align the column at the top
           children: [
-            SizedBox(height: 90), // Add space at the top if needed
+            const SizedBox(height: 90), // Add space at the top if needed
             _buildPasswordField(
               controller: _pwController,
               labelText: '현재 비밀번호',
@@ -158,7 +157,7 @@ class _ChangePWState extends State<ChangePW> {
               },
               visibility: _showOriginPassword,
             ),
-            SizedBox(height: 12), // Reduce the space between fields
+            const SizedBox(height: 12), // Reduce the space between fields
             _buildPasswordField(
               controller: _newPWController,
               labelText: '새로운 비밀번호',
@@ -171,7 +170,7 @@ class _ChangePWState extends State<ChangePW> {
               },
               visibility: _showPassword,
             ),
-            SizedBox(height: 12), // Reduce the space between fields
+            const SizedBox(height: 12), // Reduce the space between fields
             _buildPasswordField(
               controller: _confirmPWController,
               labelText: '새로운 비밀번호 확인',
@@ -184,12 +183,12 @@ class _ChangePWState extends State<ChangePW> {
               },
               visibility: _showConfirmPassword,
             ),
-            SizedBox(height: 32), // Reduce space before the button
+            const SizedBox(height: 32), // Reduce space before the button
   GestureDetector(
   onTap: _updatePassword, // 기존 onPressed 대신 onTap 사용
   child: Container(
     width: 450, // 가로 넓이 설정
-    decoration: BoxDecoration(
+    decoration: const BoxDecoration(
       // 필요한 경우 추가 스타일 설정
     ),
     child: Image.asset(
@@ -218,17 +217,17 @@ class _ChangePWState extends State<ChangePW> {
       children: [
         Text(
           labelText,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
           ),
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         TextField(
           controller: controller,
           obscureText: obscureText,
           decoration: InputDecoration(
-            border: OutlineInputBorder(),
+            border: const OutlineInputBorder(),
             hintText: hintText,
             filled: true,
             fillColor: Colors.white,

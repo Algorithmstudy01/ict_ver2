@@ -8,14 +8,14 @@ import 'dart:convert';
 class BookmarkScreen extends StatefulWidget {
   final String userId;
 
-  const BookmarkScreen({Key? key, required this.userId}) : super(key: key);
+  const BookmarkScreen({super.key, required this.userId});
 
   @override
   _BookmarkScreenState createState() => _BookmarkScreenState();
 }
 
 class _BookmarkScreenState extends State<BookmarkScreen> {
-  TextEditingController _searchController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
   Future<List<Map<String, String>>>? _favoritesFuture;
   List<Map<String, String>> _allFavorites = [];
   List<Map<String, String>> _filteredFavorites = [];
@@ -85,7 +85,7 @@ class _BookmarkScreenState extends State<BookmarkScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text('즐겨찾기 목록'),
+        title: const Text('즐겨찾기 목록'),
         backgroundColor: Colors.white,
         elevation: 4,
         centerTitle: true,
@@ -97,17 +97,17 @@ class _BookmarkScreenState extends State<BookmarkScreen> {
         child: Column(
           children: [
             _buildSearchBar(),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Expanded(
               child: FutureBuilder<List<Map<String, String>>>(
                 future: _favoritesFuture,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
+                    return const Center(child: CircularProgressIndicator());
                   } else if (snapshot.hasError) {
                     return Center(child: Text('Error: ${snapshot.error}'));
                   } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return Center(child: Text('No favorites added yet.'));
+                    return const Center(child: Text('No favorites added yet.'));
                   } else {
                     return ListView.builder(
                       itemCount: _filteredFavorites.length,
@@ -137,11 +137,11 @@ class _BookmarkScreenState extends State<BookmarkScreen> {
             ),
             child: Row(
               children: [
-                Icon(Icons.search, color: Colors.black),
+                const Icon(Icons.search, color: Colors.black),
                 Expanded(
                   child: TextField(
                     controller: _searchController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       hintText: '검색',
                       border: InputBorder.none,
                       contentPadding: EdgeInsets.symmetric(vertical: 14),
@@ -149,7 +149,7 @@ class _BookmarkScreenState extends State<BookmarkScreen> {
                   ),
                 ),
                 IconButton(
-                  icon: Icon(Icons.close),
+                  icon: const Icon(Icons.close),
                   onPressed: () {
                     _searchController.clear();
                     _filterFavorites();
@@ -187,8 +187,8 @@ Widget _buildBookmarkItem(Map<String, String> favorite) {
       );
     },
     child: Container(
-      margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),  // Slightly larger margin
-      padding: EdgeInsets.all(10),
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),  // Slightly larger margin
+      padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: Colors.purple[100],  // Slightly lighter background color
         borderRadius: BorderRadius.circular(16),
@@ -215,13 +215,13 @@ Widget _buildBookmarkItem(Map<String, String> favorite) {
                   ),
                 ),
               ),
-              SizedBox(width: 10),  // Slightly larger space between image and text
+              const SizedBox(width: 10),  // Slightly larger space between image and text
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      padding: EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.all(8.0),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(12),
@@ -229,15 +229,15 @@ Widget _buildBookmarkItem(Map<String, String> favorite) {
                       ),
                       child: Text(
                         '알약 이름 : ${favorite['pillName']}',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Container(
-                      padding: EdgeInsets.all(8.0),  // Increased padding for better readability
+                      padding: const EdgeInsets.all(8.0),  // Increased padding for better readability
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(8),
@@ -245,7 +245,7 @@ Widget _buildBookmarkItem(Map<String, String> favorite) {
                       ),
                       child: Text(
                         '효과 : ${favorite['efficacy']}',
-                        style: TextStyle(fontSize: 14),
+                        style: const TextStyle(fontSize: 14),
                       ),
                     ),
                   ],
@@ -253,7 +253,7 @@ Widget _buildBookmarkItem(Map<String, String> favorite) {
               ),
             ],
           ),
-          SizedBox(height: 5),  // More space before the button
+          const SizedBox(height: 5),  // More space before the button
           Align(
             alignment: Alignment.centerRight,
             child: TextButton(
@@ -266,13 +266,13 @@ Widget _buildBookmarkItem(Map<String, String> favorite) {
               },
               style: TextButton.styleFrom(
                 foregroundColor: Colors.black, backgroundColor: Colors.white,  // Background color
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),  // Adjust padding
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),  // Adjust padding
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),  // Rounded corners
                 ),
                 side: BorderSide(color: Colors.black.withOpacity(0.2)),  // Border color
               ),
-              child: Text(
+              child: const Text(
                 '삭제',
                 style: TextStyle(
                   fontSize: 14,

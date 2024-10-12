@@ -9,7 +9,6 @@ import 'my_page.dart';
 import 'NewAlarm/NewAlarm.dart';
 import 'pill_information.dart';
 import 'package:chungbuk_ict/recommended.dart';
-import 'package:chungbuk_ict/PharmacyScreen.dart';
 import 'package:chungbuk_ict/text_OCR.dart';
 
 
@@ -34,7 +33,7 @@ class MyApp extends StatelessWidget {
 
 class TabbarFrame extends StatelessWidget {
   final String userId;
-  const TabbarFrame({Key? key, required this.userId}) : super(key: key);
+  const TabbarFrame({super.key, required this.userId});
 
   @override
   Widget build(BuildContext context) {
@@ -63,14 +62,14 @@ class TabbarFrame extends StatelessWidget {
           bottomNavigationBar: TabBar(
             indicatorColor: Colors.white,
             labelStyle: GoogleFonts.roboto(
-              textStyle: TextStyle(
+              textStyle: const TextStyle(
                 color: Color(0xFF333333),
                 fontWeight: FontWeight.bold,
                 fontSize: 11,
               ),
             ),
             indicatorWeight: 4,
-            tabs: [
+            tabs: const [
               Tab(
                 icon: Icon(Icons.home),
                 text: "홈",
@@ -99,7 +98,7 @@ class TabbarFrame extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.userId}) : super(key: key);
+  const MyHomePage({super.key, required this.userId});
 
   final String userId;
 
@@ -109,7 +108,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   String _nickname = '';
-  Map<String, dynamic> _pillInfo = {};
+  final Map<String, dynamic> _pillInfo = {};
 
   @override
   void initState() {
@@ -149,7 +148,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   Container(
                     width: size.width * 0.2,
                     height: size.width * 0.2,
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       shape: BoxShape.circle,
                     ),
                     child: ClipRRect(
@@ -215,7 +214,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               ),
                               icon: Image.asset('assets/img/find_pill.png'),
                               iconSize: size.width * 0.15,
-                              padding: EdgeInsets.all(10),
+                              padding: const EdgeInsets.all(10),
                             ),
                           ),
                           Expanded(
@@ -228,7 +227,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               ),
                               icon: Image.asset('assets/img/favorites.png'),
                               iconSize: size.width * 0.15,
-                              padding: EdgeInsets.all(10),
+                              padding: const EdgeInsets.all(10),
                             ),
                           ),
                         ],
@@ -252,7 +251,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               ),
                               icon: Image.asset('assets/img/pharmacy.png'),
                               iconSize: size.width * 0.15,
-                              padding: EdgeInsets.all(10),
+                              padding: const EdgeInsets.all(10),
                             ),
                           ),
                           Expanded(
@@ -265,7 +264,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             ),
                               icon: Image.asset('assets/img/recommend.png'),
                               iconSize: size.width * 0.15,
-                              padding: EdgeInsets.all(10),
+                              padding: const EdgeInsets.all(10),
                             ),
                           ),
                         ],
@@ -276,14 +275,14 @@ class _MyHomePageState extends State<MyHomePage> {
                     width: size.width * 0.85,
                     margin: const EdgeInsets.only(top: 10),
                     decoration: BoxDecoration(
-                      color: Color.fromARGB(255, 162, 228, 192),
+                      color: const Color.fromARGB(255, 162, 228, 192),
                       borderRadius: BorderRadius.circular(12),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.grey.withOpacity(0.3),
                           spreadRadius: 3,
                           blurRadius: 5,
-                          offset: Offset(0, 3),
+                          offset: const Offset(0, 3),
                         ),
                       ],
                     ),
@@ -307,11 +306,11 @@ class _MyHomePageState extends State<MyHomePage> {
                                 ),
                               ),
                             ),
-                            TextSpan(
+                            const TextSpan(
                               text: '야금야금은 다양한 약을 꾸준히 복용해야 하는 분들에게 쉽고 정확하게 약을 복용할 수 있도록 도와주는 어플리케이션입니다.\n\n\n',
                             ),
 
-                            TextSpan(
+                            const TextSpan(
                               text: '- 이 어플은 참고용이며, 실제 복약 지침은 의료 전문가의 조언을 우선시하세요.\n'
                             ),
                           ],

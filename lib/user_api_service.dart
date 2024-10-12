@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  static String _baseUrl = 'https://80d4-113-198-180-184.ngrok-free.app/';
+  static final String _baseUrl = 'https://80d4-113-198-180-184.ngrok-free.app/';
 
   static Future<http.Response> registerUser(
   String id,
@@ -19,7 +19,7 @@ class ApiService {
     'location': location,
     'email': email,
   };
-  print('Request Data: ${requestData}');
+  print('Request Data: $requestData');
   print('Request Data: ${jsonEncode(requestData)}'); // 디버깅 출력
 
   try {
@@ -37,16 +37,16 @@ class ApiService {
     return response;
   } on http.ClientException catch (e) {
       print('ClientException: $e');
-    throw e;
+    rethrow;
   } on SocketException catch (e) {
       print('SocketException: $e');
-    throw e;
+    rethrow;
   } on TimeoutException catch (e) {
       print('TimeoutException: $e');
-    throw e;
+    rethrow;
   } catch (e) {
       print('Exception: $e');
-    throw e;
+    rethrow;
   }
 }
 

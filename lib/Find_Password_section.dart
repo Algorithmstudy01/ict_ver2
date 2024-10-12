@@ -1,10 +1,12 @@
+import 'package:chungbuk_ict/login_section.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-import 'login_section.dart'; // 로그인 섹션 import
 
 class FindPasswordSection extends StatefulWidget {
+  const FindPasswordSection({super.key});
+
   @override
   _FindPasswordSectionState createState() => _FindPasswordSectionState();
 }
@@ -25,7 +27,7 @@ class _FindPasswordSectionState extends State<FindPasswordSection> {
       return;
     }
 
-    final url = 'https://80d4-113-198-180-184.ngrok-free.app/find_password/'; // Django 엔드포인트
+    const url = 'https://80d4-113-198-180-184.ngrok-free.app/find_password/'; // Django 엔드포인트
     final response = await http.post(
       Uri.parse(url),
       headers: {'Content-Type': 'application/json'},
@@ -50,7 +52,7 @@ class _FindPasswordSectionState extends State<FindPasswordSection> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text('비밀번호 찾기'),
+        title: const Text('비밀번호 찾기'),
         backgroundColor: Colors.white,
         elevation: 4, // Add elevation for shadow
         centerTitle: true,
@@ -58,11 +60,11 @@ class _FindPasswordSectionState extends State<FindPasswordSection> {
         shadowColor: Colors.grey.withOpacity(0.5), // Set shadow color
 
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => LoginSection()), // 뒤로가기 버튼 누르면 로그인 섹션으로 이동
+              MaterialPageRoute(builder: (context) => const LoginSection()), // 뒤로가기 버튼 누르면 로그인 섹션으로 이동
             );
           },
         ),
@@ -75,22 +77,22 @@ class _FindPasswordSectionState extends State<FindPasswordSection> {
           children: [
             TextField(
               controller: _usernameController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: '아이디',
                 hintText: '아이디를 입력해주세요',
                 border: OutlineInputBorder(),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             TextField(
               controller: _emailController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: '이메일',
                 hintText: '이메일을 입력해주세요',
                 border: OutlineInputBorder(),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Center(
               child: GestureDetector(
                 onTap: _findPassword, // 비밀번호 찾기 로직
@@ -101,7 +103,7 @@ class _FindPasswordSectionState extends State<FindPasswordSection> {
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Center(
               child: Text(
                 _resultMessage, // 결과 메시지 또는 비밀번호 출력
@@ -112,16 +114,16 @@ class _FindPasswordSectionState extends State<FindPasswordSection> {
                 textAlign: TextAlign.center,
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Center(
               child: TextButton(
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => LoginSection()),
+                    MaterialPageRoute(builder: (context) => const LoginSection()),
                   );
                 },
-                child: Text(
+                child: const Text(
                   '로그인',
                   style: TextStyle(color: Colors.black),
                 ),
