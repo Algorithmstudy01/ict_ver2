@@ -108,7 +108,7 @@ class _FindPillState extends State<FindPill> with AutomaticKeepAliveClientMixin 
     if (_cameras.isNotEmpty) {
       controller = CameraController(
         _cameras[0],
-        ResolutionPreset.max,
+        ResolutionPreset.low,
         enableAudio: false,
       );
 
@@ -402,6 +402,7 @@ Future<void> _saveSearchHistory(PillInfo pillInfo) async {
 
 
  return Scaffold(
+   backgroundColor: Colors.white,
   appBar: AppBar(
     title: Text('알약 검색'),
     backgroundColor: Colors.white,
@@ -533,6 +534,7 @@ Future<void> _saveSearchHistory(PillInfo pillInfo) async {
                           } else {
                             setState(() {
                               _image = null; // Clear the current image
+                              imageFile = null;
                             });
                           }
                         },
