@@ -124,7 +124,6 @@ def find_pill_info_from_csv(predicted_category_id, csv_path):
                     "제품명": row["제품명"],
                     "drug_N": row["drug_N"],
                     "품목기준코드": row["품목기준코드"],
-                    "제조/수입사": row["제조/수입사"],
                     "이 약의 효능은 무엇입니까?": row["이 약의 효능은 무엇입니까?"],
                     "이 약은 어떻게 사용합니까?": row["이 약은 어떻게 사용합니까?"],
                     "이 약을 사용하기 전에 반드시 알아야 할 내용은 무엇입니까?": row["이 약을 사용하기 전에 반드시 알아야 할 내용은 무엇입니까?"],
@@ -833,7 +832,6 @@ def find_pill_info_from_csv2(predicted_category_id, csv_path):
                     "제품명": row["제품명"],
                     "drug_N": row["drug_N"],
                     "품목기준코드": row["품목기준코드"],
-                    "제조/수입사": row["제조/수입사"],
                     "이 약의 효능은 무엇입니까?": row["이 약의 효능은 무엇입니까?"],
                     "이 약은 어떻게 사용합니까?": row["이 약은 어떻게 사용합니까?"],
                     "이 약을 사용하기 전에 반드시 알아야 할 내용은 무엇입니까?": row["이 약을 사용하기 전에 반드시 알아야 할 내용은 무엇입니까?"],
@@ -897,13 +895,7 @@ import logging
 import numpy as np
 
 logger = logging.getLogger(__name__)
-<<<<<<< HEAD
 def prompt_user_selection(image_path, top_indices, pred_labels, pred_scores, csv_path, root_dir, pill_info_csv=None):
-=======
-
-def prompt_user_selection(image_path, top_indices, pred_labels, pred_scores, csv_path, root_dir, pill_info_csv=None):
-    # 예측 확률이 0.1 이상, 0.6 미만일 때 호출
->>>>>>> d4ff0eceb1fcd1d2bdfaf11abf6b98973fe3009c
     print(f"(이미지의 예측 확률이 0.1 이상, 0.6 미만입니다.)")
 
     pill_options = []
@@ -911,45 +903,6 @@ def prompt_user_selection(image_path, top_indices, pred_labels, pred_scores, csv
     # 알약 정보 생성
     for idx in range(len(pred_labels)):
         predicted_category_id = int(pred_labels[idx])
-<<<<<<< HEAD
-        pill_info_csv = find_pill_info_from_csv2(predicted_category_id, csv_path)
-
-        # pill_info = {
-        #     'predicted_category_id': predicted_category_id,
-        #     '제품명': pill_info_csv.get('제품명', f'Pill {predicted_category_id}'),  # CSV에서 가져온 제품명
-        #     'product_name': pill_info_csv.get('제품명', 'Unknown'),  # 제품명
-        #     'pill_code': predicted_category_id,
-            
-
-        #     'confidence': float(pred_scores[idx]) if isinstance(pred_scores[idx], (float, np.floating)) else pred_scores[idx],
-        # }
-        pill_info = {
-                    'predicted_category_id': int(predicted_category_id),  # 예측된 카테고리 ID
-                    'pillName': pill_info_csv.get('제품명', f'Pill {predicted_category_id}'),  # CSV에서 가져온 제품명
-                    'pill_code': pill_info_csv.get('품목기준코드', predicted_category_id),  # 알약 코드 (없을 경우 predicted_category_id)
-                    'product_name': pill_info_csv.get('제품명', 'Unknown') if pill_info_csv else 'Unknown',
-
-                    # confidence 값이 float 또는 numpy floating 타입이면 float으로 변환
-                    'confidence': float(pred_scores[idx]) if isinstance(pred_scores[idx], (float, np.floating)) else pred_scores[idx],
-                    
-                    # 추가 정보
-                    'manufacturer': pill_info_csv.get('제조/수입사', 'Unknown') if pill_info_csv else 'Unknown',  # 제조사 정보
-                    'efficacy': pill_info_csv.get('이 약의 효능은 무엇입니까?', 'No information') if pill_info_csv else 'No information',  # 효능
-                    'usage': pill_info_csv.get('이 약은 어떻게 사용합니까?', 'No information') if pill_info_csv else 'No information',  # 사용법
-                    'precautions_before_use': pill_info_csv.get('이 약을 사용하기 전에 반드시 알아야 할 내용은 무엇입니까?', 'No information') if pill_info_csv else 'No information',  # 사용 전 주의사항
-                    'usage_precautions': pill_info_csv.get('이 약의 사용상 주의사항은 무엇입니까?', 'No information') if pill_info_csv else 'No information',  # 사용상 주의사항
-                    'drug_food_interactions': pill_info_csv.get('이 약을 사용하는 동안 주의해야 할 약 또는 음식은 무엇입니까?', 'No information') if pill_info_csv else 'No information',  # 약물/음식 상호작용
-                    'side_effects': pill_info_csv.get('이 약은 어떤 이상반응이 나타날 수 있습니까?', 'No information') if pill_info_csv else 'No information',  # 부작용
-                    'storage_instructions': pill_info_csv.get('이 약은 어떻게 보관해야 합니까?', 'No information') if pill_info_csv else 'No information',  # 보관 방법
-                }
-
-        pill_options.append(pill_info)
-
-    num_options = min(len(pill_options), 3)  # 최대 3개 선택
-    pill_options = pill_options[:num_options]
-
-    # JSON으로 Flutter에 전달할 데이터
-=======
         # CSV에서 알약 정보를 가져옴
         pill_info_csv = find_pill_info_from_csv2(predicted_category_id, csv_path)
 
@@ -964,7 +917,6 @@ def prompt_user_selection(image_path, top_indices, pred_labels, pred_scores, csv
             'confidence': float(pred_scores[idx]) if isinstance(pred_scores[idx], (float, np.floating)) else pred_scores[idx],
 
             # 제조사 및 부가 정보들, null일 경우 기본값 제공
-            'manufacturer': pill_info_csv.get('제조/수입사', 'Unknown') if pill_info_csv else 'Unknown',  # 제조사 정보
             'efficacy': pill_info_csv.get('이 약의 효능은 무엇입니까?', 'No information') if pill_info_csv else 'No information',  # 효능
             'usage': pill_info_csv.get('이 약은 어떻게 사용합니까?', 'No information') if pill_info_csv else 'No information',  # 사용법
             'precautions_before_use': pill_info_csv.get('이 약을 사용하기 전에 반드시 알아야 할 내용은 무엇입니까?', 'No information') if pill_info_csv else 'No information',  # 사용 전 주의사항
@@ -981,16 +933,11 @@ def prompt_user_selection(image_path, top_indices, pred_labels, pred_scores, csv
     pill_options = pill_options[:num_options]
 
     # Flutter에 전달할 JSON 데이터
->>>>>>> d4ff0eceb1fcd1d2bdfaf11abf6b98973fe3009c
     response_data = {
         'pill_options': pill_options,
     }
 
     return response_data
-<<<<<<< HEAD
-=======
-
->>>>>>> d4ff0eceb1fcd1d2bdfaf11abf6b98973fe3009c
 
 @api_view(['POST'])
 @csrf_exempt
@@ -1001,11 +948,7 @@ def predict2(request):
         return JsonResponse({'error': 'No image file provided'}, status=400)
 
     image_file = request.FILES['image']
-<<<<<<< HEAD
-    image_path = '/tmp/temp_image.jpg'
-=======
     image_path = '/private/tmp/temp_image.jpg'
->>>>>>> d4ff0eceb1fcd1d2bdfaf11abf6b98973fe3009c
 
     try:
         # 이미지 파일을 저장
@@ -1040,19 +983,11 @@ def predict2(request):
         pred_scores = outputs[0]['scores'].cpu().numpy()
         pred_labels = outputs[0]['labels'].cpu().numpy()
 
-<<<<<<< HEAD
         # 예측률 적용
         threshold_low = 0.1
         threshold_high = 0.6
 
         # Apply thresholds
-=======
-        # 예측 확률 필터링
-        threshold_low = 0.1
-        threshold_high = 0.6
-
-        # 예측 확률이 낮은 값 제거
->>>>>>> d4ff0eceb1fcd1d2bdfaf11abf6b98973fe3009c
         pred_labels = pred_labels[pred_scores >= threshold_low]
         pred_scores = pred_scores[pred_scores >= threshold_low]
 
@@ -1060,57 +995,42 @@ def predict2(request):
             logger.info('예측이 이루어지지 않았습니다.')
             return JsonResponse({'message': 'No predictions made'}, status=200)
 
-<<<<<<< HEAD
+
         # 최상위 예측값 인덱스 찾기
         max_score_idx = pred_scores.argmax()
         predicted_category_id = pred_labels[max_score_idx]
         csv_path = '/Users/seon/Desktop/model/info.csv'
-=======
+
         # 가장 높은 확률의 예측값 인덱스
         max_score_idx = pred_scores.argmax()
         predicted_category_id = pred_labels[max_score_idx]
-        csv_path = '../ict_chungbuk/info.csv'
->>>>>>> d4ff0eceb1fcd1d2bdfaf11abf6b98973fe3009c
+        csv_path = '../ict_chungbuk/info_1.csv'
 
         # pill_info_csv 초기화
         pill_info_csv = {}
 
-<<<<<<< HEAD
         # 예측률에 따른 로직
         if pred_scores[max_score_idx] < threshold_low:
             return JsonResponse({'message': 'Prediction failed'}, status=200)
         elif threshold_low <= pred_scores[max_score_idx] < threshold_high:
             response_data = prompt_user_selection(image_path, None, pred_labels, pred_scores, csv_path, None)
             # 여기에서 response_data를 사용하여 Flutter 앱으로 전달해야 합니다.
-=======
-        # 예측률이 0.1 ~ 0.6 사이인 경우
-        if threshold_low <= pred_scores[max_score_idx] < threshold_high:
-            response_data = prompt_user_selection(image_path, None, pred_labels, pred_scores, csv_path, None)
->>>>>>> d4ff0eceb1fcd1d2bdfaf11abf6b98973fe3009c
             response_data['predicted_category_id'] = int(predicted_category_id)
             response_data['prediction_score'] = float(pred_scores[max_score_idx])
             return JsonResponse(response_data, status=200)
 
-<<<<<<< HEAD
             predicted_category_id = int(selected_category_id)  # 선택된 카테고리 ID로 업데이트
             pill_info_csv = find_pill_info_from_csv(predicted_category_id, csv_path)
 
-=======
->>>>>>> d4ff0eceb1fcd1d2bdfaf11abf6b98973fe3009c
         else:
             # 예측률이 0.6 이상인 경우
             pill_info_csv = find_pill_info_from_csv(predicted_category_id, csv_path)
 
-<<<<<<< HEAD
         # Response 준비
-=======
-        # 결과 반환
->>>>>>> d4ff0eceb1fcd1d2bdfaf11abf6b98973fe3009c
         response_data = {
             'predicted_category_id': int(predicted_category_id),
             'prediction_score': float(pred_scores[max_score_idx]),
             'product_name': pill_info_csv.get('제품명', 'Unknown') if pill_info_csv else 'Unknown',
-            'manufacturer': pill_info_csv.get('제조/수입사', 'Unknown') if pill_info_csv else 'Unknown',
             'pill_code': pill_info_csv.get('품목기준코드', 'Unknown') if pill_info_csv else 'Unknown',
             'efficacy': pill_info_csv.get('이 약의 효능은 무엇입니까?', 'No information') if pill_info_csv else 'No information',
             'usage': pill_info_csv.get('이 약은 어떻게 사용합니까?', 'No information') if pill_info_csv else 'No information',
@@ -1275,3 +1195,124 @@ class RecommendationListView(View):
             return JsonResponse({'recommendations': recommendations_data}, status=200)
         except Exception as e:
             return JsonResponse({'message': str(e)}, status=500)
+
+# from rest_framework.decorators import api_view
+# from rest_framework.response import Response
+# import requests
+# import json
+# import uuid
+# import time
+
+
+# @api_view(['POST'])
+# def ocr_view(request):
+#     image_file = request.FILES['image']
+
+#     # Request 생성
+#     request_json = {
+#         'images': [
+#             {
+#                 'format': 'jpg',
+#                 'name': 'demo'
+#             }
+#         ],
+#         'requestId': str(uuid.uuid4()),
+#         'version': 'V2',
+#         'timestamp': int(round(time.time() * 1000))
+#     }
+
+#     payload = {'message': json.dumps(request_json).encode('UTF-8')}
+#     files = [('file', image_file)]
+#     headers = {'X-OCR-SECRET': secret_key}
+
+#     # OCR 요청
+#     response = requests.request("POST", api_url, headers=headers, data=payload, files=files)
+
+#     if response.status_code == 200:
+#         ocr_results = json.loads(response.text)
+#         all_texts = []
+#         for image_result in ocr_results['images']:
+#             for field in image_result['fields']:
+#                 text = field['inferText']
+#                 all_texts.append(text)
+        
+#         full_text = ' '.join(all_texts)
+#         return Response({"text": full_text})
+#     else:
+#         return Response({"error": f"OCR 실패: 상태 코드 {response.status_code}"}, status=response.status_code)
+
+
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+import requests
+import json
+import uuid
+import time
+import re  # 정규식 사용을 위해 re 모듈 추가
+
+@api_view(['POST'])
+def ocr_view(request):
+    image_file = request.FILES['image']
+
+    # Request 생성
+    request_json = {
+        'images': [
+            {
+                'format': 'jpg',
+                'name': 'demo'
+            }
+        ],
+        'requestId': str(uuid.uuid4()),
+        'version': 'V2',
+        'timestamp': int(round(time.time() * 1000))  # 여기를 사용할 수 있습니다
+    }
+
+    payload = {'message': json.dumps(request_json).encode('UTF-8')}
+    files = [('file', image_file)]
+    headers = {'X-OCR-SECRET': secret_key}
+
+    # OCR 요청
+    response = requests.request("POST", api_url, headers=headers, data=payload, files=files)
+
+    if response.status_code == 200:
+        ocr_results = json.loads(response.text)
+        all_texts = []
+        for image_result in ocr_results['images']:
+            for field in image_result['fields']:
+                text = field['inferText']
+                all_texts.append(text)
+        
+        full_text = ' '.join(all_texts)
+
+        # 정규식을 통한 정보 추출
+        # drug_code_pattern = re.compile(r"\(\d{9}\)")
+        # drug_code_pattern = re.compile(r"(정|캡슐)")
+        drug_code_pattern = re.compile(r"([가-힣]+정|[가-힣]+캡슐)")
+
+
+        drug_codes = drug_code_pattern.findall(full_text)
+
+        dosage_pattern = re.compile(r"(하루\s*\d+회)")
+        dosages = dosage_pattern.findall(full_text)
+
+        # time_pattern 수정
+        time_pattern = re.compile(r"(아침\s*식후\s*\d+분에|아침/저녁\s*식후\s*\d+분에|저녁\s*식후\s*\d+분에)")
+        times = time_pattern.findall(full_text)
+
+        # 아침 저녁 식후가 함께 있는 경우를 분리
+        parsed_times = []
+        for time_entry in times:  # time을 time_entry로 변경
+            if "아침 저녁" in time_entry:
+                parsed_times.append("아침 식후")
+                parsed_times.append("저녁 식후")
+            else:
+                parsed_times.append(time_entry)
+
+        # 추출된 데이터 반환
+        return Response([
+                {"drug_code": drug_code, "dosage": dosages[i] if i < len(dosages) else None, "time": parsed_times[i] if i < len(parsed_times) else None} 
+                for i, drug_code in enumerate(drug_codes)
+            ])
+
+    else:
+        return Response({"error": f"OCR 실패: 상태 코드 {response.status_code}"}, status=response.status_code)

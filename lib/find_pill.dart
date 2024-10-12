@@ -118,6 +118,7 @@ class _FindPillState extends State<FindPill> with AutomaticKeepAliveClientMixin 
         return;
       }
       setState(() {
+         controller.setZoomLevel(7.0);
       });
     })
         .catchError((Object e) {
@@ -395,6 +396,7 @@ Future<void> _saveSearchHistory(PillInfo pillInfo) async {
   }
   @override
   Widget build(BuildContext context) {
+    
   super.build(context);
   final Size size = MediaQuery.of(context).size;
 
@@ -416,71 +418,17 @@ Future<void> _saveSearchHistory(PillInfo pillInfo) async {
       color: Colors.white, // AppBar 제외한 백그라운드 흰색 설정
      // AppBar 제외한 백그라운드 흰색 설정
 
-          child: Center(
+         child: Center(
+        
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                SizedBox(
-                   width: size.width * 0.85,
-                  height: size.height * 0.06,
-                 child: FittedBox(
-                    fit: BoxFit.contain,
-                    child: Text(
-                    '알약 촬영하기',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: size.height * 0.03,
-                      fontFamily: 'Manrope',
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                ),
+                
                 Column(
                   children: [
-                     Container(
-                      margin: EdgeInsets.symmetric(vertical: size.height * 0.01),
-                      width: size.width * 0.85,
-                      height: size.height * 0.09,
-                        child: FittedBox(
-                        fit: BoxFit.contain,
-                        child:Text.rich(
-                        TextSpan(
-                          children: [
-                            TextSpan(
-                              text: '정확한 알약 확인을 위해 사진을 준비해 주세요.\n아래의 ',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: size.height * 0.02,
-                                fontFamily: 'Manrope',
-                                height: size.height * 0.001,
-                              ),
-                            ),
-                            TextSpan(
-                              text: '촬영하기',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: size.height * 0.021,
-                                fontFamily: 'Manrope',
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            TextSpan(
-                              text: ' 버튼을 눌러 사진을 찍어주세요.',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: size.height * 0.02,
-                                fontFamily: 'Manrope',
-                              ),
-                            ),
-                          ],
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                     ),),
+                     
                     Padding(
-                      padding: EdgeInsets.all(10.0),
+                      padding: EdgeInsets.only(top: size.height*0.1),
                       child: SizedBox(
                         width: size.height * 0.4,
                         height: size.height * 0.4,
@@ -501,40 +449,25 @@ Future<void> _saveSearchHistory(PillInfo pillInfo) async {
                               )
                             : (_image != null
                                 ? Image.file(
-                                    imageFile!,
-                                    fit: BoxFit.contain,
+                                    File(_image!.path),
+                                    fit: BoxFit.cover,
+
                                   )
                                 : (controller.value.isInitialized
-                                    ? AspectRatio(aspectRatio: 1,
-                        child: ClipRect(
-                          child: Transform.scale(
-                            scale: controller.value.aspectRatio,
-                              child: Center(
-                                child: CameraPreview(controller),
-                              ),
-                          ),
-                        ),)
+                                     ? CameraPreview(controller)
+
+                      
                                     : Container(color: Colors.grey))),
                       ),
                     ),
-                    
+                
                     SizedBox(
                       width: size.width * 0.9,
                       height: size.height * 0.09,
-                      child: FittedBox(
-                        fit: BoxFit.contain,
-                        child:Text(
-                        '사진을 촬영, 등록하면, 위의 그림과 같이 텍스트를 \n인식하여 자동으로 알약의 정보를 불러옵니다.',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: const Color(0xFF4F4F4F),
-                           fontSize: size.height * 0.02,
-                          fontFamily: 'Manrope',
-                         ),
-                      ),
-                    ),),
+                    ),
                   ],
                 ),
+            
                 Column(
                   children: [
                        Column(
@@ -615,8 +548,11 @@ Future<void> _saveSearchHistory(PillInfo pillInfo) async {
             ),
           ),
 
-      ),),
-    );
+      ),
+    ),
+ );
+
+    
 
 }
   @override

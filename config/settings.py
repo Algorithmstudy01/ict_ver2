@@ -168,7 +168,7 @@ APPEND_SLASH = True
 import os
 
 # CSV 파일 경로 설정
-CSV_PATH = '/Users/seon/Desktop/model/info.csv'
+CSV_PATH = '/Users/seon/Desktop/model/info_1.csv'
 
 # JSON 파일들이 있는 루트 디렉토리 설정
 DATA_ROOT_DIR = '/Users/seon/Desktop/model/data'

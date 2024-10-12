@@ -21,26 +21,39 @@ class _LowPredictionState extends State<LowPrediction> {
     final Size size = MediaQuery.of(context).size;
 
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        automaticallyImplyLeading: false,
-        title: Center(
-          child: Text(
-            '검색한 이미지와 동일한 알약을 선택하세요',
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+  backgroundColor: Colors.white,
+  appBar: AppBar(
+    backgroundColor: Colors.white,
+    elevation: 0,
+    automaticallyImplyLeading: false,
+    title: Center(
+      child: Text(
+        '알약검색', // 앱 바 제목 변경
+        style: TextStyle(
+          color: Colors.black,
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
         ),
       ),
+    ),
+  ),
+  
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
+             Text(
+          '검색한 이미지와 동일한 알약을 선택하세요',
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 14,
+            fontWeight: FontWeight.normal,
+          ),
+             ),
+             Divider(
+          color: Colors.grey[300], // 회색 선 색상
+          thickness: 1, // 선 두께
+        ),
             Expanded(
               child: ListView.builder(
                 itemCount: widget.options.length,
@@ -82,10 +95,9 @@ class _LowPredictionState extends State<LowPrediction> {
                         );
                       },
                       child: Card(
+                        color: Colors.white, // 카드 배경을 흰색으로 설정
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15.0),
                         ),
-                        elevation: 4,
                         child: Row(
                           children: [
                             Padding(
@@ -94,7 +106,7 @@ class _LowPredictionState extends State<LowPrediction> {
                                 'assets/data/${option['predicted_category_id'].toString()}.png',
                                 width: size.width * 0.2,
                                 height: size.width * 0.2,
-                                fit: BoxFit.cover,
+                                fit: BoxFit.contain,
                                 errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
                                   return Icon(
                                     Icons.healing,

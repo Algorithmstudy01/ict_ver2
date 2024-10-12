@@ -193,56 +193,100 @@ class _FamilyListScreenState extends State<FamilyListScreen> {
 
           final familyMembers = snapshot.data!;
 
-          return ListView.builder(
-            itemCount: familyMembers.length,
-            itemBuilder: (context, index) {
-              final familyMember = familyMembers[index];
+             return ListView.builder(
+  itemCount: familyMembers.length,
+  itemBuilder: (context, index) {
+    final familyMember = familyMembers[index];
 
-              return Card(
-                elevation: 2.0,
-                margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-                child: ListTile(
-                  title: Text(familyMember['name'] ?? '이름 없음'),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('관계: ${familyMember['relationship']}'),
-                      Text('전화번호: ${familyMember['phone_number']}'),
-                      Text('주소: ${familyMember['address']}'),
-                    ],
-                  ),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      TextButton(
-                        onPressed: () {
-                          _editFamilyMember(
-                            familyMember['name'] ?? '',
-                            familyMember['relationship'] ?? '',
-                            familyMember['phone_number'] ?? '',
-                            familyMember['address'] ?? '',
-                          );
-                        },
-                        child: Text(
-                          '수정',
-                          style: TextStyle(color: Colors.black),
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          _confirmDelete(familyMember['name'] ?? '');
-                        },
-                        child: Text(
-                          '삭제',
-                          style: TextStyle(color: Colors.black),
-                        ),
-                      ),
-                    ],
-                  ),
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+      decoration: BoxDecoration(
+        color: Colors.white, // 카드 배경을 흰색으로 설정
+        borderRadius: BorderRadius.circular(8), // 모서리를 둥글게 설정
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(8), // 카드 모서리를 둥글게 설정
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white, // 카드의 흰색 배경
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.3), // 아래쪽 그림자 설정
+                spreadRadius: 2,
+                blurRadius: 4,
+                offset: Offset(0, 2), // 아래쪽으로만 그림자
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ListTile(
+               title: Text(
+                familyMember['name'] ?? '이름 없음',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold, // 글꼴 굵기 설정
+                  fontSize: 23, // 글씨 크기 설정
+                  color: Colors.black, // 텍스트 색상 설정
                 ),
-              );
-            },
-          );
+              ),
+
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('관계: ${familyMember['relationship']}'),
+                    Text('전화번호: ${familyMember['phone_number']}'),
+                    Text('주소: ${familyMember['address']}'),
+                  ],
+                ),
+              ),
+              // 수정 및 삭제 버튼을 카드의 아래쪽 오른쪽에 배치
+              Padding(
+                padding: const EdgeInsets.only(right: 8, bottom: 8), // 오른쪽과 아래쪽 패딩 추가
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end, // 버튼을 오른쪽으로 정렬
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        _editFamilyMember(
+                          familyMember['name'] ?? '',
+                          familyMember['relationship'] ?? '',
+                          familyMember['phone_number'] ?? '',
+                          familyMember['address'] ?? '',
+                        );
+                      },
+                      child: Text(
+                        '수정',
+                        style: TextStyle(color: Colors.black),
+                      ),
+                    ),
+                    SizedBox(width: 8), // 버튼 사이 간격 추가
+                    TextButton(
+                      onPressed: () {
+                        _confirmDelete(familyMember['name'] ?? '');
+                      },
+                      child: Text(
+                        '삭제',
+                        style: TextStyle(color: Colors.black),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // 카드 하단에 회색선 추가
+              Divider(
+                color: Colors.grey, // 회색선 색상
+                thickness: 1, // 선 두께
+                height: 1, // 선의 높이
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  },
+);
+
         },
       ),
     );
