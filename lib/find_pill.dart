@@ -449,14 +449,19 @@ Future<void> _saveSearchHistory(PillInfo pillInfo) async {
                               )
                             : (_image != null
                                 ? Image.file(
-                                    File(_image!.path),
-                                    fit: BoxFit.cover,
-
+                                    imageFile!,
+                                    fit: BoxFit.contain,
                                   )
                                 : (controller.value.isInitialized
-                                     ? CameraPreview(controller)
-
-                      
+                                    ? AspectRatio(aspectRatio: 1,
+                        child: ClipRect(
+                          child: Transform.scale(
+                            scale: controller.value.aspectRatio,
+                              child: Center(
+                                child: CameraPreview(controller),
+                              ),
+                          ),
+                        ),)
                                     : Container(color: Colors.grey))),
                       ),
                     ),
