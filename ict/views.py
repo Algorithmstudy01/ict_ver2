@@ -1001,11 +1001,6 @@ def predict2(request):
         predicted_category_id = pred_labels[max_score_idx]
         csv_path = '/Users/seon/Desktop/model/info.csv'
 
-        # 가장 높은 확률의 예측값 인덱스
-        max_score_idx = pred_scores.argmax()
-        predicted_category_id = pred_labels[max_score_idx]
-        csv_path = '../ict_chungbuk/info_1.csv'
-
         # pill_info_csv 초기화
         pill_info_csv = {}
 
@@ -1249,6 +1244,11 @@ import json
 import uuid
 import time
 import re  # 정규식 사용을 위해 re 모듈 추가
+
+
+secret_key = "VUVZTm1UYk5ocEJSaHZHRVpuc0lCc0ZUc29vTXpxdmE="
+api_url = "https://fqml315j1i.apigw.ntruss.com/custom/v1/34920/3850f8f6acb98a9f5c4375a18ec018ef3062e8636574ca5963ef4a8e618805df/general"
+
 
 @api_view(['POST'])
 def ocr_view(request):
