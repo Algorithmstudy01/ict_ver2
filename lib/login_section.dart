@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:chungbuk_ict/first_alarm_set.dart';
 import 'package:chungbuk_ict/my_page.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -25,11 +26,10 @@ class _LoginSectionState extends State<LoginSection> {
 void _login() async {
     final String id = _idController.text;
     final String password = _passwordController.text;
-    Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-      // 성공 시 페이지 이동
-      return TabbarFrame(userId: id);
-    }));
-
+    // Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) {
+    //   // 성공 시 페이지 이동
+    //   return FirstAlarmSet(userId: id);
+    // }), (route) => false);
  if (id.isNotEmpty && password.isNotEmpty) {
       try {
         final response = await http.post(
@@ -44,10 +44,10 @@ void _login() async {
         );
         if (response.statusCode == 200) {
           // 로그인 성공 시 처리
-          Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) {
             // 성공 시 페이지 이동
             return TabbarFrame(userId: id);
-          }));
+          }), (route) => false);
         } else {
           // 로그인 실패 시 처리
           final responseBody = json.decode(response.body);

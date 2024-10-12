@@ -70,6 +70,8 @@ class _ExampleAlarmHomeScreenState extends State<ExampleAlarmHomeScreen> with Au
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+
     super.build(context);
     return Scaffold(
       backgroundColor: Colors.white,
