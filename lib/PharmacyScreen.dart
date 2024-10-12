@@ -2,6 +2,7 @@
 // import 'dart:developer' show log;
 // import 'package:flutter/material.dart';
 // import 'package:flutter_naver_map/flutter_naver_map.dart';
+<<<<<<< HEAD
 
 // class NearbyPharmacyPage extends StatefulWidget {
 //   const NearbyPharmacyPage({Key? key}) : super(key: key);
@@ -10,17 +11,35 @@
 //   State<NearbyPharmacyPage> createState() => _NearbyPharmacyPageState();
 // }
 
+=======
+//
+// class NearbyPharmacyPage extends StatefulWidget {
+//   const NearbyPharmacyPage({Key? key}) : super(key: key);
+//
+//   @override
+//   State<NearbyPharmacyPage> createState() => _NearbyPharmacyPageState();
+// }
+//
+>>>>>>> fbd7e74ed6c043753a199a513af7304c46bc110d
 // class _NearbyPharmacyPageState extends State<NearbyPharmacyPage> {
 //   late NaverMapController _mapController;
 //   final Completer<NaverMapController> mapControllerCompleter = Completer();
 //   bool _isInitialized = false;
+<<<<<<< HEAD
 
+=======
+//
+>>>>>>> fbd7e74ed6c043753a199a513af7304c46bc110d
 //   @override
 //   void initState() {
 //     super.initState();
 //     _initializeNaverMap();
 //   }
+<<<<<<< HEAD
 
+=======
+//
+>>>>>>> fbd7e74ed6c043753a199a513af7304c46bc110d
 //   Future<void> _initializeNaverMap() async {
 //     WidgetsFlutterBinding.ensureInitialized();
 //     await NaverMapSdk.instance.initialize(
@@ -31,7 +50,11 @@
 //       _isInitialized = true;
 //     });
 //   }
+<<<<<<< HEAD
 
+=======
+//
+>>>>>>> fbd7e74ed6c043753a199a513af7304c46bc110d
 //   @override
 //   Widget build(BuildContext context) {
 //     return Scaffold(
@@ -49,7 +72,11 @@
 //       ),
 //     );
 //   }
+<<<<<<< HEAD
 
+=======
+//
+>>>>>>> fbd7e74ed6c043753a199a513af7304c46bc110d
 //   Widget _naverMapSection() => NaverMap(
 //     options: const NaverMapViewOptions(
 //       zoomGesturesEnable: true,
@@ -69,7 +96,11 @@
 //       _mapController = controller;
 //       mapControllerCompleter.complete(controller);
 //       log("onMapReady", name: "onMapReady");
+<<<<<<< HEAD
 
+=======
+//
+>>>>>>> fbd7e74ed6c043753a199a513af7304c46bc110d
 //       // 마커 생성 및 추가
 //       final marker = NMarker(
 //         id: 'test',
@@ -79,6 +110,7 @@
 //         id: 'test1',
 //         position: const NLatLng(37.606932467450326, 127.05578661133796),
 //       );
+<<<<<<< HEAD
 
 //       // 마커를 지도에 추가
 //       _mapController.addOverlayAll({marker, marker1});
@@ -86,6 +118,15 @@
 //       // 위치 추적 모드 설정
 //       _mapController.setLocationTrackingMode(NLocationTrackingMode.follow);
 
+=======
+//
+//       // 마커를 지도에 추가
+//       _mapController.addOverlayAll({marker, marker1});
+//
+//       // 위치 추적 모드 설정
+//       _mapController.setLocationTrackingMode(NLocationTrackingMode.follow);
+//
+>>>>>>> fbd7e74ed6c043753a199a513af7304c46bc110d
 //       // 마커에 인포 윈도우 추가
 //       final infoWindow = NInfoWindow.onMarker(
 //         id: marker.info.id,
