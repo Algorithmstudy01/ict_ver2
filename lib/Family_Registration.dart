@@ -6,7 +6,7 @@ import 'dart:convert';
 class FamilyRegister extends StatefulWidget {
   final String userId;
 
-  const FamilyRegister({Key? key, required this.userId}) : super(key: key);
+  const FamilyRegister({super.key, required this.userId});
 
   @override
   State<FamilyRegister> createState() => _FamilyRegisterState();
@@ -62,7 +62,7 @@ class _FamilyRegisterState extends State<FamilyRegister> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('가족등록'),
+        title: const Text('가족등록'),
         backgroundColor: Colors.white,
         elevation: 4,
         centerTitle: true,
@@ -75,7 +75,7 @@ class _FamilyRegisterState extends State<FamilyRegister> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Center(
               child: Image.asset(
                 'assets/img/logo.jpg',
@@ -83,13 +83,13 @@ class _FamilyRegisterState extends State<FamilyRegister> {
                 height: 100,
               ),
             ),
-            SizedBox(height: 50),
+            const SizedBox(height: 50),
             TextField(
               controller: _nameController,
               decoration: InputDecoration(
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(15.0),
-                  borderSide: BorderSide(
+                  borderSide: const BorderSide(
                     color: Colors.black,
                     width: 2.0,
                   ),
@@ -98,13 +98,13 @@ class _FamilyRegisterState extends State<FamilyRegister> {
                 hintText: '이름을 입력해 주세요.',
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             // 관계 선택 드롭다운 메뉴
             DropdownButtonFormField<String>(
               decoration: InputDecoration(
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(15.0),
-                  borderSide: BorderSide(
+                  borderSide: const BorderSide(
                     color: Colors.black,
                     width: 2.0,
                   ),
@@ -123,15 +123,15 @@ class _FamilyRegisterState extends State<FamilyRegister> {
                   _selectedRelationship = value; // 선택된 관계 저장
                 });
               },
-              hint: Text('관계를 선택해 주세요.'),
+              hint: const Text('관계를 선택해 주세요.'),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             TextField(
               controller: _phoneNumberController,
               decoration: InputDecoration(
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(15.0),
-                  borderSide: BorderSide(
+                  borderSide: const BorderSide(
                     color: Colors.black,
                     width: 2.0,
                   ),
@@ -140,13 +140,13 @@ class _FamilyRegisterState extends State<FamilyRegister> {
                 hintText: '전화번호를 입력해 주세요',
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             TextField(
               controller: _addressController,
               decoration: InputDecoration(
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(15.0),
-                  borderSide: BorderSide(
+                  borderSide: const BorderSide(
                     color: Colors.black,
                     width: 2.0,
                   ),
@@ -155,7 +155,7 @@ class _FamilyRegisterState extends State<FamilyRegister> {
                 hintText: '주소를 입력해 주세요',
               ),
             ),
-            SizedBox(height: 30),
+            const SizedBox(height: 30),
             GestureDetector(
               onTap: _submitForm,
               child: Image.asset(
@@ -174,14 +174,14 @@ class _FamilyRegisterState extends State<FamilyRegister> {
 class FamilyRegisterCompleteScreen extends StatelessWidget {
   final String userId;
 
-  FamilyRegisterCompleteScreen({required this.userId});
+  const FamilyRegisterCompleteScreen({super.key, required this.userId});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.push(
               context,
@@ -197,7 +197,7 @@ class FamilyRegisterCompleteScreen extends StatelessWidget {
       body: Container(
         color: Colors.white,
         padding: const EdgeInsets.all(16.0),
-        child: Center(
+        child: const Center(
           child: Text(
             '정상적으로 등록 되었습니다.',
             style: TextStyle(

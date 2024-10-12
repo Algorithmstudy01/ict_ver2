@@ -17,7 +17,7 @@ import 'dart:convert';
 class MyPage extends StatefulWidget {
   final String userId;
 
-  const MyPage({Key? key, required this.userId}) : super(key: key);
+  const MyPage({super.key, required this.userId});
 
   @override
   State<MyPage> createState() => _MyPageState();
@@ -75,25 +75,25 @@ class _MyPageState extends State<MyPage> {
         child: ListView(
           children: [
             Container(
-              padding: EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(16.0),
               color: Colors.grey[50],
               child: Row(
                 children: [
-                  CircleAvatar(
+                  const CircleAvatar(
                     radius: 30,
                     child: Icon(Icons.person, size: 40),
                   ),
-                  SizedBox(width: 16),
+                  const SizedBox(width: 16),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         "안녕하세요.",
                         style: TextStyle(fontSize: 16),
                       ),
                       Text(
                         "$_nickname 님",
-                        style: TextStyle(
+                        style: const TextStyle(
                             fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                     ],
@@ -101,7 +101,7 @@ class _MyPageState extends State<MyPage> {
                 ],
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Container(
               color: Colors.grey[300], // Thicker separator color
               height: 8, // Increase height to make it thicker
@@ -109,15 +109,15 @@ class _MyPageState extends State<MyPage> {
 
             // 검색 기록
             ListTile(
-              title: Text("검색 기록"),
-              trailing: Icon(Icons.chevron_right),
+              title: const Text("검색 기록"),
+              trailing: const Icon(Icons.chevron_right),
               onTap: openPillInformation, // Updated to call the correct function
             ),
 
             // 추천 받은 목록
             ListTile(
-              title: Text("추천 받은 목록"), // 메뉴 제목
-              trailing: Icon(Icons.chevron_right), // 화살표 아이콘
+              title: const Text("추천 받은 목록"), // 메뉴 제목
+              trailing: const Icon(Icons.chevron_right), // 화살표 아이콘
               onTap: () {
                 // 추천 받은 목록 화면으로 이동
                 Navigator.push(
@@ -136,8 +136,8 @@ class _MyPageState extends State<MyPage> {
 
             // 비밀번호 변경
             ListTile(
-              title: Text("비밀번호 변경"),
-              trailing: Icon(Icons.chevron_right),
+              title: const Text("비밀번호 변경"),
+              trailing: const Icon(Icons.chevron_right),
               onTap: () {
                 // 비밀번호 변경 화면으로 이동
                 Navigator.push(
@@ -149,8 +149,8 @@ class _MyPageState extends State<MyPage> {
 
             // 가족 등록 하기
             ListTile(
-              title: Text("가족 등록"),
-              trailing: Icon(Icons.chevron_right),
+              title: const Text("가족 등록"),
+              trailing: const Icon(Icons.chevron_right),
               onTap: () {
                 // 가족 등록하기 화면으로 이동
                 Navigator.push(
@@ -162,8 +162,8 @@ class _MyPageState extends State<MyPage> {
 
             // 가족 목록 보기
             ListTile(
-              title: Text("가족 목록"),
-              trailing: Icon(Icons.chevron_right),
+              title: const Text("가족 목록"),
+              trailing: const Icon(Icons.chevron_right),
               onTap: openFamilyList, // 가족 목록 화면으로 이동
             ),
 
@@ -174,8 +174,8 @@ class _MyPageState extends State<MyPage> {
 
             // 회원탈퇴
             ListTile(
-              title: Text("회원탈퇴"),
-              trailing: Icon(Icons.chevron_right),
+              title: const Text("회원탈퇴"),
+              trailing: const Icon(Icons.chevron_right),
               onTap: () {
                 // 회원탈퇴 화면으로 이동
                 Navigator.push(

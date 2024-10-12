@@ -17,7 +17,7 @@ Future<void> main() async {
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   await Alarm.init();
   
-  runApp(MyApp());
+  runApp(const MyApp());
 
   if (await Permission.contacts.request().isGranted) {
     // Either the permission was already granted before or the user just granted it.

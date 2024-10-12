@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-// Assuming this contains the PillInfo class
 import 'package:chungbuk_ict/pill_information.dart'; 
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -9,7 +8,7 @@ class LowPrediction extends StatefulWidget {
   final List<dynamic> options;
   final String userId;
 
-  LowPrediction({Key? key, required this.options, required this.userId}) : super(key: key);
+  const LowPrediction({super.key, required this.options, required this.userId});
 
   @override
   _LowPredictionState createState() => _LowPredictionState();
@@ -26,7 +25,7 @@ class _LowPredictionState extends State<LowPrediction> {
     backgroundColor: Colors.white,
     elevation: 0,
     automaticallyImplyLeading: false,
-    title: Center(
+    title: const Center(
       child: Text(
         '알약검색', // 앱 바 제목 변경
         style: TextStyle(
@@ -42,7 +41,7 @@ class _LowPredictionState extends State<LowPrediction> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-             Text(
+             const Text(
           '검색한 이미지와 동일한 알약을 선택하세요',
           style: TextStyle(
             color: Colors.black,
@@ -96,7 +95,7 @@ class _LowPredictionState extends State<LowPrediction> {
                       },
                       child: Card(
                         color: Colors.white, // 카드 배경을 흰색으로 설정
-                        shape: RoundedRectangleBorder(
+                        shape: const RoundedRectangleBorder(
                         ),
                         child: Row(
                           children: [
@@ -124,17 +123,17 @@ class _LowPredictionState extends State<LowPrediction> {
                                   children: [
                                     Text(
                                       '약 이름: ${option['product_name']}',
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w500,
                                       ),
                                     ),
-                                    SizedBox(height: 8),
+                                    const SizedBox(height: 8),
                                     Text(
                                       '예측 확률: ${(option['confidence'] is String
                                           ? double.parse(option['confidence'])
                                           : option['confidence']).toStringAsFixed(1)}%',
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                         fontSize: 14,
                                       ),
                                     ),

@@ -7,6 +7,8 @@ import 'package:http/http.dart' as http;
 
 
 class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key});
+
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
@@ -82,7 +84,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Flutter Image Upload'),
+        title: const Text('Flutter Image Upload'),
       ),
       body: SingleChildScrollView(
         child: Center(
@@ -90,39 +92,39 @@ class _MyHomePageState extends State<MyHomePage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               _image == null
-                  ? Text('No image selected.')
+                  ? const Text('No image selected.')
                   : Container(
-                      constraints: BoxConstraints(maxHeight: 300), // Image maximum height limit
+                      constraints: const BoxConstraints(maxHeight: 300), // Image maximum height limit
                       child: Image.file(_image!),
                     ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               if (_isLoading) // Show loading indicator if loading
-                CircularProgressIndicator(),
+                const CircularProgressIndicator(),
               if (!_isLoading) ...[
                 Text(
                   'Pill Code: $_pillCode',
-                  style: TextStyle(fontSize: 20),
+                  style: const TextStyle(fontSize: 20),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Text(
                   'Pill Name: $_pillName',
-                  style: TextStyle(fontSize: 20),
+                  style: const TextStyle(fontSize: 20),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Text(
                   'Confidence: $_confidence',
-                  style: TextStyle(fontSize: 20),
+                  style: const TextStyle(fontSize: 20),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Text(
                   'Extracted Text: $_extractedText',
-                  style: TextStyle(fontSize: 20),
+                  style: const TextStyle(fontSize: 20),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
               ],
               ElevatedButton(
                 onPressed: _pickImage,
-                child: Text('Pick Image'),
+                child: const Text('Pick Image'),
               ),
             ],
           ),
