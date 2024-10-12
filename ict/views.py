@@ -1196,15 +1196,59 @@ class RecommendationListView(View):
         except Exception as e:
             return JsonResponse({'message': str(e)}, status=500)
 
+# from rest_framework.decorators import api_view
+# from rest_framework.response import Response
+# import requests
+# import json
+# import uuid
+# import time
+
+
+# @api_view(['POST'])
+# def ocr_view(request):
+#     image_file = request.FILES['image']
+
+#     # Request 생성
+#     request_json = {
+#         'images': [
+#             {
+#                 'format': 'jpg',
+#                 'name': 'demo'
+#             }
+#         ],
+#         'requestId': str(uuid.uuid4()),
+#         'version': 'V2',
+#         'timestamp': int(round(time.time() * 1000))
+#     }
+
+#     payload = {'message': json.dumps(request_json).encode('UTF-8')}
+#     files = [('file', image_file)]
+#     headers = {'X-OCR-SECRET': secret_key}
+
+#     # OCR 요청
+#     response = requests.request("POST", api_url, headers=headers, data=payload, files=files)
+
+#     if response.status_code == 200:
+#         ocr_results = json.loads(response.text)
+#         all_texts = []
+#         for image_result in ocr_results['images']:
+#             for field in image_result['fields']:
+#                 text = field['inferText']
+#                 all_texts.append(text)
+        
+#         full_text = ' '.join(all_texts)
+#         return Response({"text": full_text})
+#     else:
+#         return Response({"error": f"OCR 실패: 상태 코드 {response.status_code}"}, status=response.status_code)
+
+
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 import requests
 import json
 import uuid
 import time
-
-secret_key = ""
-api_url = "https://fqml315j1i.apigw.ntruss.com/custom/v1/34920/3850f8f6acb98a9f5c4375a18ec018ef3062e8636574ca5963ef4a8e618805df/general"
+import re  # 정규식 사용을 위해 re 모듈 추가
 
 @api_view(['POST'])
 def ocr_view(request):
@@ -1220,7 +1264,7 @@ def ocr_view(request):
         ],
         'requestId': str(uuid.uuid4()),
         'version': 'V2',
-        'timestamp': int(round(time.time() * 1000))
+        'timestamp': int(round(time.time() * 1000))  # 여기를 사용할 수 있습니다
     }
 
     payload = {'message': json.dumps(request_json).encode('UTF-8')}
@@ -1239,6 +1283,36 @@ def ocr_view(request):
                 all_texts.append(text)
         
         full_text = ' '.join(all_texts)
-        return Response({"text": full_text})
+
+        # 정규식을 통한 정보 추출
+        # drug_code_pattern = re.compile(r"\(\d{9}\)")
+        # drug_code_pattern = re.compile(r"(정|캡슐)")
+        drug_code_pattern = re.compile(r"([가-힣]+정|[가-힣]+캡슐)")
+
+
+        drug_codes = drug_code_pattern.findall(full_text)
+
+        dosage_pattern = re.compile(r"(하루\s*\d+회)")
+        dosages = dosage_pattern.findall(full_text)
+
+        # time_pattern 수정
+        time_pattern = re.compile(r"(아침\s*식후\s*\d+분에|아침/저녁\s*식후\s*\d+분에|저녁\s*식후\s*\d+분에)")
+        times = time_pattern.findall(full_text)
+
+        # 아침 저녁 식후가 함께 있는 경우를 분리
+        parsed_times = []
+        for time_entry in times:  # time을 time_entry로 변경
+            if "아침 저녁" in time_entry:
+                parsed_times.append("아침 식후")
+                parsed_times.append("저녁 식후")
+            else:
+                parsed_times.append(time_entry)
+
+        # 추출된 데이터 반환
+        return Response([
+                {"drug_code": drug_code, "dosage": dosages[i] if i < len(dosages) else None, "time": parsed_times[i] if i < len(parsed_times) else None} 
+                for i, drug_code in enumerate(drug_codes)
+            ])
+
     else:
         return Response({"error": f"OCR 실패: 상태 코드 {response.status_code}"}, status=response.status_code)

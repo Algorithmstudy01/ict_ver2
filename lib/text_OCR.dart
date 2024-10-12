@@ -91,41 +91,55 @@ class _FindTextState extends State<FindText> with AutomaticKeepAliveClientMixin 
       print("Image selected from gallery and processed.");
     }
   }
+Future<void> sendImageToServer(File imageFile) async {
+  setState(() {
+    _isLoading = true;
+    _ocrResult = "OCR 요청 중입니다...";
+  });
 
-  Future<void> sendImageToServer(File imageFile) async {
-    setState(() {
-      _isLoading = true;
-      _ocrResult = "OCR 요청 중입니다...";
-    });
+  var request = http.MultipartRequest('POST', Uri.parse('https://80d4-113-198-180-184.ngrok-free.app/ocr/'));
+  request.files.add(await http.MultipartFile.fromPath('image', imageFile.path));
 
-    var request = http.MultipartRequest('POST', Uri.parse('https://80d4-113-198-180-184.ngrok-free.app/ocr/'));
-    request.files.add(await http.MultipartFile.fromPath('image', imageFile.path));
+  try {
+    var response = await request.send();
+    if (response.statusCode == 200) {
+      var responseBody = await response.stream.bytesToString();
+      var result = jsonDecode(responseBody);
 
-    try {
-      var response = await request.send();
-      if (response.statusCode == 200) {
-        var responseBody = await response.stream.bytesToString();
-        var result = jsonDecode(responseBody);
-
-        setState(() {
-          _ocrResult = result['text'] ?? 'OCR 결과 없음';
-        });
-      } else {
-        setState(() {
-          _ocrResult = 'OCR 요청 실패: 상태 코드 ${response.statusCode}';
-        });
-      }
-    } catch (e) {
       setState(() {
-        _ocrResult = 'OCR 요청 실패: 오류가 발생했습니다.';
+        // 응답이 리스트로 되어 있는지 확인하고 처리
+        if (result is List) {
+          List<Map<String, dynamic>> results = List<Map<String, dynamic>>.from(result);
+          _ocrResult = results.map((data) {
+            String drugCode = data['drug_code'] ?? '알 수 없음';
+            String dosage = data['dosage'] ?? '알 수 없음';
+            String time = data['time'] ?? '알 수 없음';
+            return """
+            약품 코드: $drugCode
+            복용 횟수: $dosage
+            복용 시간: $time
+            """;
+          }).join('\n');
+        } else {
+          _ocrResult = 'OCR 결과가 예상한 형태가 아닙니다.';
+        }
       });
-      print('Error during OCR request: $e');
-    } finally {
+    } else {
       setState(() {
-        _isLoading = false;
+        _ocrResult = 'OCR 요청 실패: 상태 코드 ${response.statusCode}';
       });
     }
+  } catch (e) {
+    setState(() {
+      _ocrResult = 'OCR 요청 실패: 오류가 발생했습니다.';
+    });
+    print('Error during OCR request: $e');
+  } finally {
+    setState(() {
+      _isLoading = false;
+    });
   }
+}
 
   void _showErrorDialog(String message) {
     showDialog(

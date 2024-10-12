@@ -219,39 +219,71 @@ Future<void> _removeFromFavorites() async {
     } catch (e) {
       _showErrorDialog();
     }
-  }
-
-  void _showFamilyDialog(List<dynamic> familyMembers) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('가족에게 추천하기'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: familyMembers.map<Widget>((member) {
-                return ListTile(
-                  title: Text(member['name']),
-                  subtitle: Text('관계: ${member['relationship']}'),
+  }void _showFamilyDialog(List<dynamic> familyMembers) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text(
+          '추천',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
+        content: SingleChildScrollView(
+          child: ListBody(
+            children: familyMembers.map<Widget>((member) {
+              return Container(
+                margin: EdgeInsets.symmetric(vertical: 5), // 리스트 간격
+                child: ListTile(
+                  leading: Icon(
+                    Icons.person,
+                    color: Colors.purple,
+                    size: 50, // 아이콘 크기를 30으로 설정
+                  ),
+                  title: Text(
+                    member['name'],
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87, // 텍스트 색상
+                    ),
+                  ),
+                  subtitle: Text(
+                    '관계: ${member['relationship']}',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey, // 서브타이틀 색상
+                    ),
+                  ),
                   onTap: () {
                     // 선택한 가족에게 추천 기능을 구현
                     Navigator.of(context).pop();
                     _recommendToFamily(member['name']); // 추천 기능 호출
                   },
-                );
-              }).toList(),
+                ),
+              );
+            }).toList(),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(
+              '취소',
+              style: TextStyle(
+                color: Colors.black, // 취소 버튼 색상
+              ),
             ),
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text('취소'),
-            ),
-          ],
-        );
-      },
-    );
-  }
+        ],
+      );
+    },
+  );
+}
+
 
   void _showNoFamilyDialog() {
     showDialog(
@@ -431,7 +463,7 @@ void _showSuccessDialog() {
                       children: [
                         Expanded(
                           child: Text(
-                            '제품명 : \n${widget.usage}\n',
+                            '제품명 : \n${widget.pillName}\n',
                             style: TextStyle(
                               fontSize: 25,
                               fontWeight: FontWeight.bold, // 글씨체를 굵게 설정
@@ -459,7 +491,7 @@ void _showSuccessDialog() {
                           children: [
                             Expanded(
                               child: Text(
-                                '효능 : \n${widget.usage}\n',
+                                '효능 : \n${widget.efficacy}\n',
                                 style: TextStyle(
                                   fontSize: 25,
                                   fontWeight: FontWeight.bold, // 글씨체를 굵게 설정
@@ -554,14 +586,34 @@ void _showSuccessDialog() {
               ),
             ),
             SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                recommendPill(); // 추천하기 함수 호출
-              },
-              child: Text('추천하기'),
-            ),
-          ],
+       Row(
+  mainAxisAlignment: MainAxisAlignment.end, // 버튼을 오른쪽으로 정렬
+  children: [
+    ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        padding: EdgeInsets.symmetric(horizontal: 50, vertical: 10), // 버튼의 패딩 조정
+        textStyle: TextStyle(
+          fontSize: 20, // 텍스트 크기 조정
         ),
+       backgroundColor: Color.fromARGB(255, 238, 229, 248), // 버튼 배경색을 흰색으로 설정
+        foregroundColor: Colors.black, // 텍스트 색상 설정
+        elevation: 2, // 그림자 깊이 설정
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.zero, // 모서리를 둥글게 하지 않음
+        ),
+      ),
+      onPressed: () {
+        recommendPill(); // 추천하기 함수 호출
+      },
+      child: Text('추천하기'),
+    ),
+  ],
+),
+
+
+
+          ],
+        )
       ),
     );
   }
