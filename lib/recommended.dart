@@ -174,124 +174,125 @@ Future<void> initTts() async {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (widget.recommendation['pill_code'] != null)
-                    Row(
-                      children: [
-                        Expanded(child: Text('품목기준코드: ${widget.recommendation['pill_code']}\n', style: const TextStyle(fontSize: 16))),
-                        IconButton(
-                          icon: const Icon(Icons.volume_up),
-                          onPressed: () => speak('품목기준코드: ${widget.recommendation['pill_code']}'), // 음성 출력
-                        ),
-                      ],
-                    ),
-                     Row(
-                    children: [
-                      Expanded(child: Text('예측된 카테고리 ID: ${widget.recommendation['predicted_category_id']}\n', style: const TextStyle(fontSize: 16))),
-                      IconButton(
-                        icon: const Icon(Icons.volume_up),
-                        onPressed: () => speak('예측된 카테고리 ID: ${widget.recommendation['predicted_category_id']}'),
-                      ),
-                    ],
-                  ),
+                  // if (widget.recommendation['pill_code'] != null)
+                  //   Row(
+                  //     children: [
+                  //       Expanded(child: Text('품목기준코드: ${widget.recommendation['pill_code']}\n', style: const TextStyle(fontSize: 16))),
+                  //       IconButton(
+                  //         icon: const Icon(Icons.volume_up),
+                  //         onPressed: () => speak('품목기준코드: ${widget.recommendation['pill_code']}'), // 음성 출력
+                  //       ),
+                  //     ],
+                  //   ),
+                  //    Row(
+                  //   children: [
+                  //     Expanded(child: Text('예측된 카테고리 ID: ${widget.recommendation['predicted_category_id']}\n', style: const TextStyle(fontSize: 16))),
+                  //     IconButton(
+                  //       icon: const Icon(Icons.volume_up),
+                  //       onPressed: () => speak('예측된 카테고리 ID: ${widget.recommendation['predicted_category_id']}'),
+                  //     ),
+                  //   ],
+                  // ),
                   if (widget.recommendation['pill_name'] != null)
                     Row(
                       children: [
-                        Expanded(child: Text('제품명: ${widget.recommendation['pill_name']}\n', style: const TextStyle(fontSize: 16))),
+                        Expanded(child: Text('제품명: \n${widget.recommendation['pill_name']}\n', style: const TextStyle(fontSize: 25,fontWeight: FontWeight.bold,))),
+                        
                         IconButton(
                           icon: const Icon(Icons.volume_up),
                           onPressed: () => speak('제품명: ${widget.recommendation['pill_name']}'),
                         ),
                       ],
                     ),
-                     if (widget.recommendation['confidence'] != null)
-                    Row(
-                      children: [
-                        Expanded(child: Text('예측 확률: ${widget.recommendation['confidence']}\n', style: const TextStyle(fontSize: 16))),
-                        IconButton(
-                          icon: const Icon(Icons.volume_up),
-                          onPressed: () => speak('예측 확률: ${widget.recommendation['confidence']}'),
-                        ),
-                      ],
-                    ),
+                    //  if (widget.recommendation['confidence'] != null)
+                    // Row(
+                    //   children: [
+                    //     Expanded(child: Text('예측 확률: ${widget.recommendation['confidence']}\n', style: const TextStyle(fontSize: 16))),
+                    //     IconButton(
+                    //       icon: const Icon(Icons.volume_up),
+                    //       onPressed: () => speak('예측 확률: ${widget.recommendation['confidence']}'),
+                    //     ),
+                    //   ],
+                    // ),
                   if (widget.recommendation['efficacy'] != null)
                     Row(
                       children: [
-                        Expanded(child: Text('이 약의 효능은 무엇입니까?\n${widget.recommendation['efficacy']}\n', style: const TextStyle(fontSize: 16))),
+                        Expanded(child: Text('효능 : \n${widget.recommendation['efficacy']}\n', style: const TextStyle(fontSize: 25,fontWeight: FontWeight.bold,))),
                         IconButton(
                           icon: const Icon(Icons.volume_up),
-                          onPressed: () => speak('이 약의 효능은 무엇입니까? ${widget.recommendation['efficacy']}'),
+                          onPressed: () => speak('효능? ${widget.recommendation['efficacy']}'),
                         ),
                       ],
                     ),
-                  if (widget.recommendation['manufacturer'] != null)
-                    Row(
-                      children: [
-                        Expanded(child: Text('제조/수입사: ${widget.recommendation['manufacturer']}\n', style: const TextStyle(fontSize: 16))),
-                        IconButton(
-                          icon: const Icon(Icons.volume_up),
-                          onPressed: () => speak('제조/수입사: ${widget.recommendation['manufacturer']}'),
-                        ),
-                      ],
-                    ),
+                  // if (widget.recommendation['manufacturer'] != null)
+                  //   Row(
+                  //     children: [
+                  //       Expanded(child: Text('제조/수입사: ${widget.recommendation['manufacturer']}\n', style: const TextStyle(fontSize: 16))),
+                  //       IconButton(
+                  //         icon: const Icon(Icons.volume_up),
+                  //         onPressed: () => speak('제조/수입사: ${widget.recommendation['manufacturer']}'),
+                  //       ),
+                  //     ],
+                  //   ),
                     if (widget.recommendation['usage'] != null)
                     Row(
                       children: [
-                        Expanded(child: Text('이 약은 어떻게 사용합니까?\n${widget.recommendation['usage']}\n', style: const TextStyle(fontSize: 16))),
+                        Expanded(child: Text('사용법 : \n${widget.recommendation['usage']}\n', style: const TextStyle(fontSize: 25,fontWeight: FontWeight.bold,))),
                         IconButton(
                           icon: const Icon(Icons.volume_up),
-                          onPressed: () => speak('이 약은 어떻게 사용합니까? ${widget.recommendation['usage']}'),
+                          onPressed: () => speak('사용법 ${widget.recommendation['usage']}'),
                         ),
                       ],
-                    ),
-                  if (widget.recommendation['precautions_before_use'] != null)
-                    Row(
-                      children: [
-                        Expanded(child: Text('이 약을 사용하기 전에 반드시 알아야 할 내용은 무엇입니까?\n${widget.recommendation['precautions_before_use']}\n', style: const TextStyle(fontSize: 16))),
-                        IconButton(
-                          icon: const Icon(Icons.volume_up),
-                          onPressed: () => speak('이 약을 사용하기 전에 반드시 알아야 할 내용은 무엇입니까? ${widget.recommendation['precautions_before_use']}'),
-                        ),
-                      ],
-                    ),
-                    if (widget.recommendation['usage_precautions'] != null)
-                    Row(
-                      children: [
-                        Expanded(child: Text('이 약을 사용할 때 주의해야 할 점은 무엇입니까?\n${widget.recommendation['usage_precautions']}\n', style: const TextStyle(fontSize: 16))),
-                        IconButton(
-                          icon: const Icon(Icons.volume_up),
-                          onPressed: () => speak('이 약을 사용할 때 주의해야 할 점은 무엇입니까? ${widget.recommendation['usage_precautions']}'),
-                        ),
-                      ],
-                    ),
-                  if (widget.recommendation['drug_food_interactions'] != null)
-                    Row(
-                      children: [
-                        Expanded(child: Text('이 약과 음식의 상호작용은 무엇입니까?\n${widget.recommendation['drug_food_interactions']}\n', style: const TextStyle(fontSize: 16))),
-                        IconButton(
-                          icon: const Icon(Icons.volume_up),
-                          onPressed: () => speak('이 약과 음식의 상호작용은 무엇입니까? ${widget.recommendation['drug_food_interactions']}'),
-                        ),
-                      ],
-                    ),if (widget.recommendation['side_effects'] != null)
-                    Row(
-                      children: [
-                        Expanded(child: Text('이 약의 부작용은 무엇입니까?\n${widget.recommendation['side_effects']}\n', style: const TextStyle(fontSize: 16))),
-                        IconButton(
-                          icon: const Icon(Icons.volume_up),
-                          onPressed: () => speak('이 약의 부작용은 무엇입니까? ${widget.recommendation['side_effects']}'),
-                        ),
-                      ],
-                    ),
-                  if (widget.recommendation['storage_instructions'] != null)
-                    Row(
-                      children: [
-                        Expanded(child: Text('이 약의 보관 방법은 무엇입니까?\n${widget.recommendation['storage_instructions']}\n', style: const TextStyle(fontSize: 16))),
-                        IconButton(
-                          icon: const Icon(Icons.volume_up),
-                          onPressed: () => speak('이 약의 보관 방법은 무엇입니까? ${widget.recommendation['storage_instructions']}'),
-                        ),
-                      ],
-                    ),
+                  ),
+                  // if (widget.recommendation['precautions_before_use'] != null)
+                  //   Row(
+                  //     children: [
+                  //       Expanded(child: Text('이 약을 사용하기 전에 반드시 알아야 할 내용은 무엇입니까?\n${widget.recommendation['precautions_before_use']}\n', style: const TextStyle(fontSize: 16))),
+                  //       IconButton(
+                  //         icon: const Icon(Icons.volume_up),
+                  //         onPressed: () => speak('이 약을 사용하기 전에 반드시 알아야 할 내용은 무엇입니까? ${widget.recommendation['precautions_before_use']}'),
+                  //       ),
+                  //     ],
+                  //   ),
+                    // if (widget.recommendation['usage_precautions'] != null)
+                    // Row(
+                    //   children: [
+                    //     Expanded(child: Text('이 약을 사용할 때 주의해야 할 점은 무엇입니까?\n${widget.recommendation['usage_precautions']}\n', style: const TextStyle(fontSize: 16))),
+                    //     IconButton(
+                    //       icon: const Icon(Icons.volume_up),
+                    //       onPressed: () => speak('이 약을 사용할 때 주의해야 할 점은 무엇입니까? ${widget.recommendation['usage_precautions']}'),
+                    //     ),
+                    //   ],
+                    // ),
+                  // if (widget.recommendation['drug_food_interactions'] != null)
+                  //   Row(
+                  //     children: [
+                  //       Expanded(child: Text('이 약과 음식의 상호작용은 무엇입니까?\n${widget.recommendation['drug_food_interactions']}\n', style: const TextStyle(fontSize: 16))),
+                  //       IconButton(
+                  //         icon: const Icon(Icons.volume_up),
+                  //         onPressed: () => speak('이 약과 음식의 상호작용은 무엇입니까? ${widget.recommendation['drug_food_interactions']}'),
+                  //       ),
+                  //     ],
+                  //   ),if (widget.recommendation['side_effects'] != null)
+                  //   Row(
+                  //     children: [
+                  //       Expanded(child: Text('이 약의 부작용은 무엇입니까?\n${widget.recommendation['side_effects']}\n', style: const TextStyle(fontSize: 16))),
+                  //       IconButton(
+                  //         icon: const Icon(Icons.volume_up),
+                  //         onPressed: () => speak('이 약의 부작용은 무엇입니까? ${widget.recommendation['side_effects']}'),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // if (widget.recommendation['storage_instructions'] != null)
+                  //   Row(
+                  //     children: [
+                  //       Expanded(child: Text('이 약의 보관 방법은 무엇입니까?\n${widget.recommendation['storage_instructions']}\n', style: const TextStyle(fontSize: 16))),
+                  //       IconButton(
+                  //         icon: const Icon(Icons.volume_up),
+                  //         onPressed: () => speak('이 약의 보관 방법은 무엇입니까? ${widget.recommendation['storage_instructions']}'),
+                  //       ),
+                  //     ],
+                  //   ),
 
 
                   // 나머지 정보들을 같은 방식으로 보여주고 TTS 제공
