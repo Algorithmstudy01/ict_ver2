@@ -123,14 +123,14 @@ def find_pill_info_from_csv(predicted_category_id, csv_path):
                 pill_info = {
                     "제품명": row["제품명"],
                     "drug_N": row["drug_N"],
-                    "품목기준코드": row["품목기준코드"],
+                    # "품목기준코드": row["품목기준코드"],
                     "이 약의 효능은 무엇입니까?": row["이 약의 효능은 무엇입니까?"],
                     "이 약은 어떻게 사용합니까?": row["이 약은 어떻게 사용합니까?"],
-                    "이 약을 사용하기 전에 반드시 알아야 할 내용은 무엇입니까?": row["이 약을 사용하기 전에 반드시 알아야 할 내용은 무엇입니까?"],
-                    "이 약의 사용상 주의사항은 무엇입니까?": row["이 약의 사용상 주의사항은 무엇입니까?"],
-                    "이 약을 사용하는 동안 주의해야 할 약 또는 음식은 무엇입니까?": row["이 약을 사용하는 동안 주의해야 할 약 또는 음식은 무엇입니까?"],
-                    "이 약은 어떤 이상반응이 나타날 수 있습니까?": row["이 약은 어떤 이상반응이 나타날 수 있습니까?"],
-                    "이 약은 어떻게 보관해야 합니까?": row["이 약은 어떻게 보관해야 합니까?"]
+                    # "이 약을 사용하기 전에 반드시 알아야 할 내용은 무엇입니까?": row["이 약을 사용하기 전에 반드시 알아야 할 내용은 무엇입니까?"],
+                    # "이 약의 사용상 주의사항은 무엇입니까?": row["이 약의 사용상 주의사항은 무엇입니까?"],
+                    # "이 약을 사용하는 동안 주의해야 할 약 또는 음식은 무엇입니까?": row["이 약을 사용하는 동안 주의해야 할 약 또는 음식은 무엇입니까?"],
+                    # "이 약은 어떤 이상반응이 나타날 수 있습니까?": row["이 약은 어떤 이상반응이 나타날 수 있습니까?"],
+                    # "이 약은 어떻게 보관해야 합니까?": row["이 약은 어떻게 보관해야 합니까?"]
                 }
                 return pill_info
     return None
@@ -910,7 +910,7 @@ def prompt_user_selection(image_path, top_indices, pred_labels, pred_scores, csv
         pill_info = {
             'predicted_category_id': int(predicted_category_id),  # 예측된 카테고리 ID
             'pillName': pill_info_csv.get('제품명', f'Pill {predicted_category_id}') if pill_info_csv else f'Pill {predicted_category_id}',  # 제품명 또는 기본값
-            'pill_code': pill_info_csv.get('품목기준코드', predicted_category_id) if pill_info_csv else predicted_category_id,  # 품목기준코드 또는 기본값
+            # 'pill_code': pill_info_csv.get('품목기준코드', predicted_category_id) if pill_info_csv else predicted_category_id,  # 품목기준코드 또는 기본값
             'product_name': pill_info_csv.get('제품명', 'Unknown') if pill_info_csv else 'Unknown',  # 제품명 또는 기본값
 
             # confidence 값을 float으로 변환
@@ -999,7 +999,8 @@ def predict2(request):
         # 최상위 예측값 인덱스 찾기
         max_score_idx = pred_scores.argmax()
         predicted_category_id = pred_labels[max_score_idx]
-        csv_path = '/Users/seon/Desktop/model/info.csv'
+        csv_path = '/Users/seon/Desktop/Ict_FIN/ict_chungbuk/info_llm_1.csv'
+       
 
         # pill_info_csv 초기화
         pill_info_csv = {}
@@ -1026,7 +1027,7 @@ def predict2(request):
             'predicted_category_id': int(predicted_category_id),
             'prediction_score': float(pred_scores[max_score_idx]),
             'product_name': pill_info_csv.get('제품명', 'Unknown') if pill_info_csv else 'Unknown',
-            'pill_code': pill_info_csv.get('품목기준코드', 'Unknown') if pill_info_csv else 'Unknown',
+            # 'pill_code': pill_info_csv.get('품목기준코드', 'Unknown') if pill_info_csv else 'Unknown',
             'efficacy': pill_info_csv.get('이 약의 효능은 무엇입니까?', 'No information') if pill_info_csv else 'No information',
             'usage': pill_info_csv.get('이 약은 어떻게 사용합니까?', 'No information') if pill_info_csv else 'No information',
             'precautions_before_use': pill_info_csv.get('이 약을 사용하기 전에 반드시 알아야 할 내용은 무엇입니까?', 'No information') if pill_info_csv else 'No information',
@@ -1246,9 +1247,13 @@ import time
 import re  # 정규식 사용을 위해 re 모듈 추가
 
 
-secret_key = "VUVZTm1UYk5ocEJSaHZHRVpuc0lCc0ZUc29vTXpxdmE="
-api_url = "https://fqml315j1i.apigw.ntruss.com/custom/v1/34920/3850f8f6acb98a9f5c4375a18ec018ef3062e8636574ca5963ef4a8e618805df/general"
-
+import json
+import re
+import time
+import uuid
+import requests
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 @api_view(['POST'])
 def ocr_view(request):
@@ -1264,7 +1269,7 @@ def ocr_view(request):
         ],
         'requestId': str(uuid.uuid4()),
         'version': 'V2',
-        'timestamp': int(round(time.time() * 1000))  # 여기를 사용할 수 있습니다
+                'timestamp': int(round(time.time() * 1000))  # 여기를 사용할 수 있습니다
     }
 
     payload = {'message': json.dumps(request_json).encode('UTF-8')}
@@ -1284,35 +1289,23 @@ def ocr_view(request):
         
         full_text = ' '.join(all_texts)
 
-        # 정규식을 통한 정보 추출
-        # drug_code_pattern = re.compile(r"\(\d{9}\)")
-        # drug_code_pattern = re.compile(r"(정|캡슐)")
-        drug_code_pattern = re.compile(r"([가-힣]+정|[가-힣]+캡슐)")
-
-
+        # 약품 이름을 추출하는 정규식
+        # "정"이나 "캡슐" 뒤에 추가적인 설명이 없거나, 용량이 있는 경우도 허용
+        drug_code_pattern = re.compile(r"([가-힣]+(?:정|캡슐)(?:\s*\d*mg|밀리그램)?(?=\s|$))") 
         drug_codes = drug_code_pattern.findall(full_text)
 
-        dosage_pattern = re.compile(r"(하루\s*\d+회)")
+        # 복용 횟수를 추출하는 정규식
+        dosage_pattern = re.compile(r"(\d+정씩\s*\d+회)")
         dosages = dosage_pattern.findall(full_text)
 
-        # time_pattern 수정
-        time_pattern = re.compile(r"(아침\s*식후\s*\d+분에|아침/저녁\s*식후\s*\d+분에|저녁\s*식후\s*\d+분에)")
-        times = time_pattern.findall(full_text)
-
-        # 아침 저녁 식후가 함께 있는 경우를 분리
-        parsed_times = []
-        for time_entry in times:  # time을 time_entry로 변경
-            if "아침 저녁" in time_entry:
-                parsed_times.append("아침 식후")
-                parsed_times.append("저녁 식후")
-            else:
-                parsed_times.append(time_entry)
-
         # 추출된 데이터 반환
-        return Response([
-                {"drug_code": drug_code, "dosage": dosages[i] if i < len(dosages) else None, "time": parsed_times[i] if i < len(parsed_times) else None} 
-                for i, drug_code in enumerate(drug_codes)
-            ])
+        response_data = [
+            {"drug_code": drug_code, 
+             "dosage": dosages[i] if i < len(dosages) else None} 
+            for i, drug_code in enumerate(drug_codes)
+        ]
+
+        return Response(response_data)
 
     else:
         return Response({"error": f"OCR 실패: 상태 코드 {response.status_code}"}, status=response.status_code)

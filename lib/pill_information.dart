@@ -252,7 +252,7 @@ Future<void> _removeFromFavorites() async {
                     ),
                   ),
                   subtitle: Text(
-                    '관계: ${member['relationship']}',
+                    ' ${member['relationship']}',
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.grey, // 서브타이틀 색상
