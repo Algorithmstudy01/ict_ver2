@@ -37,17 +37,14 @@ class DetailedInfoScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-<<<<<<< HEAD
         title: const Text('약물 상세정보'),
         backgroundColor: Colors.white,
         elevation: 4, // Add elevation for shadow
         centerTitle: true,
         foregroundColor: Colors.black,
         shadowColor: Colors.grey.withOpacity(0.5), // Set shadow color
-=======
-        title: Text('약물 상세 정보'),
->>>>>>> 0f92f468f6b2d6986d39c3ae4f758432369faed8
       ),
+      backgroundColor: Colors.white,
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -58,15 +55,33 @@ class DetailedInfoScreen extends StatelessWidget {
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 16),
-            Text('품목기준코드: $pillCode'),
-            Text('예측 확률: $confidence'),
-            Text('효능: $efficacy'),
-            Text('사용법: $usage'),
-            Text('사용 시 주의사항: $precautionsBeforeUse'),
-            Text('약물-음식 상호작용: $drugFoodInteractions'),
-            Text('부작용: $sideEffects'),
-            Text('보관 방법: $storageInstructions'),
-            Text('제조사: $manufacturer'),
+            Text('품목기준코드: $pillCode',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            Text('예측 확률: $confidence',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            Text('효능: $efficacy',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            Text('사용법: $usage',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            Text('사용 시 주의사항: $precautionsBeforeUse',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            Text('약물-음식 상호작용: $drugFoodInteractions',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            Text('부작용: $sideEffects',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            Text('보관 방법: $storageInstructions',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            Text('제조사: $manufacturer',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
           ],
         ),
       ),
