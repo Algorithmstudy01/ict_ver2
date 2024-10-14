@@ -1257,8 +1257,8 @@ import requests
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-secret_key = "VUVZTm1UYk5ocEJSaHZHRVpuc0lCc0ZUc29vTXpxdmE="
-api_url = "https://fqml315j1i.apigw.ntruss.com/custom/v1/34920/3850f8f6acb98a9f5c4375a18ec018ef3062e8636574ca5963ef4a8e618805df/general"
+secret_key = "WGxKQm5hSHNIV2RDV3F4dkdyakRqU0RVYVhzTU5MeHU="
+api_url = "https://p405u8jqwz.apigw.ntruss.com/custom/v1/35036/36ab22ac55e0312c6af8e6d47ee49ac8e5c924df2f038ea2bbc6da922bc3113e/general"
 @api_view(['POST'])
 def ocr_view(request):
     image_file = request.FILES['image']
