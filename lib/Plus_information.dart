@@ -37,7 +37,16 @@ class DetailedInfoScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+<<<<<<< HEAD
+        title: const Text('약물 상세정보'),
+        backgroundColor: Colors.white,
+        elevation: 4, // Add elevation for shadow
+        centerTitle: true,
+        foregroundColor: Colors.black,
+        shadowColor: Colors.grey.withOpacity(0.5), // Set shadow color
+=======
         title: Text('약물 상세 정보'),
+>>>>>>> 0f92f468f6b2d6986d39c3ae4f758432369faed8
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
