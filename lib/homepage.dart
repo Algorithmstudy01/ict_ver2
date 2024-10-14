@@ -249,7 +249,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                   builder: (context) => const FindText(), // NaverMapApp 화면으로 이동
                                 ),
                               ),
-                              icon: Image.asset('assets/img/pharmacy.png'),
+                              icon: Image.asset('assets/img/ocr.png'),
                               iconSize: size.width * 0.15,
                               padding: const EdgeInsets.all(10),
                             ),

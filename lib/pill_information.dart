@@ -82,11 +82,9 @@ Future<String> fetchImageUrl(String predictedCategoryId) async {
 Future<void> _initTts() async {
     flutterTts = FlutterTts();
 
-  await flutterTts.setSpeechRate(0.6); // 빠른 말하기 속도
+  await flutterTts.setSpeechRate(0.4); // 빠른 말하기 속도
 
 
-
-    // TTS 엔진 초기화
     await flutterTts.awaitSpeakCompletion(true);
     
     // 언어 설정 (한국어 예시)

@@ -68,30 +68,31 @@ class _LowPredictionState extends State<LowPrediction> {
 
                         await _saveSearchHistory(pillInfo); // 함수 호출
 
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => InformationScreen(
-                              pillCode: option['pill_code'],
-                              pillName: option['product_name'],
-                              confidence: (option['confidence'] is String
-                                  ? double.parse(option['confidence'])
-                                  : option['confidence']).toStringAsFixed(2),
-                              extractedText: '',
-                              userId: widget.userId, // userId 사용
-                              usage: option['usage'] ?? 'No information',
-                              precautionsBeforeUse: option['precautions_before_use'] ?? 'No information',
-                              usagePrecautions: option['usage_precautions'] ?? 'No information',
-                              drugFoodInteractions: option['drug_food_interactions'] ?? 'No information',
-                              sideEffects: option['side_effects'] ?? 'No information',
-                              storageInstructions: option['storage_instructions'] ?? 'No information',
-                              efficacy: option['efficacy'] ?? 'No information',
-                              manufacturer: option['manufacturer'] ?? 'Unknown',
-                              imageUrl: option['image_url'] ?? '',
-                              predictedCategoryId: option['predicted_category_id']?.toString() ?? 'Unknown',
-                            ),
-                          ),
-                        );
+                      Navigator.push(
+  context,
+  MaterialPageRoute(
+    builder: (context) => InformationScreen(
+      pillCode: option['pill_code'] ?? 'Unknown',
+      pillName: option['product_name'] ?? 'Unknown',
+      confidence: (option['confidence'] is String
+          ? double.parse(option['confidence'])
+          : option['confidence']).toStringAsFixed(2) ?? '0.0',
+      extractedText: '',
+      userId: widget.userId,
+      usage: option['usage'] ?? 'No information',
+      precautionsBeforeUse: option['precautions_before_use'] ?? 'No information',
+      usagePrecautions: option['usage_precautions'] ?? 'No information',
+      drugFoodInteractions: option['drug_food_interactions'] ?? 'No information',
+      sideEffects: option['side_effects'] ?? 'No information',
+      storageInstructions: option['storage_instructions'] ?? 'No information',
+      efficacy: option['efficacy'] ?? 'No information',
+      manufacturer: option['manufacturer'] ?? 'Unknown',
+      imageUrl: option['image_url'] ?? '',
+      predictedCategoryId: option['predicted_category_id']?.toString() ?? 'Unknown',
+    ),
+  ),
+);
+
                       },
                       child: Card(
                         color: Colors.white, // 카드 배경을 흰색으로 설정
