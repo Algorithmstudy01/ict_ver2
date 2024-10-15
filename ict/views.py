@@ -122,15 +122,16 @@ def find_pill_info_from_csv(predicted_category_id, csv_path):
             if int(row['category_id']) == predicted_category_id:
                 pill_info = {
                     "제품명": row["제품명"],
+                    "제조/수입사": row["제조/수입사"],
                     "drug_N": row["drug_N"],
-                    # "품목기준코드": row["품목기준코드"],
+                    "품목기준코드": row["품목기준코드"],
                     "이 약의 효능은 무엇입니까?": row["이 약의 효능은 무엇입니까?"],
                     "이 약은 어떻게 사용합니까?": row["이 약은 어떻게 사용합니까?"],
-                    # "이 약을 사용하기 전에 반드시 알아야 할 내용은 무엇입니까?": row["이 약을 사용하기 전에 반드시 알아야 할 내용은 무엇입니까?"],
-                    # "이 약의 사용상 주의사항은 무엇입니까?": row["이 약의 사용상 주의사항은 무엇입니까?"],
-                    # "이 약을 사용하는 동안 주의해야 할 약 또는 음식은 무엇입니까?": row["이 약을 사용하는 동안 주의해야 할 약 또는 음식은 무엇입니까?"],
-                    # "이 약은 어떤 이상반응이 나타날 수 있습니까?": row["이 약은 어떤 이상반응이 나타날 수 있습니까?"],
-                    # "이 약은 어떻게 보관해야 합니까?": row["이 약은 어떻게 보관해야 합니까?"]
+                    "이 약을 사용하기 전에 반드시 알아야 할 내용은 무엇입니까?": row["이 약을 사용하기 전에 반드시 알아야 할 내용은 무엇입니까?"],
+                    "이 약의 사용상 주의사항은 무엇입니까?": row["이 약의 사용상 주의사항은 무엇입니까?"],
+                    "이 약을 사용하는 동안 주의해야 할 약 또는 음식은 무엇입니까?": row["이 약을 사용하는 동안 주의해야 할 약 또는 음식은 무엇입니까?"],
+                    "이 약은 어떤 이상반응이 나타날 수 있습니까?": row["이 약은 어떤 이상반응이 나타날 수 있습니까?"],
+                    "이 약은 어떻게 보관해야 합니까?": row["이 약은 어떻게 보관해야 합니까?"]
                 }
                 return pill_info
     return None
@@ -830,15 +831,16 @@ def find_pill_info_from_csv2(predicted_category_id, csv_path):
             if int(row['category_id']) == predicted_category_id:
                 pill_info = {
                     "제품명": row["제품명"],
+                    "제조/수입사": row["제조/수입사"],
                     "drug_N": row["drug_N"],
-                    # "품목기준코드": row["품목기준코드"],
+                    "품목기준코드": row["품목기준코드"],
                     "이 약의 효능은 무엇입니까?": row["이 약의 효능은 무엇입니까?"],
                     "이 약은 어떻게 사용합니까?": row["이 약은 어떻게 사용합니까?"],
-                    # "이 약을 사용하기 전에 반드시 알아야 할 내용은 무엇입니까?": row["이 약을 사용하기 전에 반드시 알아야 할 내용은 무엇입니까?"],
-                    # "이 약의 사용상 주의사항은 무엇입니까?": row["이 약의 사용상 주의사항은 무엇입니까?"],
-                    # "이 약을 사용하는 동안 주의해야 할 약 또는 음식은 무엇입니까?": row["이 약을 사용하는 동안 주의해야 할 약 또는 음식은 무엇입니까?"],
-                    # "이 약은 어떤 이상반응이 나타날 수 있습니까?": row["이 약은 어떤 이상반응이 나타날 수 있습니까?"],
-                    # "이 약은 어떻게 보관해야 합니까?": row["이 약은 어떻게 보관해야 합니까?"]
+                    "이 약을 사용하기 전에 반드시 알아야 할 내용은 무엇입니까?": row["이 약을 사용하기 전에 반드시 알아야 할 내용은 무엇입니까?"],
+                    "이 약의 사용상 주의사항은 무엇입니까?": row["이 약의 사용상 주의사항은 무엇입니까?"],
+                    "이 약을 사용하는 동안 주의해야 할 약 또는 음식은 무엇입니까?": row["이 약을 사용하는 동안 주의해야 할 약 또는 음식은 무엇입니까?"],
+                    "이 약은 어떤 이상반응이 나타날 수 있습니까?": row["이 약은 어떤 이상반응이 나타날 수 있습니까?"],
+                    "이 약은 어떻게 보관해야 합니까?": row["이 약은 어떻게 보관해야 합니까?"]
                 }
                 return pill_info
     return None
@@ -910,20 +912,20 @@ def prompt_user_selection(image_path, top_indices, pred_labels, pred_scores, csv
         pill_info = {
             'predicted_category_id': int(predicted_category_id),  # 예측된 카테고리 ID
             'pillName': pill_info_csv.get('제품명', f'Pill {predicted_category_id}') if pill_info_csv else f'Pill {predicted_category_id}',  # 제품명 또는 기본값
-            # 'pill_code': pill_info_csv.get('품목기준코드', predicted_category_id) if pill_info_csv else predicted_category_id,  # 품목기준코드 또는 기본값
+            'pill_code': pill_info_csv.get('품목기준코드', predicted_category_id) if pill_info_csv else predicted_category_id,  # 품목기준코드 또는 기본값
             'product_name': pill_info_csv.get('제품명', 'Unknown') if pill_info_csv else 'Unknown',  # 제품명 또는 기본값
 
             # confidence 값을 float으로 변환
             'confidence': float(pred_scores[idx]) if isinstance(pred_scores[idx], (float, np.floating)) else pred_scores[idx],
-
+            'manufacturer': pill_info_csv.get('제조/수입사', 'Unknown') if pill_info_csv else 'Unknown',
             # 제조사 및 부가 정보들, null일 경우 기본값 제공
             'efficacy': pill_info_csv.get('이 약의 효능은 무엇입니까?', 'No information') if pill_info_csv else 'No information',  # 효능
             'usage': pill_info_csv.get('이 약은 어떻게 사용합니까?', 'No information') if pill_info_csv else 'No information',  # 사용법
-            # 'precautions_before_use': pill_info_csv.get('이 약을 사용하기 전에 반드시 알아야 할 내용은 무엇입니까?', 'No information') if pill_info_csv else 'No information',  # 사용 전 주의사항
-            # 'usage_precautions': pill_info_csv.get('이 약의 사용상 주의사항은 무엇입니까?', 'No information') if pill_info_csv else 'No information',  # 사용상 주의사항
-            # 'drug_food_interactions': pill_info_csv.get('이 약을 사용하는 동안 주의해야 할 약 또는 음식은 무엇입니까?', 'No information') if pill_info_csv else 'No information',  # 약물/음식 상호작용
-            # 'side_effects': pill_info_csv.get('이 약은 어떤 이상반응이 나타날 수 있습니까?', 'No information') if pill_info_csv else 'No information',  # 부작용
-            # 'storage_instructions': pill_info_csv.get('이 약은 어떻게 보관해야 합니까?', 'No information') if pill_info_csv else 'No information',  # 보관 방법
+            'precautions_before_use': pill_info_csv.get('이 약을 사용하기 전에 반드시 알아야 할 내용은 무엇입니까?', 'No information') if pill_info_csv else 'No information',  # 사용 전 주의사항
+            'usage_precautions': pill_info_csv.get('이 약의 사용상 주의사항은 무엇입니까?', 'No information') if pill_info_csv else 'No information',  # 사용상 주의사항
+            'drug_food_interactions': pill_info_csv.get('이 약을 사용하는 동안 주의해야 할 약 또는 음식은 무엇입니까?', 'No information') if pill_info_csv else 'No information',  # 약물/음식 상호작용
+            'side_effects': pill_info_csv.get('이 약은 어떤 이상반응이 나타날 수 있습니까?', 'No information') if pill_info_csv else 'No information',  # 부작용
+            'storage_instructions': pill_info_csv.get('이 약은 어떻게 보관해야 합니까?', 'No information') if pill_info_csv else 'No information',  # 보관 방법
         }
 
         pill_options.append(pill_info)
@@ -999,7 +1001,7 @@ def predict2(request):
         # 최상위 예측값 인덱스 찾기
         max_score_idx = pred_scores.argmax()
         predicted_category_id = pred_labels[max_score_idx]
-        csv_path = '/Users/seon/Desktop/Ict_FIN/ict_chungbuk/info_llm_1.csv'
+        csv_path = '/Users/seon/Desktop/Ict_FIN/ict_chungbuk/info2.csv'
        
 
         # pill_info_csv 초기화
@@ -1025,9 +1027,10 @@ def predict2(request):
         # Response 준비
         response_data = {
             'predicted_category_id': int(predicted_category_id),
+            'manufacturer': pill_info_csv.get('제조/수입사', 'Unknown'),
             'prediction_score': float(pred_scores[max_score_idx]),
             'product_name': pill_info_csv.get('제품명', 'Unknown') if pill_info_csv else 'Unknown',
-            # 'pill_code': pill_info_csv.get('품목기준코드', 'Unknown') if pill_info_csv else 'Unknown',
+            'pill_code': pill_info_csv.get('품목기준코드', 'Unknown') if pill_info_csv else 'Unknown',
             'efficacy': pill_info_csv.get('이 약의 효능은 무엇입니까?', 'No information') if pill_info_csv else 'No information',
             'usage': pill_info_csv.get('이 약은 어떻게 사용합니까?', 'No information') if pill_info_csv else 'No information',
             'precautions_before_use': pill_info_csv.get('이 약을 사용하기 전에 반드시 알아야 할 내용은 무엇입니까?', 'No information') if pill_info_csv else 'No information',
@@ -1257,8 +1260,6 @@ import requests
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-secret_key = "WGxKQm5hSHNIV2RDV3F4dkdyakRqU0RVYVhzTU5MeHU="
-api_url = "https://p405u8jqwz.apigw.ntruss.com/custom/v1/35036/36ab22ac55e0312c6af8e6d47ee49ac8e5c924df2f038ea2bbc6da922bc3113e/general"
 @api_view(['POST'])
 def ocr_view(request):
     image_file = request.FILES['image']
