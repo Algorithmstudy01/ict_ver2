@@ -8,6 +8,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:camera/camera.dart';
 import 'Camera.dart';
 import 'My_alarm/alarm.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 late List<CameraDescription> _cameras;
 
@@ -41,6 +42,13 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (context) => Camera(_cameras),  // Pass the cameras to the provider
       child: MaterialApp(
+        localizationsDelegates: [
+          GlobalMaterialLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: [
+          Locale('ko', 'KR'),
+        ],
         home: StartSection(), // Start the app with StartSection
       ),
     );
