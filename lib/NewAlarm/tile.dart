@@ -1,4 +1,4 @@
-import 'package:chungbuk_ict/My_alarm/alarm.dart';
+import 'package:chungbuk_ict/CustomAlarm/alarm.dart';
 import 'package:flutter/material.dart';
 
 class ExampleAlarmTile extends StatelessWidget {

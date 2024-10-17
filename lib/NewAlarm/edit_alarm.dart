@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:chungbuk_ict/My_alarm/alarm.dart';
+import 'package:chungbuk_ict/CustomAlarm/alarm.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -207,14 +207,12 @@ class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
     final iD = periodDateTime.hour+periodDateTime.minute;
     final alarmSettings = AlarmSettings(
       id: iD,
-      dateTime: periodDateTime.add(Duration(minutes: i*30)),
+      dateTime: selectedDateTime[0],
       loopAudio: loopAudio,
       vibrate: vibrate,
       volume: volume,
       assetAudioPath: assetAudio,
-      notificationTitle: '야금야금',
-      notificationBody: '$alarmName 드실 시간이에요',
-      enableNotificationOnKill: Platform.isAndroid,
+      warningNotificationOnKill: Platform.isAndroid,
       alarmName: Alarm.getAlarm(iD)?.alarmName != null? Alarm.getAlarm(iD)?.alarmName != alarmName? "${Alarm.getAlarm(iD)?.alarmName}, $alarmName": alarmName : alarmName,
       mon: mon,
       tue: tue,
@@ -223,6 +221,10 @@ class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
       fri: fri,
       sat: sat,
       sun: sun,
+      notificationSettings: NotificationSettings(
+          title: '야금야금',
+          body: '$alarmName 드실 시간이에요',
+          ),
     );
     return alarmSettings;
   }
@@ -230,10 +232,10 @@ class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
   void saveAlarm(int id, int i) {
     if (loading) return;
     setState(() => loading = true);
-    Alarm.set(alarmSettings: buildAlarmSettings(id, i));//.then((res) {
-      //if (res) Navigator.pop(context, true);
+    Alarm.set(alarmSettings: buildAlarmSettings(id, i)).then((res) {
+      if (res) Navigator.pop(context, true);
     setState(() => loading = false);
-    //});
+   });
   }
 
   void deleteAlarm() {
@@ -324,14 +326,15 @@ class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
               ),
               TextButton(
                 onPressed: (){
-                  for(int i=0; i<5; i++){
-                    if(setTime[i]){
-                      saveAlarm(i, meal[i]);
-                    }
-                  }
-                  Navigator.pop(context, true);
-                  setState(() {
-                  });
+                  // for(int i=0; i<5; i++){
+                  //   if(setTime[i]){
+                  //     saveAlarm(i, meal[i]);
+                  //   }
+                  // }
+                  // Navigator.pop(context, true);
+                  // setState(() {
+                  // });
+                  saveAlarm(0, 0);
                 },
                 child: loading
                     ? const CircularProgressIndicator()

@@ -1,22 +1,22 @@
+import 'package:chungbuk_ict/CustomAlarm/model/notification_settings.dart';
 import 'package:flutter/widgets.dart';
 
+@immutable
 
 /// [AlarmSettings] is a model that contains all the settings to customize
 /// and set an alarm.
-@immutable
 class AlarmSettings {
-  /// Model that contains all the settings to customize and set an alarm.
+  /// Constructs an instance of `AlarmSettings`.
   const AlarmSettings({
     required this.id,
     required this.dateTime,
     required this.assetAudioPath,
-    required this.notificationTitle,
-    required this.notificationBody,
+    required this.notificationSettings,
     this.loopAudio = true,
     this.vibrate = true,
     this.volume,
     this.fadeDuration = 0.0,
-    this.enableNotificationOnKill = true,
+    this.warningNotificationOnKill = true,
     this.androidFullScreenIntent = true,
     this.alarmName = '',
     this.sun =true,
@@ -29,30 +29,54 @@ class AlarmSettings {
   });
 
   /// Constructs an `AlarmSettings` instance from the given JSON data.
-  factory AlarmSettings.fromJson(Map<String, dynamic> json) => AlarmSettings(
-        id: json['id'] as int,
-        dateTime: DateTime.fromMicrosecondsSinceEpoch(json['dateTime'] as int),
-        assetAudioPath: json['assetAudioPath'] as String,
-        loopAudio: json['loopAudio'] as bool,
-        vibrate: json['vibrate'] as bool? ?? true,
-        volume: json['volume'] as double?,
-        fadeDuration: json['fadeDuration'] as double,
-        notificationTitle: json['notificationTitle'] as String? ?? '',
-        notificationBody: json['notificationBody'] as String? ?? '',
-        enableNotificationOnKill:
-            json['enableNotificationOnKill'] as bool? ?? true,
-        androidFullScreenIntent:
-            json['androidFullScreenIntent'] as bool? ?? true,
-        alarmName: json['alarmName'] as String? ?? '',
-        sun:json['sun'] as bool? ?? true,
-        mon:json['mon'] as bool? ?? true,
-        tue:json['tue'] as bool? ?? true,
-        wed:json['wed'] as bool? ?? true,
-        thu:json['thu'] as bool? ?? true,
-        fri:json['fri'] as bool? ?? true,
-        sat:json['sat'] as bool? ?? true,
-      );
+  factory AlarmSettings.fromJson(Map<String, dynamic> json) {
+    NotificationSettings notificationSettings;
 
+    // Ensure compatibility with plugin versions below 4.0.0.
+    if (json.containsKey('notificationSettings') &&
+        json['notificationSettings'] != null) {
+      notificationSettings = NotificationSettings.fromJson(
+        json['notificationSettings'] as Map<String, dynamic>,
+      );
+    } else {
+      final notificationTitle = json['notificationTitle'] as String? ?? '';
+      final notificationBody = json['notificationBody'] as String? ?? '';
+
+      notificationSettings = NotificationSettings(
+        title: notificationTitle,
+        body: notificationBody,
+      );
+    }
+
+    final warningNotificationOnKill =
+        json.containsKey('warningNotificationOnKill')
+            ? json['warningNotificationOnKill'] as bool
+            : json['enableNotificationOnKill'] as bool? ?? true;
+
+    return AlarmSettings(
+      id: json['id'] as int,
+      dateTime: DateTime.fromMicrosecondsSinceEpoch(json['dateTime'] as int),
+      assetAudioPath: json['assetAudioPath'] as String,
+      notificationSettings: notificationSettings,
+      loopAudio: json['loopAudio'] as bool? ?? true,
+      vibrate: json['vibrate'] as bool? ?? true,
+      volume: json['volume'] as double?,
+      fadeDuration: json['fadeDuration'] as double? ?? 0.0,
+      warningNotificationOnKill: warningNotificationOnKill,
+      androidFullScreenIntent: json['androidFullScreenIntent'] as bool? ?? true,
+      alarmName: json['alarmName'] as String? ?? '',
+      sun:json['sun'] as bool? ?? true,
+      mon:json['mon'] as bool? ?? true,
+      tue:json['tue'] as bool? ?? true,
+      wed:json['wed'] as bool? ?? true,
+      thu:json['thu'] as bool? ?? true,
+      fri:json['fri'] as bool? ?? true,
+      sat:json['sat'] as bool? ?? true,
+    );
+  }
+  final bool sun, mon, tue, wed, thu, fri, sat;
+
+  final String alarmName;
   /// Unique identifier assiocated with the alarm. Cannot be 0 or -1;
   final int id;
 
@@ -82,6 +106,9 @@ class AlarmSettings {
   /// `android.permission.READ_EXTERNAL_STORAGE`
   final String assetAudioPath;
 
+  /// Settings for the notification.
+  final NotificationSettings notificationSettings;
+
   /// If true, [assetAudioPath] will repeat indefinitely until alarm is stopped.
   final bool loopAudio;
 
@@ -107,21 +134,15 @@ class AlarmSettings {
   /// Set to 0.0 by default, which means no fade.
   final double fadeDuration;
 
-  /// Title of the notification to be shown when alarm is triggered.
-  final String notificationTitle;
-
-  /// Body of the notification to be shown when alarm is triggered.
-  final String notificationBody;
-
-  /// Whether to show a notification when application is killed by user.
+  /// Whether to show a warning notification when application is killed by user.
   ///
-  /// - Android: the alarm should still trigger even if the app is killed,
+  /// - **Android**: the alarm should still trigger even if the app is killed,
   /// if configured correctly and with the right permissions.
-  /// - iOS: the alarm will not trigger if the app is killed.
+  /// - **iOS**: the alarm will not trigger if the app is killed.
   ///
   /// Recommended: set to `Platform.isIOS` to enable it only
   /// on iOS. Defaults to `true`.
-  final bool enableNotificationOnKill;
+  final bool warningNotificationOnKill;
 
   /// Whether to turn screen on and display full screen notification
   /// when android alarm notification is triggered. Enabled by default.
@@ -132,9 +153,6 @@ class AlarmSettings {
   /// package.
   final bool androidFullScreenIntent;
 
-  final bool sun, mon, tue, wed, thu, fri, sat;
-
-  final String alarmName;
   /// Returns a hash code for this `AlarmSettings` instance using
   /// Jenkins hash function.
   @override
@@ -144,13 +162,13 @@ class AlarmSettings {
     hash = hash ^ id.hashCode;
     hash = hash ^ dateTime.hashCode;
     hash = hash ^ assetAudioPath.hashCode;
+    hash = hash ^ notificationSettings.hashCode;
     hash = hash ^ loopAudio.hashCode;
     hash = hash ^ vibrate.hashCode;
     hash = hash ^ volume.hashCode;
     hash = hash ^ fadeDuration.hashCode;
-    hash = hash ^ (notificationTitle.hashCode);
-    hash = hash ^ (notificationBody.hashCode);
-    hash = hash ^ enableNotificationOnKill.hashCode;
+    hash = hash ^ warningNotificationOnKill.hashCode;
+    hash = hash ^ androidFullScreenIntent.hashCode;
     hash = hash ^ alarmName.hashCode;
     hash = hash ^ sun.hashCode;
     hash = hash ^ mon.hashCode;
@@ -170,13 +188,14 @@ class AlarmSettings {
     int? id,
     DateTime? dateTime,
     String? assetAudioPath,
+    NotificationSettings? notificationSettings,
     bool? loopAudio,
     bool? vibrate,
     double? volume,
     double? fadeDuration,
     String? notificationTitle,
     String? notificationBody,
-    bool? enableNotificationOnKill,
+    bool? warningNotificationOnKill,
     bool? androidFullScreenIntent,
     String? alarmName,
     bool? sun,
@@ -191,14 +210,13 @@ class AlarmSettings {
       id: id ?? this.id,
       dateTime: dateTime ?? this.dateTime,
       assetAudioPath: assetAudioPath ?? this.assetAudioPath,
+      notificationSettings: notificationSettings ?? this.notificationSettings,
       loopAudio: loopAudio ?? this.loopAudio,
       vibrate: vibrate ?? this.vibrate,
       volume: volume ?? this.volume,
       fadeDuration: fadeDuration ?? this.fadeDuration,
-      notificationTitle: notificationTitle ?? this.notificationTitle,
-      notificationBody: notificationBody ?? this.notificationBody,
-      enableNotificationOnKill:
-          enableNotificationOnKill ?? this.enableNotificationOnKill,
+      warningNotificationOnKill:
+          warningNotificationOnKill ?? this.warningNotificationOnKill,
       androidFullScreenIntent:
           androidFullScreenIntent ?? this.androidFullScreenIntent,
       alarmName: alarmName ?? this.alarmName,
@@ -217,22 +235,21 @@ class AlarmSettings {
         'id': id,
         'dateTime': dateTime.microsecondsSinceEpoch,
         'assetAudioPath': assetAudioPath,
+        'notificationSettings': notificationSettings.toJson(),
         'loopAudio': loopAudio,
         'vibrate': vibrate,
         'volume': volume,
         'fadeDuration': fadeDuration,
-        'notificationTitle': notificationTitle,
-        'notificationBody': notificationBody,
-        'enableNotificationOnKill': enableNotificationOnKill,
+        'warningNotificationOnKill': warningNotificationOnKill,
         'androidFullScreenIntent': androidFullScreenIntent,
-        'alarmName': alarmName,
-        'sun':sun,
-        'mon':mon,
-        'tue':tue,
-        'wed':wed,
-        'thu':thu,
-        'fri':fri,
-        'sat':sat,
+    'alarmName': alarmName,
+    'sun':sun,
+    'mon':mon,
+    'tue':tue,
+    'wed':wed,
+    'thu':thu,
+    'fri':fri,
+    'sat':sat,
       };
 
   /// Returns all the properties of `AlarmSettings` for debug purposes.
@@ -254,13 +271,12 @@ class AlarmSettings {
           id == other.id &&
           dateTime == other.dateTime &&
           assetAudioPath == other.assetAudioPath &&
+          notificationSettings == other.notificationSettings &&
           loopAudio == other.loopAudio &&
           vibrate == other.vibrate &&
           volume == other.volume &&
           fadeDuration == other.fadeDuration &&
-          notificationTitle == other.notificationTitle &&
-          notificationBody == other.notificationBody &&
-          enableNotificationOnKill == other.enableNotificationOnKill &&
+          warningNotificationOnKill == other.warningNotificationOnKill &&
           androidFullScreenIntent == other.androidFullScreenIntent &&
           alarmName == other.alarmName &&
           sun == other.sun &&

@@ -57,6 +57,14 @@ class AndroidAlarm {
           'notificationTitle': settings.notificationTitle,
           'notificationBody': settings.notificationBody,
           'fullScreenIntent': settings.androidFullScreenIntent,
+          'alarmName': settings.alarmName,
+          'sun' : settings.sun,
+          'mon' : settings.mon,
+          'tue' : settings.tue,
+          'wed' : settings.wed,
+          'thu' : settings.thu,
+          'fri' : settings.fri,
+          'sat' : settings.sat
         },
       );
     } catch (e) {

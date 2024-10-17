@@ -1,4 +1,4 @@
-import 'package:chungbuk_ict/My_alarm/alarm.dart';
+import 'package:chungbuk_ict/CustomAlarm/alarm.dart';
 import 'package:flutter/material.dart';
 
 class ExampleAlarmRingScreen extends StatelessWidget {
@@ -47,9 +47,7 @@ class ExampleAlarmRingScreen extends StatelessWidget {
         vibrate: alarmSettings.vibrate,
         volume: alarmSettings.volume,
         assetAudioPath: alarmSettings.assetAudioPath,
-        notificationTitle: alarmSettings.notificationTitle,
-        notificationBody: alarmSettings.notificationBody,
-        enableNotificationOnKill: alarmSettings.enableNotificationOnKill,
+        warningNotificationOnKill: alarmSettings.warningNotificationOnKill,
         alarmName: alarmSettings.alarmName,
         sun: alarmSettings.sun,
         mon: alarmSettings.mon,
@@ -58,6 +56,7 @@ class ExampleAlarmRingScreen extends StatelessWidget {
         thu: alarmSettings.thu,
         fri: alarmSettings.fri,
         sat: alarmSettings.sat,
+        notificationSettings: alarmSettings.notificationSettings
       );
 
 

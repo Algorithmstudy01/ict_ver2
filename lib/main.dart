@@ -5,7 +5,7 @@ import 'start_section.dart';  // Import the start section
 import 'package:permission_handler/permission_handler.dart';
 import 'package:camera/camera.dart';
 import 'Camera.dart';
-import 'My_alarm/alarm.dart';
+import 'CustomAlarm/alarm.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 late List<CameraDescription> _cameras;
