@@ -6,6 +6,11 @@ import 'package:camera/camera.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_native_image/flutter_native_image.dart';
+import 'package:provider/provider.dart';
+
+import 'Camera.dart';
+import 'NewAlarm/edit_alarm.dart';
+
 
 class FindText extends StatefulWidget {
   const FindText({super.key});
