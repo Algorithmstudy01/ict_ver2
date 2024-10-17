@@ -78,7 +78,7 @@ class PillInfo {
 class FindPill extends StatefulWidget {
   final String userId;
 
-  const FindPill({Key? key, required this.userId}) : super(key: key);
+  const FindPill({super.key, required this.userId});
 
   @override
   State<FindPill> createState() => _FindPillState();
@@ -107,7 +107,7 @@ class _FindPillState extends State<FindPill> with AutomaticKeepAliveClientMixin 
     if (_cameras.isNotEmpty) {
       controller = CameraController(
         _cameras[0],
-        ResolutionPreset.max,
+        ResolutionPreset.low,
         enableAudio: false,
       );
 
@@ -143,19 +143,15 @@ Future<void> _takePicture() async {
   try {
     final XFile file = await controller.takePicture();
 
-    if  (file != null) {
-      ImageProperties properties = await FlutterNativeImage. getImageProperties (file.path);
-      var cropSize =  min (properties.width!, properties.height!);
-      int offsetX = (properties.width! - cropSize) ~/2;
-      int offsetY = (properties.height! - cropSize) ~/2;
-      imageFile = await FlutterNativeImage. cropImage (file.path, offsetX, offsetY, cropSize, cropSize);
+    ImageProperties properties = await FlutterNativeImage. getImageProperties (file.path);
+    var cropSize =  min (properties.width!, properties.height!);
+    int offsetX = (properties.width! - cropSize) ~/2;
+    int offsetY = (properties.height! - cropSize) ~/2;
+    imageFile = await FlutterNativeImage. cropImage (file.path, offsetX, offsetY, cropSize, cropSize);
 
-      if  (imageFile != null)
-        print ( "Good" );
-    }  else  {
-      print ( "Error" );
-    }
-
+    if  (imageFile != null)
+      print ( "Good" );
+  
     setState(() {
       _image = file;
       _pillInfo = {};
@@ -169,6 +165,7 @@ Future<void> _takePicture() async {
     print('Error taking picture: $e');
     _showErrorDialog('이미지 촬영 중 오류가 발생했습니다.');
   }
+  
 }
 
 Future<void> getImage(ImageSource imageSource) async {
@@ -176,12 +173,14 @@ Future<void> getImage(ImageSource imageSource) async {
   if (pickedFile != null) {
     setState(() {
       _image = pickedFile;
+      imageFile = File(pickedFile.path); // imageFile을 제대로 설정
       _pillInfo = {};
       _isLoading = true;
     });
 
     // 선택한 이미지를 서버로 업로드
-    await _uploadImage(File(pickedFile.path));
+    await _uploadImage(imageFile!);
+    // await _uploadImage(File(pickedFile.path));
   }
 }
 
@@ -189,15 +188,16 @@ Future<void> getImage(ImageSource imageSource) async {
 
 
   Future<void> _startSearch() async {
-    if (_image != null) {
-      setState(() {
-        _isLoading = true;
-      });
-      await _uploadImage(File(_image!.path));
-    } else {
-      _showErrorDialog('이미지를 먼저 선택해 주세요.');
-    }
+  if (_image != null) {
+    setState(() {
+      _isLoading = true;
+    });
+    await _uploadImage(File(_image!.path)); // Ensure _image is non-null
+  } else {
+    _showErrorDialog('이미지를 먼저 선택해 주세요.');
   }
+}
+
 
 Future<void> _uploadImage(File image) async {
   final url = Uri.parse('https://80d4-113-198-180-184.ngrok-free.app/predict2/');
@@ -220,25 +220,30 @@ Future<void> _uploadImage(File image) async {
       print(decodedData);
 
       if (decodedData == null || decodedData.containsKey('error')) {
-        _showErrorDialog(decodedData?['error'] ?? 'Unknown error occurred');
+  _showErrorDialog(decodedData?['error'] ?? 'Unknown error occurred');
+  setState(() {
+    _isLoading = false;
+  });
+  return;
+}
+
+int predictedCategoryId = decodedData['predicted_category_id'] ?? 0; // 이 부분에서 null일 경우
+
+      double predictionScore = decodedData['prediction_score']?.toDouble() ?? 0.0;
+
+      if (predictedCategoryId == 0) {
+        _showErrorDialog('사진을 다시 촬영해주세요');
         setState(() {
           _isLoading = false;
         });
         return;
       }
 
-      int predictedCategoryId = decodedData['predicted_category_id'] ?? 0;
-      double predictionScore = decodedData['prediction_score']?.toDouble() ?? 0.0;
-
-      if (predictedCategoryId == 0) {
-        _showErrorDialog('예상 범주 ID를 찾을 수 없습니다.');
-        return;
-      }
-
-      setState(() {
-        _pillInfo = decodedData;
-        _isLoading = false;
-      });
+       setState(() {
+  _pillInfo = decodedData;
+  print("Pill Info: $_pillInfo"); // Debugging line
+  _isLoading = false;
+});
 
       // 예측 확률에 따른 내비게이션
       if (predictionScore >= 0.6) {
@@ -247,28 +252,30 @@ Future<void> _uploadImage(File image) async {
         await _saveSearchHistory(pillInfo);
 
         // 바로 정보 화면으로 이동
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => InformationScreen(
-              pillCode: _pillInfo['pill_code'] ?? 'Unknown',
-              pillName: _pillInfo['product_name'] ?? 'Unknown',
-              confidence: predictionScore.toString(),
-              userId: widget.userId,
-              usage: _pillInfo['usage'] ?? 'No information',
-              precautionsBeforeUse: _pillInfo['precautions_before_use'] ?? 'No information',
-              usagePrecautions: _pillInfo['usage_precautions'] ?? 'No information',
-              drugFoodInteractions: _pillInfo['drug_food_interactions'] ?? 'No information',
-              sideEffects: _pillInfo['side_effects'] ?? 'No information',
-              storageInstructions: _pillInfo['storage_instructions'] ?? 'No information',
-              efficacy: _pillInfo['efficacy'] ?? 'No information',
-              manufacturer: _pillInfo['manufacturer'] ?? 'No information',
-              imageUrl: _pillInfo['image_url'] ?? '',
-              extractedText: '',
-              predictedCategoryId: predictedCategoryId.toString(),
-            ),
-          ),
-        );
+      Navigator.push(
+  context,
+  MaterialPageRoute(
+    builder: (context) => InformationScreen(
+      pillCode: _pillInfo['pill_code'] ?? 'Unknown',
+
+      pillName: _pillInfo['product_name'] ?? 'Unknown',
+      confidence: predictionScore.toString(),
+      userId: widget.userId,
+      usage: _pillInfo['usage'] ?? 'No information',
+      precautionsBeforeUse: _pillInfo['precautions_before_use'] ?? 'No information',
+      usagePrecautions: _pillInfo['usage_precautions'] ?? 'No information',
+      drugFoodInteractions: _pillInfo['drug_food_interactions'] ?? 'No information',
+      sideEffects: _pillInfo['side_effects'] ?? 'No information',
+      storageInstructions: _pillInfo['storage_instructions'] ?? 'No information',
+      efficacy: _pillInfo['efficacy'] ?? 'No information',
+      manufacturer: _pillInfo['manufacturer'] ?? 'No information',
+      imageUrl: _pillInfo['image_url'] ?? '',
+      extractedText: '',
+      predictedCategoryId: predictedCategoryId.toString(),
+    ),
+  ),
+);
+
       } else if (predictionScore >= 0.1 && predictionScore < 0.6) {
         // 낮은 확신의 예측
         List<dynamic> pillOptions = decodedData['pill_options'] ?? [];
@@ -282,8 +289,8 @@ Future<void> _uploadImage(File image) async {
               context, 
               MaterialPageRoute(
                 builder: (context) => InformationScreen(
-                  pillCode: option['pill_code'], 
-                  pillName: option['product_name'],
+                  pillCode: option['pill_code'] ?? 'Unknown', 
+                  pillName: option['product_name'] ?? 'Unknown',
                   confidence: (option['confidence'] is String 
                       ? double.parse(option['confidence']) 
                       : option['confidence']).toStringAsFixed(2),
@@ -332,6 +339,11 @@ Future<void> _uploadImage(File image) async {
       _isLoading = false;
     });
   }
+  
+
+
+    print("Image: $_image");
+print("Image File: $imageFile");
 }
 
 
@@ -375,12 +387,12 @@ Future<void> _saveSearchHistory(PillInfo pillInfo) async {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('오류'),
+          title: const Text('오류'),
           content: Text(message),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text('확인'),
+              child: const Text('확인'),
             ),
           ],
         );
@@ -401,8 +413,9 @@ Future<void> _saveSearchHistory(PillInfo pillInfo) async {
 
 
  return Scaffold(
+   backgroundColor: Colors.white,
   appBar: AppBar(
-    title: Text('알약 검색'),
+    title: const Text('알약 검색'),
     backgroundColor: Colors.white,
     elevation: 4,
     centerTitle: true,
@@ -435,8 +448,8 @@ Future<void> _saveSearchHistory(PillInfo pillInfo) async {
                             ? Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  CircularProgressIndicator(),
-                                  SizedBox(height: 10),
+                                  const CircularProgressIndicator(),
+                                  const SizedBox(height: 10),
                                   Text(
                                     '알약 검색 중입니다...',
                                     style: TextStyle(
@@ -450,7 +463,8 @@ Future<void> _saveSearchHistory(PillInfo pillInfo) async {
                                 ? Image.file(
                                     imageFile!,
                                     fit: BoxFit.contain,
-                                  )
+                                  ) 
+                            
                                 : (controller.value.isInitialized
                                     ? AspectRatio(aspectRatio: 1,
                         child: ClipRect(
@@ -504,8 +518,8 @@ Future<void> _saveSearchHistory(PillInfo pillInfo) async {
                             child: ElevatedButton(
                                 onPressed: _image == null ? _takePicture : _startSearch,
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: _image == null ? Color(0xffC22AF8) : Color(0xff852C83),
-                                  shape: BeveledRectangleBorder(),
+                                  backgroundColor: _image == null ? const Color(0xffC22AF8) : const Color(0xff852C83),
+                                  shape: const BeveledRectangleBorder(),
                                   minimumSize: Size(size.width * 0.7, size.height * 0.06),
                                 ),
                                 child: Text(
@@ -532,6 +546,7 @@ Future<void> _saveSearchHistory(PillInfo pillInfo) async {
                           } else {
                             setState(() {
                               _image = null; // Clear the current image
+                              imageFile = null;
                             });
                           }
                         },
@@ -570,7 +585,7 @@ Future<void> _saveSearchHistory(PillInfo pillInfo) async {
 class ImageUploadScreen extends StatefulWidget {
   final String userId;
 
-  const ImageUploadScreen({Key? key, required this.userId}) : super(key: key);
+  const ImageUploadScreen({super.key, required this.userId});
 
   @override
   _ImageUploadScreenState createState() => _ImageUploadScreenState();
@@ -652,12 +667,12 @@ Future<void> _uploadImage(File image) async {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('오류'),
+        title: const Text('오류'),
         content: Text(message),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: Text('확인'),
+            child: const Text('확인'),
           ),
         ],
       ),
@@ -672,10 +687,10 @@ Future<void> _uploadImage(File image) async {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('이미지 업로드'),
+        title: const Text('이미지 업로드'),
       ),
       body: Center(
-        child: _isLoading ? CircularProgressIndicator() : Text('이미지 업로드 화면'),
+        child: _isLoading ? const CircularProgressIndicator() : const Text('이미지 업로드 화면'),
       ),
     );
   }

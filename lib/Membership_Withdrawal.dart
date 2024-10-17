@@ -4,14 +4,14 @@ import 'my_page.dart';
 class MembershipWithdrawScreen extends StatelessWidget {
   final String userId;
 
-  MembershipWithdrawScreen({required this.userId});
+  const MembershipWithdrawScreen({super.key, required this.userId});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text('회원탈퇴'),
+        title: const Text('회원탈퇴'),
         backgroundColor: Colors.white,
         elevation: 4,
         centerTitle: true,
@@ -23,8 +23,8 @@ class MembershipWithdrawScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 90),
-            Text(
+            const SizedBox(height: 90),
+            const Text(
               '여기서 활동하신 모든 기록들이 삭제됩니다.',
               style: TextStyle(
                 fontSize: 16,
@@ -32,8 +32,8 @@ class MembershipWithdrawScreen extends StatelessWidget {
                 color: Colors.black,
               ),
             ),
-            SizedBox(height: 4),
-            Text(
+            const SizedBox(height: 4),
+            const Text(
               '삭제된 이후 정보들은 다시 복구할 수 없습니다.',
               style: TextStyle(
                 fontSize: 16,
@@ -41,8 +41,8 @@ class MembershipWithdrawScreen extends StatelessWidget {
                 color: Colors.black,
               ),
             ),
-            SizedBox(height: 160),
-            Text(
+            const SizedBox(height: 160),
+            const Text(
               '회원탈퇴를 하시겠습니까?',
               style: TextStyle(
                 fontSize: 16,
@@ -50,8 +50,8 @@ class MembershipWithdrawScreen extends StatelessWidget {
                 color: Colors.black,
               ),
             ),
-            SizedBox(height: 16),
-            Text(
+            const SizedBox(height: 16),
+            const Text(
               '회원탈퇴를 하기 위해 비밀번호를 입력해 주세요.',
               style: TextStyle(
                 fontSize: 16,
@@ -59,9 +59,9 @@ class MembershipWithdrawScreen extends StatelessWidget {
                 color: Colors.black,
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             PasswordField(hintText: '비밀번호를 입력해 주세요.'),
-            SizedBox(height: 40),
+            const SizedBox(height: 40),
             Center(
               child: GestureDetector(
                 onTap: () {
@@ -90,7 +90,7 @@ class MembershipWithdrawScreen extends StatelessWidget {
 class PasswordField extends StatefulWidget {
   final String hintText;
 
-  PasswordField({required this.hintText});
+  const PasswordField({super.key, required this.hintText});
 
   @override
   _PasswordFieldState createState() => _PasswordFieldState();
@@ -110,7 +110,7 @@ class _PasswordFieldState extends State<PasswordField> {
     return TextField(
       obscureText: _obscureText,
       decoration: InputDecoration(
-        border: OutlineInputBorder(),
+        border: const OutlineInputBorder(),
         hintText: widget.hintText,
         filled: true,
         fillColor: Colors.white,
@@ -128,7 +128,7 @@ class _PasswordFieldState extends State<PasswordField> {
 class WithdrawCompleteScreen extends StatelessWidget {
   final String userId;
 
-  WithdrawCompleteScreen({required this.userId});
+  const WithdrawCompleteScreen({super.key, required this.userId});
 
   @override
   Widget build(BuildContext context) {
@@ -136,7 +136,7 @@ class WithdrawCompleteScreen extends StatelessWidget {
       backgroundColor: Colors.white,
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.push(
               context,
@@ -151,7 +151,7 @@ class WithdrawCompleteScreen extends StatelessWidget {
         centerTitle: true,
         foregroundColor: Colors.black,
       ),
-      body: Center(
+      body: const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

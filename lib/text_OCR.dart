@@ -13,7 +13,7 @@ import 'NewAlarm/edit_alarm.dart';
 
 
 class FindText extends StatefulWidget {
-  const FindText({Key? key}) : super(key: key);
+  const FindText({super.key});
 
   @override
   State<FindText> createState() => _FindTextState();
@@ -154,12 +154,12 @@ Future<void> sendImageToServer(File imageFile) async {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('오류'),
+          title: const Text('오류'),
           content: Text(message),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text('확인'),
+              child: const Text('확인'),
             ),
           ],
         );
@@ -181,7 +181,7 @@ Future<void> sendImageToServer(File imageFile) async {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text('처방전'),
+        title: const Text('처방전'),
         backgroundColor: Colors.white,
         elevation: 4,
         centerTitle: true,
@@ -199,7 +199,7 @@ Future<void> sendImageToServer(File imageFile) async {
                   width: size.height * 0.4,
                   height: size.height * 0.4,
                   child: _isLoading
-                      ? Column(
+                      ? const Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       CircularProgressIndicator(),
@@ -225,7 +225,7 @@ Future<void> sendImageToServer(File imageFile) async {
                   child: Text(
                     _ocrResult,
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 18),
+                    style: const TextStyle(fontSize: 18),
                   ),
                 ),
                 Container(
@@ -235,8 +235,8 @@ Future<void> sendImageToServer(File imageFile) async {
                   child: ElevatedButton(
                     onPressed: _image == null ? _takePicture : () => setState(() => _image = null),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: _image == null ? Color(0xffC22AF8) : Color(0xff852C83),
-                      shape: BeveledRectangleBorder(),
+                      backgroundColor: _image == null ? const Color(0xffC22AF8) : const Color(0xff852C83),
+                      shape: const BeveledRectangleBorder(),
                     ),
                     child: Text(
                       _image == null ? '촬영하기' : '다시 촬영하기',

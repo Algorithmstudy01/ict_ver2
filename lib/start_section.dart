@@ -3,6 +3,8 @@ import 'login_section.dart';
 import 'signup_section.dart';
 
 class StartSection extends StatelessWidget {
+  const StartSection({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,14 +22,14 @@ class StartSection extends StatelessWidget {
                  // Replace with your image asset path
                width: 230,
               ),
-                SizedBox(height: 30),
+                const SizedBox(height: 30),
               Image.asset(
                 'assets/img/logo.jpg', // Replace with your image asset path
                 width: 200,
                 height: 200,
               ),
                 
-              SizedBox(height: 30), // Space between image and buttons
+              const SizedBox(height: 30), // Space between image and buttons
 
               // SizedBox to ensure consistent button width
               SizedBox(
@@ -39,7 +41,7 @@ class StartSection extends StatelessWidget {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => LoginSection()),
+                          MaterialPageRoute(builder: (context) => const LoginSection()),
                         );
                       },
                       child: Image.asset(
@@ -48,14 +50,14 @@ class StartSection extends StatelessWidget {
                         fit: BoxFit.contain, // Ensure the image scales correctly
                       ),
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
 
                     // Sign Up button with image only
                     GestureDetector(
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => SignUpSection()),
+                          MaterialPageRoute(builder: (context) => const SignUpSection()),
                         );
                       },
                       child: Image.asset(

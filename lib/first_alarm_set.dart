@@ -11,7 +11,7 @@ import 'homepage.dart';
 class FirstAlarmSet extends StatefulWidget {
   final String userId;
 
-  const FirstAlarmSet({Key? key, required this.userId}) : super(key: key);
+  const FirstAlarmSet({super.key, required this.userId});
 
 
   @override
@@ -178,7 +178,7 @@ class _FirstAlarmSet extends State<FirstAlarmSet> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text('알람 세팅'),
+        title: const Text('알람 세팅'),
         backgroundColor: Colors.white,
         elevation: 4,
         centerTitle: true,

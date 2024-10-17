@@ -122,6 +122,7 @@ def find_pill_info_from_csv(predicted_category_id, csv_path):
             if int(row['category_id']) == predicted_category_id:
                 pill_info = {
                     "제품명": row["제품명"],
+                    "제조/수입사": row["제조/수입사"],
                     "drug_N": row["drug_N"],
                     "품목기준코드": row["품목기준코드"],
                     "이 약의 효능은 무엇입니까?": row["이 약의 효능은 무엇입니까?"],
@@ -830,6 +831,7 @@ def find_pill_info_from_csv2(predicted_category_id, csv_path):
             if int(row['category_id']) == predicted_category_id:
                 pill_info = {
                     "제품명": row["제품명"],
+                    "제조/수입사": row["제조/수입사"],
                     "drug_N": row["drug_N"],
                     "품목기준코드": row["품목기준코드"],
                     "이 약의 효능은 무엇입니까?": row["이 약의 효능은 무엇입니까?"],
@@ -915,7 +917,7 @@ def prompt_user_selection(image_path, top_indices, pred_labels, pred_scores, csv
 
             # confidence 값을 float으로 변환
             'confidence': float(pred_scores[idx]) if isinstance(pred_scores[idx], (float, np.floating)) else pred_scores[idx],
-
+            'manufacturer': pill_info_csv.get('제조/수입사', 'Unknown') if pill_info_csv else 'Unknown',
             # 제조사 및 부가 정보들, null일 경우 기본값 제공
             'efficacy': pill_info_csv.get('이 약의 효능은 무엇입니까?', 'No information') if pill_info_csv else 'No information',  # 효능
             'usage': pill_info_csv.get('이 약은 어떻게 사용합니까?', 'No information') if pill_info_csv else 'No information',  # 사용법
@@ -999,12 +1001,8 @@ def predict2(request):
         # 최상위 예측값 인덱스 찾기
         max_score_idx = pred_scores.argmax()
         predicted_category_id = pred_labels[max_score_idx]
-        csv_path = '/Users/seon/Desktop/model/info.csv'
-
-        # 가장 높은 확률의 예측값 인덱스
-        max_score_idx = pred_scores.argmax()
-        predicted_category_id = pred_labels[max_score_idx]
-        csv_path = '../ict_chungbuk/info_1.csv'
+        csv_path = '/Users/seon/Desktop/Ict_FIN/ict_chungbuk/info2.csv'
+       
 
         # pill_info_csv 초기화
         pill_info_csv = {}
@@ -1029,6 +1027,7 @@ def predict2(request):
         # Response 준비
         response_data = {
             'predicted_category_id': int(predicted_category_id),
+            'manufacturer': pill_info_csv.get('제조/수입사', 'Unknown'),
             'prediction_score': float(pred_scores[max_score_idx]),
             'product_name': pill_info_csv.get('제품명', 'Unknown') if pill_info_csv else 'Unknown',
             'pill_code': pill_info_csv.get('품목기준코드', 'Unknown') if pill_info_csv else 'Unknown',
@@ -1202,53 +1201,64 @@ class RecommendationListView(View):
 # import json
 # import uuid
 # import time
+# secret_key = "VUVZTm1UYk5ocEJSaHZHRVpuc0lCc0ZUc29vTXpxdmE="
+# api_url = "https://fqml315j1i.apigw.ntruss.com/custom/v1/34920/3850f8f6acb98a9f5c4375a18ec018ef3062e8636574ca5963ef4a8e618805df/general"
 
 
-# @api_view(['POST'])
-# def ocr_view(request):
-#     image_file = request.FILES['image']
+# # @api_view(['POST'])
+# # def ocr_view(request):
+# #     image_file = request.FILES['image']
 
-#     # Request 생성
-#     request_json = {
-#         'images': [
-#             {
-#                 'format': 'jpg',
-#                 'name': 'demo'
-#             }
-#         ],
-#         'requestId': str(uuid.uuid4()),
-#         'version': 'V2',
-#         'timestamp': int(round(time.time() * 1000))
-#     }
+# #     # Request 생성
+# #     request_json = {
+# #         'images': [
+# #             {
+# #                 'format': 'jpg',
+# #                 'name': 'demo'
+# #             }
+# #         ],
+# #         'requestId': str(uuid.uuid4()),
+# #         'version': 'V2',
+# #         'timestamp': int(round(time.time() * 1000))
+# #     }
 
-#     payload = {'message': json.dumps(request_json).encode('UTF-8')}
-#     files = [('file', image_file)]
-#     headers = {'X-OCR-SECRET': secret_key}
+# #     payload = {'message': json.dumps(request_json).encode('UTF-8')}
+# #     files = [('file', image_file)]
+# #     headers = {'X-OCR-SECRET': secret_key}
 
-#     # OCR 요청
-#     response = requests.request("POST", api_url, headers=headers, data=payload, files=files)
+# #     # OCR 요청
+# #     response = requests.request("POST", api_url, headers=headers, data=payload, files=files)
 
-#     if response.status_code == 200:
-#         ocr_results = json.loads(response.text)
-#         all_texts = []
-#         for image_result in ocr_results['images']:
-#             for field in image_result['fields']:
-#                 text = field['inferText']
-#                 all_texts.append(text)
+# #     if response.status_code == 200:
+# #         ocr_results = json.loads(response.text)
+# #         all_texts = []
+# #         for image_result in ocr_results['images']:
+# #             for field in image_result['fields']:
+# #                 text = field['inferText']
+# #                 all_texts.append(text)
         
-#         full_text = ' '.join(all_texts)
-#         return Response({"text": full_text})
-#     else:
-#         return Response({"error": f"OCR 실패: 상태 코드 {response.status_code}"}, status=response.status_code)
+# #         full_text = ' '.join(all_texts)
+# #         return Response({"text": full_text})
+# #     else:
+# #         return Response({"error": f"OCR 실패: 상태 코드 {response.status_code}"}, status=response.status_code)
 
 
+# # # from rest_framework.decorators import api_view
+# # # from rest_framework.response import Response
+# # # import requests
+# # # import json
+# # # import uuid
+# # # import time
+# # # import re  # 정규식 사용을 위해 re 모듈 추가
+
+
+# import json
+import re
+import time
+import uuid
+import requests
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-import requests
-import json
-import uuid
-import time
-import re  # 정규식 사용을 위해 re 모듈 추가
 
 @api_view(['POST'])
 def ocr_view(request):
@@ -1264,7 +1274,7 @@ def ocr_view(request):
         ],
         'requestId': str(uuid.uuid4()),
         'version': 'V2',
-        'timestamp': int(round(time.time() * 1000))  # 여기를 사용할 수 있습니다
+                'timestamp': int(round(time.time() * 1000))  # 여기를 사용할 수 있습니다
     }
 
     payload = {'message': json.dumps(request_json).encode('UTF-8')}
@@ -1284,19 +1294,20 @@ def ocr_view(request):
         
         full_text = ' '.join(all_texts)
 
-        # 정규식을 통한 정보 추출
-        # drug_code_pattern = re.compile(r"\(\d{9}\)")
-        # drug_code_pattern = re.compile(r"(정|캡슐)")
-        drug_code_pattern = re.compile(r"([가-힣]+정|[가-힣]+캡슐)")
-
-
+        # 약품 이름을 추출하는 정규식
+        # "정"이나 "캡슐" 뒤에 추가적인 설명이 없거나, 용량이 있는 경우도 허용
+        drug_code_pattern = re.compile(r"([가-힣]+(?:정|캡슐)(?:\s*\d*mg|밀리그램)?(?=\s|$))") 
         drug_codes = drug_code_pattern.findall(full_text)
 
-        dosage_pattern = re.compile(r"(하루\s*\d+회)")
-        dosages = dosage_pattern.findall(full_text)
+        # 복용 횟수를 추출하는 정규식
+        # dosage_pattern = re.compile(r"(\d+\.\d+정씩\s*\d+회)")
+        # dosage_pattern = re.compile(r"(하루\s*\d+회)")
+        dosage_pattern = re.compile(r"(하루\s*\d+회|\d+\.\d+정씩\s*\d+회|\d+정씩\s*\d+회)")
 
-        # time_pattern 수정
+        dosages = dosage_pattern.findall(full_text)
         time_pattern = re.compile(r"(아침\s*식후\s*\d+분에|아침/저녁\s*식후\s*\d+분에|저녁\s*식후\s*\d+분에)")
+
+
         times = time_pattern.findall(full_text)
 
         # 아침 저녁 식후가 함께 있는 경우를 분리
@@ -1308,11 +1319,150 @@ def ocr_view(request):
             else:
                 parsed_times.append(time_entry)
 
-        # 추출된 데이터 반환
         return Response([
                 {"drug_code": drug_code, "dosage": dosages[i] if i < len(dosages) else None, "time": parsed_times[i] if i < len(parsed_times) else None} 
                 for i, drug_code in enumerate(drug_codes)
             ])
 
+        # # 추출된 데이터 반환
+        # response_data = [
+        #     {"drug_code": drug_code, 
+        #      "dosage": dosages[i] if i < len(dosages) else None} 
+        #     for i, drug_code in enumerate(drug_codes)
+        # ]
+
+        return Response(response_data)
+
     else:
         return Response({"error": f"OCR 실패: 상태 코드 {response.status_code}"}, status=response.status_code)
+
+# # import json
+# import re
+# import time
+# import uuid
+# import requests
+# from rest_framework.decorators import api_view
+# from rest_framework.response import Response
+# secret_key = "VUVZTm1UYk5ocEJSaHZHRVpuc0lCc0ZUc29vTXpxdmE="
+# api_url = "https://fqml315j1i.apigw.ntruss.com/custom/v1/34920/3850f8f6acb98a9f5c4375a18ec018ef3062e8636574ca5963ef4a8e618805df/general"
+
+# @api_view(['POST'])
+# def ocr_view(request):
+#     image_file = request.FILES['image']
+
+#     # Request 생성
+#     request_json = {
+#         'images': [
+#             {
+#                 'format': 'jpg',
+#                 'name': 'demo'
+#             }
+#         ],
+#         'requestId': str(uuid.uuid4()),
+#         'version': 'V2',
+#                 'timestamp': int(round(time.time() * 1000))  # 여기를 사용할 수 있습니다
+#     }
+
+#     payload = {'message': json.dumps(request_json).encode('UTF-8')}
+#     files = [('file', image_file)]
+#     headers = {'X-OCR-SECRET': secret_key}
+
+#     # OCR 요청
+#     response = requests.request("POST", api_url, headers=headers, data=payload, files=files)
+
+#     if response.status_code == 200:
+#         ocr_results = json.loads(response.text)
+#         all_texts = []
+#         for image_result in ocr_results['images']:
+#             for field in image_result['fields']:
+#                 text = field['inferText']
+#                 all_texts.append(text)
+        
+#         full_text = ' '.join(all_texts)
+
+#         # 약품 이름을 추출하는 정규식
+#         # "정"이나 "캡슐" 뒤에 추가적인 설명이 없거나, 용량이 있는 경우도 허용
+#         drug_code_pattern = re.compile(r"([가-힣]+(?:정|캡슐)(?:\s*\d*mg|밀리그램)?(?=\s|$))") 
+#         drug_codes = drug_code_pattern.findall(full_text)
+
+#         # 복용 횟수를 추출하는 정규식
+#         dosage_pattern = re.compile(r"(\d+정씩\s*\d+회)")
+#         dosages = dosage_pattern.findall(full_text)
+
+#         # 추출된 데이터 반환
+#         response_data = [
+#             {"drug_code": drug_code, 
+#              "dosage": dosages[i] if i < len(dosages) else None} 
+#             for i, drug_code in enumerate(drug_codes)
+#         ]
+
+#         return Response(response_data)
+
+#     else:
+#         return Response({"error": f"OCR 실패: 상태 코드 {response.status_code}"}, status=response.status_code)
+
+
+# import json
+# import re
+# import time
+# import uuid
+# import requests
+# from rest_framework.decorators import api_view
+# from rest_framework.response import Response
+# secret_key = "VUVZTm1UYk5ocEJSaHZHRVpuc0lCc0ZUc29vTXpxdmE="
+# api_url = "https://fqml315j1i.apigw.ntruss.com/custom/v1/34920/3850f8f6acb98a9f5c4375a18ec018ef3062e8636574ca5963ef4a8e618805df/general"
+
+# @api_view(['POST'])
+# def ocr_view(request):
+#     image_file = request.FILES['image']
+
+#     # Request 생성
+#     request_json = {
+#         'images': [
+#             {
+#                 'format': 'jpg',
+#                 'name': 'demo'
+#             }
+#         ],
+#         'requestId': str(uuid.uuid4()),
+#         'version': 'V2',
+#                 'timestamp': int(round(time.time() * 1000))  # 여기를 사용할 수 있습니다
+#     }
+
+#     payload = {'message': json.dumps(request_json).encode('UTF-8')}
+#     files = [('file', image_file)]
+#     headers = {'X-OCR-SECRET': secret_key}
+
+#     # OCR 요청
+#     response = requests.request("POST", api_url, headers=headers, data=payload, files=files)
+
+#     if response.status_code == 200:
+#         ocr_results = json.loads(response.text)
+#         all_texts = []
+#         for image_result in ocr_results['images']:
+#             for field in image_result['fields']:
+#                 text = field['inferText']
+#                 all_texts.append(text)
+        
+#         full_text = ' '.join(all_texts)
+
+#         # 약품 이름을 추출하는 정규식
+#         # "정"이나 "캡슐" 뒤에 추가적인 설명이 없거나, 용량이 있는 경우도 허용
+#         drug_code_pattern = re.compile(r"([가-힣]+(?:정|캡슐)(?:\s*\d*mg|밀리그램)?(?=\s|$))") 
+#         drug_codes = drug_code_pattern.findall(full_text)
+
+#         # 복용 횟수를 추출하는 정규식
+#         dosage_pattern = re.compile(r"(\d+정씩\s*\d+회)")
+#         dosages = dosage_pattern.findall(full_text)
+
+#         # 추출된 데이터 반환
+#         response_data = [
+#             {"drug_code": drug_code, 
+#              "dosage": dosages[i] if i < len(dosages) else None} 
+#             for i, drug_code in enumerate(drug_codes)
+#         ]
+
+#         return Response(response_data)
+
+#     else:
+#         return Response({"error": f"OCR 실패: 상태 코드 {response.status_code}"}, status=response.status_code)

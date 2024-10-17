@@ -4,7 +4,7 @@ import 'login_section.dart';  // Ensure you import the login section
 import 'package:http/http.dart' as http;
 
 class SignUpSection extends StatefulWidget {
-  const SignUpSection({Key? key}) : super(key: key);
+  const SignUpSection({super.key});
 
   @override
   _SignUpSectionState createState() => _SignUpSectionState();
@@ -72,11 +72,11 @@ class _SignUpSectionState extends State<SignUpSection> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Error'),
+          title: const Text('Error'),
           content: Text(message),
           actions: <Widget>[
             TextButton(
-              child: Text('OK'),
+              child: const Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -92,18 +92,18 @@ class _SignUpSectionState extends State<SignUpSection> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('회원가입 완료'),
-          content: Text('회원가입이 완료되었습니다.'),
+          title: const Text('회원가입 완료'),
+          content: const Text('회원가입이 완료되었습니다.'),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) => LoginSection()), // Navigate to login page
+                  MaterialPageRoute(builder: (context) => const LoginSection()), // Navigate to login page
                 );
               },
-              child: Text('확인'),
+              child: const Text('확인'),
             ),
           ],
         );
@@ -116,7 +116,7 @@ class _SignUpSectionState extends State<SignUpSection> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text('회원가입'),
+        title: const Text('회원가입'),
         backgroundColor: Colors.white,
         elevation: 4, // Add elevation for shadow
         centerTitle: true,
@@ -131,9 +131,9 @@ class _SignUpSectionState extends State<SignUpSection> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildTextField(_nicknameController, '닉네임을 입력해주세요'),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             _buildTextField(_idController, '아이디를 입력해주세요'),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             _buildPasswordTextField(
               _passwordController,
               '비밀번호를 입력해주세요',
@@ -144,7 +144,7 @@ class _SignUpSectionState extends State<SignUpSection> {
                 });
               },
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             _buildPasswordTextField(
               _confirmPasswordController,
               '비밀번호를 한번 더 입력해주세요',
@@ -155,11 +155,11 @@ class _SignUpSectionState extends State<SignUpSection> {
                 });
               },
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             _buildTextField(_locationController, '거주 지역을 입력해주세요'),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             _buildTextField(_emailController, '이메일을 입력해주세요'),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Center(
               child: GestureDetector(
                 onTap: _signUp,
@@ -181,7 +181,7 @@ class _SignUpSectionState extends State<SignUpSection> {
       controller: controller,
       decoration: InputDecoration(
         labelText: labelText,
-        border: OutlineInputBorder(),
+        border: const OutlineInputBorder(),
       ),
     );
   }
@@ -197,7 +197,7 @@ class _SignUpSectionState extends State<SignUpSection> {
       obscureText: !isVisible,
       decoration: InputDecoration(
         labelText: labelText,
-        border: OutlineInputBorder(),
+        border: const OutlineInputBorder(),
         suffixIcon: IconButton(
           icon: Icon(isVisible ? Icons.visibility : Icons.visibility_off),
           onPressed: toggleVisibility,

@@ -9,7 +9,7 @@ import 'signup_section.dart';
 
 class LoginSection extends StatefulWidget {
     
-  const LoginSection({Key? key}) : super(key: key);
+  const LoginSection({super.key});
 
   @override
   _LoginSectionState createState() => _LoginSectionState();
@@ -19,7 +19,9 @@ class _LoginSectionState extends State<LoginSection> {
   final TextEditingController _idController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+
   //bool _showPassword = false; // 비밀번호 보이기 여부
+
 
 
 void _login() async {
@@ -76,7 +78,7 @@ void _login() async {
           context: context,
           builder: (context) {
             return AlertDialog(
-              content: Text('로그인 중 오류가 발생했습니다.'),
+              content: const Text('로그인 중 오류가 발생했습니다.'),
               actions: [
                 TextButton(
                   onPressed: () {
@@ -115,28 +117,28 @@ void _login() async {
     return Scaffold(
       backgroundColor: Colors.white,
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             TextField(
               controller: _idController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: '아이디(이메일 아이디)',
                 border: OutlineInputBorder(),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             TextField(
               controller: _passwordController,
               obscureText: true,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: '비밀번호',
                 border: OutlineInputBorder(),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             GestureDetector(
               onTap: _login,
               child: Image.asset(
@@ -145,7 +147,7 @@ void _login() async {
                 fit: BoxFit.contain, // Ensure the image scales correctly
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
@@ -156,12 +158,12 @@ void _login() async {
                       MaterialPageRoute(builder: (context) => FindIDSection()),
                     );
                   },
-                  child: Text(
+                  child: const Text(
                     'ID 찾기',
                     style: TextStyle(color: Colors.black),
                   ),
                 ),
-                Text('|', style: TextStyle(color: Colors.black)),
+                const Text('|', style: TextStyle(color: Colors.black)),
                 TextButton(
                   onPressed: () {
                     Navigator.push(
@@ -169,20 +171,20 @@ void _login() async {
                       MaterialPageRoute(builder: (context) => FindPasswordSection()),
                     );
                   },
-                  child: Text(
+                  child: const Text(
                     'PW 찾기',
                     style: TextStyle(color: Colors.black),
                   ),
                 ),
-                Text('|', style: TextStyle(color: Colors.black)),
+                const Text('|', style: TextStyle(color: Colors.black)),
                 TextButton(
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => SignUpSection()),
+                      MaterialPageRoute(builder: (context) => const SignUpSection()),
                     );
                   },
-                  child: Text(
+                  child: const Text(
                     '회원가입',
                     style: TextStyle(color: Colors.black),
                   ),

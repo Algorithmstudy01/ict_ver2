@@ -3,6 +3,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class PredictionScreen extends StatefulWidget {
+  const PredictionScreen({super.key});
+
   @override
   _PredictionScreenState createState() => _PredictionScreenState();
 }
@@ -36,11 +38,11 @@ class _PredictionScreenState extends State<PredictionScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Prediction Result'),
+        title: const Text('Prediction Result'),
       ),
       body: Center(
         child: imageUrl.isEmpty
-            ? CircularProgressIndicator() // 이미지 로딩 중일 때 스피너 표시
+            ? const CircularProgressIndicator() // 이미지 로딩 중일 때 스피너 표시
             : Image.network(imageUrl), // 이미지 출력
       ),
     );
