@@ -9,6 +9,7 @@ import 'package:flutter_native_image/flutter_native_image.dart';
 import 'package:provider/provider.dart';
 
 import 'Camera.dart';
+import 'NewAlarm/edit_alarm.dart';
 
 
 class FindText extends StatefulWidget {
@@ -124,6 +125,9 @@ Future<void> sendImageToServer(File imageFile) async {
             복용 시간: $time
             """;
           }).join('\n');
+          List<bool> timeSet;
+          List<int> meal;
+          ExampleAlarmEditScreen(alarmSettings: null,);
         } else {
           _ocrResult = 'OCR 결과가 예상한 형태가 아닙니다.';
         }
