@@ -14,7 +14,7 @@ class FamilyRegister extends StatefulWidget {
 
 class _FamilyRegisterState extends State<FamilyRegister> {
   final _nameController = TextEditingController();
-  final _relationshipController = TextEditingController(); // 기존 관계 입력 필드 제거
+  //final _relationshipController = TextEditingController(); // 기존 관계 입력 필드 제거
   final _phoneNumberController = TextEditingController();
   final _addressController = TextEditingController();
   String? _selectedRelationship; // 선택된 관계를 저장할 변수

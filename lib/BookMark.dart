@@ -8,7 +8,7 @@ import 'dart:convert';
 class BookmarkScreen extends StatefulWidget {
   final String userId;
 
-  const BookmarkScreen({Key? key, required this.userId}) : super(key: key);
+  const BookmarkScreen({super.key, required this.userId});
 
   @override
   _BookmarkScreenState createState() => _BookmarkScreenState();

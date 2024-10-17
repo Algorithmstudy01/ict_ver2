@@ -6,6 +6,9 @@ import 'package:camera/camera.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_native_image/flutter_native_image.dart';
+import 'package:provider/provider.dart';
+
+import 'Camera.dart';
 
 
 class FindText extends StatefulWidget {
@@ -32,7 +35,8 @@ class _FindTextState extends State<FindText> with AutomaticKeepAliveClientMixin 
   }
 
   void _initializeCamera() async {
-    _cameras = await availableCameras();
+    final Cameras = Provider.of<Camera>(context, listen: false);
+    _cameras = Cameras.cameras;
     if (_cameras.isNotEmpty) {
       controller = CameraController(
         _cameras[0],

@@ -46,6 +46,7 @@ class _ExampleAlarmHomeScreenState extends State<ExampleAlarmHomeScreen> with Au
 
   Future<void> navigateToAlarmScreen(AlarmSettings? settings) async {
     final res = await showModalBottomSheet<bool?>(
+      backgroundColor: Colors.white,
       context: context,
       isScrollControlled: true,
       shape: RoundedRectangleBorder(
@@ -70,7 +71,6 @@ class _ExampleAlarmHomeScreenState extends State<ExampleAlarmHomeScreen> with Au
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
 
     super.build(context);
     return Scaffold(
@@ -89,7 +89,7 @@ class _ExampleAlarmHomeScreenState extends State<ExampleAlarmHomeScreen> with Au
                 minute: alarms[index].dateTime.minute,
               ).format(context),
               alarmsettings: alarms[index],
-              onPressed: () => navigateToAlarmScreen(alarms[index]),
+              onPressed: () => print("hi"),//navigateToAlarmScreen(alarms[index]),
               onDismissed: () {
                 Alarm.stop(alarms[index].id).then((_) => loadAlarms());
               },

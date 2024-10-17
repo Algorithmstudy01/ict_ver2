@@ -8,7 +8,6 @@ import 'package:camera/camera.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_native_image/flutter_native_image.dart';
 
 
@@ -273,7 +272,7 @@ Future<void> _uploadImage(File image) async {
       } else if (predictionScore >= 0.1 && predictionScore < 0.6) {
         // 낮은 확신의 예측
         List<dynamic> pillOptions = decodedData['pill_options'] ?? [];
-        List<double> predScores = decodedData['pred_scores']?.map<double>((score) => score.toDouble()).toList() ?? [];
+       // List<double> predScores = decodedData['pred_scores']?.map<double>((score) => score.toDouble()).toList() ?? [];
 
         if (pillOptions.isNotEmpty) {
           // 선택지의 개수에 따라 처리
@@ -337,7 +336,7 @@ Future<void> _uploadImage(File image) async {
 
 
 Future<void> _saveSearchHistory(PillInfo pillInfo) async {
-  final prefs = await SharedPreferences.getInstance();
+  //final prefs = await SharedPreferences.getInstance();
   final userId = widget.userId;
 
   final response = await http.post(

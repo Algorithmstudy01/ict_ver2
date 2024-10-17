@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'login_section.dart'; // Import the Login Screen
+// Import the Login Screen
 import 'my_page.dart'; // Import MyPage
 
 class ChangePW extends StatefulWidget {

@@ -1,5 +1,3 @@
-import 'package:chungbuk_ict/homepage.dart';
-import 'package:chungbuk_ict/my_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';

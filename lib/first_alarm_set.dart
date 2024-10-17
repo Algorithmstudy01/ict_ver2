@@ -6,7 +6,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'homepage.dart';
 
 class FirstAlarmSet extends StatefulWidget {
@@ -26,7 +25,6 @@ class _FirstAlarmSet extends State<FirstAlarmSet> {
   final now = DateTime.now();
   var selectedTime = List<TimeOfDay>.filled(5, TimeOfDay.now());
   late DateTime timeSet;
-  final _formKey = GlobalKey<FormState>();
   late String test ="";
 
   void setSelectedTime(int i, int hour, int min){
@@ -70,10 +68,10 @@ class _FirstAlarmSet extends State<FirstAlarmSet> {
     await file.writeAsString(selectedTime[i].format(context));
     setState(() {});
 
-    // Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) {
-    //   // 성공 시 페이지 이동
-    //   return TabbarFrame(userId: widget.userId);
-    // }));
+    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) {
+      // 성공 시 페이지 이동
+      return TabbarFrame(userId: widget.userId);
+    }));
 
   }
 
@@ -102,6 +100,29 @@ class _FirstAlarmSet extends State<FirstAlarmSet> {
       initialTime: selectedTime[i],
       context: context,
       initialEntryMode: TimePickerEntryMode.inputOnly,
+      builder: (context, child){
+        final Size size = MediaQuery.of(context).size;
+        return Theme(data: ThemeData.light().copyWith(
+          timePickerTheme: TimePickerThemeData(
+            backgroundColor: Colors.white,
+            hourMinuteColor: Colors.white,
+            dayPeriodColor: Colors.blueAccent,
+            helpTextStyle: TextStyle(
+              fontSize: size.height*0.02
+            ),
+            cancelButtonStyle: ButtonStyle(
+              foregroundColor: MaterialStateProperty.all<Color>(Colors.redAccent),
+            ),
+            confirmButtonStyle: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all<Color>(Colors.blueAccent),
+              foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+            )
+
+          )
+        ),
+            child: child!,
+        );
+      }
     );
 
     if(res != null){
@@ -116,7 +137,6 @@ class _FirstAlarmSet extends State<FirstAlarmSet> {
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
-    final selection = CupertinoTextSelectionControls();
 
     RawMaterialButton timeButton(int i, String time){
       RawMaterialButton  button = new RawMaterialButton(
@@ -130,12 +150,24 @@ class _FirstAlarmSet extends State<FirstAlarmSet> {
                   bottom: BorderSide(color: Colors.grey, width: 1)
               )
           ),
-          child: Text(
-            "$time "+selectedTime[i].format(context),
-            style: Theme.of(context)
-                .textTheme
-                .displayMedium!
-                .copyWith(color: Colors.blueAccent),
+          child: Text.rich(
+            TextSpan(
+              text: "$time ",
+              style: Theme.of(context)
+                  .textTheme
+                  .displayMedium!
+                  .copyWith(color: Colors.black),
+              children: [
+                TextSpan(text: selectedTime[i].format(context),
+                  style: Theme.of(context)
+                      .textTheme
+                      .displayMedium!
+                      .copyWith(color: Colors.blueAccent),
+                ),
+              ]
+            ),
+
+
 
           ),
         ),
@@ -167,10 +199,13 @@ class _FirstAlarmSet extends State<FirstAlarmSet> {
             SizedBox(
               width: size.width*0.9,
                 child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
 
-                ElevatedButton(
+                SizedBox(
+                  width: size.width*0.7,
+                  height: size.height*0.08,
+                  child: ElevatedButton(
                     onPressed: (){
                         for(int i=0; i<5; i++) {
                           setAlarmTime(
@@ -182,27 +217,32 @@ class _FirstAlarmSet extends State<FirstAlarmSet> {
                         }
 
                       },
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(),
+                        backgroundColor: Colors.blueAccent,
+                      ),
                     child: Text(
                         "시간 설정",
                       style: TextStyle(
-                        fontSize: size.height*0.02
+                        fontSize: size.height*0.038,
+                        color: Colors.white
                       ),
                     )
-                ),
-                ElevatedButton(
-                    onPressed: () async {
-                      test = await _loadFile("morning");
-                      setState(() {
-                      });
-                    },
-                    child: Text(
-                        "건너뛰기",
-                      style: TextStyle(
-                        fontSize:  size.height*0.02,
-                      ),
-                    ),
-
-                ),
+                ),)
+                // ElevatedButton(
+                //     onPressed: () async {
+                //       test = await _loadFile("morning");
+                //       setState(() {
+                //       });
+                //     },
+                //     child: Text(
+                //         "건너뛰기",
+                //       style: TextStyle(
+                //         fontSize:  size.height*0.02,
+                //       ),
+                //     ),
+                //
+                // ),
               ],
             )),
             //Text(test)

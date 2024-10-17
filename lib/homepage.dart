@@ -4,12 +4,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'BookMark.dart';
 import 'find_pill.dart';
-import 'search_history_screen.dart';
 import 'my_page.dart';
 import 'NewAlarm/NewAlarm.dart';
-import 'pill_information.dart';
 import 'package:chungbuk_ict/recommended.dart';
-import 'package:chungbuk_ict/PharmacyScreen.dart';
 import 'package:chungbuk_ict/text_OCR.dart';
 
 
@@ -109,7 +106,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   String _nickname = '';
-  Map<String, dynamic> _pillInfo = {};
+  //Map<String, dynamic> _pillInfo = {};
 
   @override
   void initState() {
@@ -126,9 +123,9 @@ class _MyHomePageState extends State<MyHomePage> {
         _nickname = data['nickname'] ?? 'Unknown User';
       });
     } else {
-      setState(() {
+
         _nickname = 'Unknown User';
-      });
+
     }
   }
 

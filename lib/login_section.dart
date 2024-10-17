@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:chungbuk_ict/first_alarm_set.dart';
-import 'package:chungbuk_ict/my_page.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'homepage.dart';
@@ -20,7 +19,7 @@ class _LoginSectionState extends State<LoginSection> {
   final TextEditingController _idController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  bool _showPassword = false; // 비밀번호 보이기 여부
+  //bool _showPassword = false; // 비밀번호 보이기 여부
 
 
 void _login() async {
