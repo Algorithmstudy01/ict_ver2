@@ -129,14 +129,10 @@ class _LowPredictionState extends State<LowPrediction> {
                                       ),
                                     ),
                                     const SizedBox(height: 8),
-                                    Text(
-                                      '예측 확률: ${(option['confidence'] is String
-                                          ? double.parse(option['confidence'])
-                                          : option['confidence']).toStringAsFixed(1)}%',
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                      ),
-                                    ),
+
+
+
+
                                   ],
                                 ),
                               ),

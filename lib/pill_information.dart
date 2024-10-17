@@ -384,18 +384,24 @@ void _showSuccessDialog() {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white, // AppBar 배경색 설정
+        elevation: 4, // 그림자 효과
+        centerTitle: true,
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.of(context).pop();
           },
+          color: Colors.black, // 아이콘 색상 설정
         ),
         actions: [
           IconButton(
             icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
             onPressed: toggleFavorite,
+            color: Colors.black, // 아이콘 색상 설정
           ),
         ],
+        shadowColor: Colors.grey.withOpacity(0.5), // AppBar 그림자 색상
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
