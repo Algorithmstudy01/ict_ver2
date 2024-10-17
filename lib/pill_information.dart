@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:chungbuk_ict/BookMark.dart';
-import 'package:chungbuk_ict/pill_information.dart';  // Import if necessary
-import 'package:chungbuk_ict/Plus_information.dart';
+
 
 class InformationScreen extends StatefulWidget {
 

@@ -9,10 +9,6 @@ import 'Family_Registration.dart'; // 가족 등록 페이지
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'pill_information.dart'; // 알약 정보 페이지
-import 'package:chungbuk_ict/search_history_screen.dart';
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 
 class MyPage extends StatefulWidget {
   final String userId;

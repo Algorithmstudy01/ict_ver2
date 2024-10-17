@@ -1,5 +1,3 @@
-import 'package:chungbuk_ict/homepage.dart';
-import 'package:chungbuk_ict/my_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -8,6 +6,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:camera/camera.dart';
 import 'Camera.dart';
 import 'My_alarm/alarm.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 late List<CameraDescription> _cameras;
 
@@ -41,6 +40,13 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (context) => Camera(_cameras),  // Pass the cameras to the provider
       child: MaterialApp(
+        localizationsDelegates: [
+          GlobalMaterialLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: [
+          Locale('ko', 'KR'),
+        ],
         home: StartSection(), // Start the app with StartSection
       ),
     );
