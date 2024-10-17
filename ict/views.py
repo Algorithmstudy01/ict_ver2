@@ -1252,13 +1252,101 @@ class RecommendationListView(View):
 # # # import re  # 정규식 사용을 위해 re 모듈 추가
 
 
-# import json
+# # import json
+# import re
+# import time
+# import uuid
+# import requests
+# from rest_framework.decorators import api_view
+# from rest_framework.response import Response
+
+# secret_key = "WGxKQm5hSHNIV2RDV3F4dkdyakRqU0RVYVhzTU5MeHU="
+# api_url = "https://p405u8jqwz.apigw.ntruss.com/custom/v1/35036/36ab22ac55e0312c6af8e6d47ee49ac8e5c924df2f038ea2bbc6da922bc3113e/general"
+# @api_view(['POST'])
+# def ocr_view(request):
+#     image_file = request.FILES['image']
+
+#     # Request 생성
+#     request_json = {
+#         'images': [
+#             {
+#                 'format': 'jpg',
+#                 'name': 'demo'
+#             }
+#         ],
+#         'requestId': str(uuid.uuid4()),
+#         'version': 'V2',
+#                 'timestamp': int(round(time.time() * 1000))  # 여기를 사용할 수 있습니다
+#     }
+
+#     payload = {'message': json.dumps(request_json).encode('UTF-8')}
+#     files = [('file', image_file)]
+#     headers = {'X-OCR-SECRET': secret_key}
+
+#     # OCR 요청
+#     response = requests.request("POST", api_url, headers=headers, data=payload, files=files)
+
+#     if response.status_code == 200:
+#         ocr_results = json.loads(response.text)
+#         all_texts = []
+#         for image_result in ocr_results['images']:
+#             for field in image_result['fields']:
+#                 text = field['inferText']
+#                 all_texts.append(text)
+        
+#         full_text = ' '.join(all_texts)
+
+#         # 약품 이름을 추출하는 정규식
+#         # "정"이나 "캡슐" 뒤에 추가적인 설명이 없거나, 용량이 있는 경우도 허용
+#         drug_code_pattern = re.compile(r"([가-힣]+(?:정|캡슐)(?:\s*\d*mg|밀리그램)?(?=\s|$))") 
+#         drug_codes = drug_code_pattern.findall(full_text)
+
+#         # 복용 횟수를 추출하는 정규식
+#         # dosage_pattern = re.compile(r"(\d+\.\d+정씩\s*\d+회)")
+#         # dosage_pattern = re.compile(r"(하루\s*\d+회)")
+#         dosage_pattern = re.compile(r"(하루\s*\d+회|\d+\.\d+정씩\s*\d+회|\d+정씩\s*\d+회)")
+
+#         dosages = dosage_pattern.findall(full_text)
+#         time_pattern = re.compile(r"(아침\s*식후\s*\d+분에|아침/저녁\s*식후\s*\d+분에|저녁\s*식후\s*\d+분에)")
+
+
+#         times = time_pattern.findall(full_text)
+
+#         # 아침 저녁 식후가 함께 있는 경우를 분리
+#         parsed_times = []
+#         for time_entry in times:  # time을 time_entry로 변경
+#             if "아침 저녁" in time_entry:
+#                 parsed_times.append("아침 식후")
+#                 parsed_times.append("저녁 식후")
+#             else:
+#                 parsed_times.append(time_entry)
+
+#         return Response([
+#                 {"drug_code": drug_code, "dosage": dosages[i] if i < len(dosages) else None, "time": parsed_times[i] if i < len(parsed_times) else None} 
+#                 for i, drug_code in enumerate(drug_codes)
+#             ])
+
+#         # # 추출된 데이터 반환
+#         # response_data = [
+#         #     {"drug_code": drug_code, 
+#         #      "dosage": dosages[i] if i < len(dosages) else None} 
+#         #     for i, drug_code in enumerate(drug_codes)
+#         # ]
+
+#         return Response(response_data)
+
+#     else:
+#         return Response({"error": f"OCR 실패: 상태 코드 {response.status_code}"}, status=response.status_code)
 import re
 import time
 import uuid
 import requests
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+import json
+
+secret_key = "WGxKQm5hSHNIV2RDV3F4dkdyakRqU0RVYVhzTU5MeHU="
+api_url = "https://p405u8jqwz.apigw.ntruss.com/custom/v1/35036/36ab22ac55e0312c6af8e6d47ee49ac8e5c924df2f038ea2bbc6da922bc3113e/general"
 
 @api_view(['POST'])
 def ocr_view(request):
@@ -1274,7 +1362,7 @@ def ocr_view(request):
         ],
         'requestId': str(uuid.uuid4()),
         'version': 'V2',
-                'timestamp': int(round(time.time() * 1000))  # 여기를 사용할 수 있습니다
+        'timestamp': int(round(time.time() * 1000))  # 여기를 사용할 수 있습니다
     }
 
     payload = {'message': json.dumps(request_json).encode('UTF-8')}
@@ -1295,43 +1383,35 @@ def ocr_view(request):
         full_text = ' '.join(all_texts)
 
         # 약품 이름을 추출하는 정규식
-        # "정"이나 "캡슐" 뒤에 추가적인 설명이 없거나, 용량이 있는 경우도 허용
         drug_code_pattern = re.compile(r"([가-힣]+(?:정|캡슐)(?:\s*\d*mg|밀리그램)?(?=\s|$))") 
         drug_codes = drug_code_pattern.findall(full_text)
 
-        # 복용 횟수를 추출하는 정규식
-        # dosage_pattern = re.compile(r"(\d+\.\d+정씩\s*\d+회)")
-        # dosage_pattern = re.compile(r"(하루\s*\d+회)")
-        dosage_pattern = re.compile(r"(하루\s*\d+회|\d+\.\d+정씩\s*\d+회|\d+정씩\s*\d+회)")
-
-        dosages = dosage_pattern.findall(full_text)
-        time_pattern = re.compile(r"(아침\s*식후\s*\d+분에|아침/저녁\s*식후\s*\d+분에|저녁\s*식후\s*\d+분에)")
-
-
+        # 복용 시간을 추출하는 정규식
+        time_pattern = re.compile(r"(아침|점심|저녁)")
         times = time_pattern.findall(full_text)
 
-        # 아침 저녁 식후가 함께 있는 경우를 분리
+        # 아침/저녁을 분리하여 개별 항목으로 처리
         parsed_times = []
-        for time_entry in times:  # time을 time_entry로 변경
+        for time_entry in times:
             if "아침 저녁" in time_entry:
                 parsed_times.append("아침 식후")
                 parsed_times.append("저녁 식후")
             else:
                 parsed_times.append(time_entry)
 
-        return Response([
-                {"drug_code": drug_code, "dosage": dosages[i] if i < len(dosages) else None, "time": parsed_times[i] if i < len(parsed_times) else None} 
-                for i, drug_code in enumerate(drug_codes)
-            ])
+        # Remove duplicates from drug_codes and parsed_times
+        drug_codes = list(set(drug_codes))
+        parsed_times = list(set(parsed_times))
 
-        # # 추출된 데이터 반환
-        # response_data = [
-        #     {"drug_code": drug_code, 
-        #      "dosage": dosages[i] if i < len(dosages) else None} 
-        #     for i, drug_code in enumerate(drug_codes)
-        # ]
+        # Print the drug codes and times to terminal
+        print(f"약품 코드 리스트: {drug_codes}")
+        print(f"복용 시간 리스트: {parsed_times}")
 
-        return Response(response_data)
+        # 약품 이름 리스트와 복용 시간 리스트를 각각 반환
+        return Response({
+            "drug_codes": drug_codes,
+            "times": parsed_times
+        })
 
     else:
         return Response({"error": f"OCR 실패: 상태 코드 {response.status_code}"}, status=response.status_code)

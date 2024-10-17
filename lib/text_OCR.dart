@@ -7,7 +7,6 @@ import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_native_image/flutter_native_image.dart';
 
-
 class FindText extends StatefulWidget {
   const FindText({super.key});
 
@@ -21,7 +20,8 @@ class _FindTextState extends State<FindText> with AutomaticKeepAliveClientMixin 
   XFile? _image;
   File? imageFile;
   bool _isLoading = false;
-  String _ocrResult = "OCR 결과가 여기에 표시됩니다.";
+  List<String> uniqueDrugCodes = [];
+  List<String> uniqueTimes = [];
 
   final ImagePicker picker = ImagePicker();
 
@@ -91,55 +91,48 @@ class _FindTextState extends State<FindText> with AutomaticKeepAliveClientMixin 
       print("Image selected from gallery and processed.");
     }
   }
-Future<void> sendImageToServer(File imageFile) async {
-  setState(() {
-    _isLoading = true;
-    _ocrResult = "OCR 요청 중입니다...";
-  });
 
-  var request = http.MultipartRequest('POST', Uri.parse('https://80d4-113-198-180-184.ngrok-free.app/ocr/'));
-  request.files.add(await http.MultipartFile.fromPath('image', imageFile.path));
+  Future<void> sendImageToServer(File imageFile) async {
+    setState(() {
+      _isLoading = true;
+      uniqueDrugCodes.clear(); // Clear previous results
+      uniqueTimes.clear();     // Clear previous results
+    });
 
-  try {
-    var response = await request.send();
-    if (response.statusCode == 200) {
-      var responseBody = await response.stream.bytesToString();
-      var result = jsonDecode(responseBody);
+    var request = http.MultipartRequest('POST', Uri.parse('https://80d4-113-198-180-184.ngrok-free.app/ocr/'));
+    request.files.add(await http.MultipartFile.fromPath('image', imageFile.path));
 
+    try {
+      var response = await request.send();
+      if (response.statusCode == 200) {
+        var responseBody = await response.stream.bytesToString();
+        var result = jsonDecode(responseBody);
+
+        setState(() {
+          if (result['drug_codes'] is List && result['times'] is List) {
+            // Use Set to collect unique drug codes and times
+            uniqueDrugCodes = Set<String>.from(result['drug_codes']).toList();
+            uniqueTimes = Set<String>.from(result['times']).toList();
+          } else {
+            _showErrorDialog('OCR 결과가 예상한 형태가 아닙니다.');
+          }
+        });
+      } else {
+        setState(() {
+          _showErrorDialog('OCR 요청 실패: 상태 코드 ${response.statusCode}');
+        });
+      }
+    } catch (e) {
       setState(() {
-        // 응답이 리스트로 되어 있는지 확인하고 처리
-        if (result is List) {
-          List<Map<String, dynamic>> results = List<Map<String, dynamic>>.from(result);
-          _ocrResult = results.map((data) {
-            String drugCode = data['drug_code'] ?? '알 수 없음';
-            String dosage = data['dosage'] ?? '알 수 없음';
-            String time = data['time'] ?? '알 수 없음';
-            return """
-            약품 코드: $drugCode
-            복용 횟수: $dosage
-            복용 시간: $time
-            """;
-          }).join('\n');
-        } else {
-          _ocrResult = 'OCR 결과가 예상한 형태가 아닙니다.';
-        }
+        _showErrorDialog('OCR 요청 실패: 오류가 발생했습니다.');
       });
-    } else {
+      print('Error during OCR request: $e');
+    } finally {
       setState(() {
-        _ocrResult = 'OCR 요청 실패: 상태 코드 ${response.statusCode}';
+        _isLoading = false;
       });
     }
-  } catch (e) {
-    setState(() {
-      _ocrResult = 'OCR 요청 실패: 오류가 발생했습니다.';
-    });
-    print('Error during OCR request: $e');
-  } finally {
-    setState(() {
-      _isLoading = false;
-    });
   }
-}
 
   void _showErrorDialog(String message) {
     showDialog(
@@ -192,30 +185,44 @@ Future<void> sendImageToServer(File imageFile) async {
                   height: size.height * 0.4,
                   child: _isLoading
                       ? const Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      CircularProgressIndicator(),
-                      SizedBox(height: 10),
-                      Text('이미지 처리 중입니다...'),
-                    ],
-                  )
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            CircularProgressIndicator(),
+                            SizedBox(height: 10),
+                            Text('이미지 처리 중입니다...'),
+                          ],
+                        )
                       : (_image != null
-                      ? Image.file(
-                    imageFile!,
-                    fit: BoxFit.contain,
-                  )
-                      : (controller.value.isInitialized
-                      ? AspectRatio(
-                    aspectRatio: 1,
-                    child: CameraPreview(controller),
-                  )
-                      : Container(color: Colors.grey))),
+                          ? Image.file(
+                              imageFile!,
+                              fit: BoxFit.contain,
+                            )
+                          : (controller.value.isInitialized
+                              ? AspectRatio(
+                                  aspectRatio: 1,
+                                  child: CameraPreview(controller),
+                                )
+                              : Container(color: Colors.grey))),
                 ),
                 SizedBox(height: size.height * 0.05),
+                // Display unique drug codes
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Text(
-                    _ocrResult,
+                    '약품 코드:\n' + (uniqueDrugCodes.isNotEmpty
+                        ? uniqueDrugCodes.join(', ')
+                        : '결과 없음'),
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(fontSize: 18),
+                  ),
+                ),
+                // Display unique times
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(
+                    '복용 시간:\n' + (uniqueTimes.isNotEmpty
+                        ? uniqueTimes.join(', ')
+                        : '결과 없음'),
                     textAlign: TextAlign.center,
                     style: const TextStyle(fontSize: 18),
                   ),

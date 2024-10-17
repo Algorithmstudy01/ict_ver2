@@ -80,7 +80,7 @@ class DetailedInfoScreen extends StatelessWidget {
             Text('보관 방법: $storageInstructions',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-             if (manufacturer.isNotEmpty)
+            
             Text('제조사: $manufacturer',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
