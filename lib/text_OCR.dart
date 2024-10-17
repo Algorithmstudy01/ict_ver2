@@ -272,7 +272,7 @@ class _FindTextState extends State<FindText> with AutomaticKeepAliveClientMixin 
                           builder: (context) {
                             return FractionallySizedBox(
                               heightFactor: 0.75,
-                              child: ExampleAlarmEditScreen(alarmSettings: null, timeSelected: timeSet,mealTime: meal,name: "결막염"),
+                              child: ExampleAlarmEditScreen(alarmSettings: null, timeSelected: timeSet,mealTime: meal,name: "고혈압 약"),
                             );
                           },
                         );
