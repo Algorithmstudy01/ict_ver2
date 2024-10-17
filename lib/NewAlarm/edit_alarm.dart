@@ -87,7 +87,7 @@ class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
       vibrate = true;
       volume = null;
       assetAudio = 'assets/marimba.mp3';
-      alarmName = predict!;
+      alarmName = predict!=null ?predict!: "";
       mon = true;
       tue = true;
       wed = true;
@@ -302,7 +302,7 @@ class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
-    myController.text = (alarmName != ""? alarmName : predict)!;
+    myController.text = (alarmName != ""? alarmName : "약이름")!;
     return SingleChildScrollView(
   child: Padding(
       padding: EdgeInsets.symmetric(vertical: size.height*0.02, horizontal: size.width*0.06),
