@@ -5,11 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 
 class ExampleAlarmEditScreen extends StatefulWidget {
-  const ExampleAlarmEditScreen({super.key, this.alarmSettings, this.timeSelected, this.mealTime});
+  const ExampleAlarmEditScreen({super.key, this.alarmSettings, this.timeSelected, this.mealTime, this.name});
 
   final AlarmSettings? alarmSettings;
   final List<bool>? timeSelected;
   final List<int>? mealTime;
+  final String? name;
 
   @override
   State<ExampleAlarmEditScreen> createState() => _ExampleAlarmEditScreenState();
@@ -26,7 +27,7 @@ class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
   late String assetAudio;
   late String alarmName;
   late bool mon, tue, wed, thu, fri, sat, sun;
-  late String predict = "약이름";
+  late String? predict = widget.name;
   List<bool> setTime = List<bool>.filled(5, false);
   List<int> meal = List<int>.filled(5, 0);
   List<String> time = ["기상", "취침", "아침", "점심", "저녁"];
@@ -86,7 +87,7 @@ class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
       vibrate = true;
       volume = null;
       assetAudio = 'assets/marimba.mp3';
-      alarmName = '';
+      alarmName = predict!;
       mon = true;
       tue = true;
       wed = true;
@@ -301,7 +302,7 @@ class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
-    myController.text = alarmName != ""? alarmName : predict;
+    myController.text = (alarmName != ""? alarmName : predict)!;
     return SingleChildScrollView(
   child: Padding(
       padding: EdgeInsets.symmetric(vertical: size.height*0.02, horizontal: size.width*0.06),

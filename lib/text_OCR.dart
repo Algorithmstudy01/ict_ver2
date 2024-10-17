@@ -28,6 +28,9 @@ class _FindTextState extends State<FindText> with AutomaticKeepAliveClientMixin 
   List<String> uniqueDrugCodes = [];
   List<String> uniqueTimes = [];
 
+  List<bool> timeSet = List<bool>.filled(5,false);
+  List<int> meal = List<int>.filled(5, 0);
+
   final ImagePicker picker = ImagePicker();
 
   @override
@@ -37,7 +40,8 @@ class _FindTextState extends State<FindText> with AutomaticKeepAliveClientMixin 
   }
 
   void _initializeCamera() async {
-    _cameras = await availableCameras();
+    final Cameras = Provider.of<Camera>(context, listen: false);
+    _cameras = Cameras.cameras;
     if (_cameras.isNotEmpty) {
       controller = CameraController(
         _cameras[0],
@@ -118,6 +122,23 @@ class _FindTextState extends State<FindText> with AutomaticKeepAliveClientMixin 
             // Use Set to collect unique drug codes and times
             uniqueDrugCodes = Set<String>.from(result['drug_codes']).toList();
             uniqueTimes = Set<String>.from(result['times']).toList();
+
+            for(int i=0; i<5; i++){
+              if(uniqueTimes.contains("아침")){
+                timeSet[2] = true;
+                if(uniqueTimes.contains("식후")){
+                  meal[2] = 1;
+                }
+              }
+                if(uniqueTimes.contains("저녁")){
+                  timeSet[4] = true;
+                  if(uniqueTimes.contains("식후")){
+                    meal[4] = 1;
+                  }
+                }
+
+            }
+
           } else {
             _showErrorDialog('OCR 결과가 예상한 형태가 아닙니다.');
           }
@@ -237,13 +258,33 @@ class _FindTextState extends State<FindText> with AutomaticKeepAliveClientMixin 
                   width: size.width * 0.7,
                   height: size.height * 0.06,
                   child: ElevatedButton(
-                    onPressed: _image == null ? _takePicture : () => setState(() => _image = null),
+                    onPressed: (){
+                      if(_image ==null){
+                        _takePicture();
+                      }else{
+                        showModalBottomSheet<bool?>(
+                          backgroundColor: Colors.white,
+                          context: context,
+                          isScrollControlled: true,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          builder: (context) {
+                            return FractionallySizedBox(
+                              heightFactor: 0.75,
+                              child: ExampleAlarmEditScreen(alarmSettings: null, timeSelected: timeSet,mealTime: meal,name: "결막염"),
+                            );
+                          },
+                        );
+                        //_image = null;
+                      }
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: _image == null ? const Color(0xffC22AF8) : const Color(0xff852C83),
                       shape: const BeveledRectangleBorder(),
                     ),
                     child: Text(
-                      _image == null ? '촬영하기' : '다시 촬영하기',
+                      _image == null ? '촬영하기' : '알람 등록',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colors.white,

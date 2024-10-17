@@ -27,10 +27,10 @@ class _LoginSectionState extends State<LoginSection> {
 void _login() async {
     final String id = _idController.text;
     final String password = _passwordController.text;
-    // Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) {
-    //   // 성공 시 페이지 이동
-    //   return FirstAlarmSet(userId: id);
-    // }), (route) => false);
+    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) {
+      // 성공 시 페이지 이동
+      return FirstAlarmSet(userId: id);
+    }), (route) => false);
  if (id.isNotEmpty && password.isNotEmpty) {
       try {
         final response = await http.post(
