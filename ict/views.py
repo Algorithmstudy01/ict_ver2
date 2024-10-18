@@ -1423,8 +1423,6 @@ def ocr_view(request):
 # import requests
 # from rest_framework.decorators import api_view
 # from rest_framework.response import Response
-# secret_key = "VUVZTm1UYk5ocEJSaHZHRVpuc0lCc0ZUc29vTXpxdmE="
-# api_url = "https://fqml315j1i.apigw.ntruss.com/custom/v1/34920/3850f8f6acb98a9f5c4375a18ec018ef3062e8636574ca5963ef4a8e618805df/general"
 
 # @api_view(['POST'])
 # def ocr_view(request):
